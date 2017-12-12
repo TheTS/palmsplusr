@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^README-.*\.png$
+^docs$
+^plots$
+^test.R$

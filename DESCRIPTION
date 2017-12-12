@@ -2,7 +2,7 @@ Package: palmsplusr
 Type: Package
 Title: Process GPS and accelerometer data retrieved from PALMS
 Version: 0.1.0
-Author: Tom Stewart
+Authors@R: person("Tom", "Stewart", role = c("aut", "cre"), email = "tom.stewart@aut.ac.nz")
 Maintainer: Tom Stewart <tom.stewart@aut.ac.nz>
 Description: This package makes it easier to analyse physical activity
     and travel data obtained from the Personal Activity Location Measurement
@@ -14,7 +14,10 @@ Depends:
   R (>= 3.2.4),
   dplyr (>= 0.7.1)
 Imports:
-  rlang
+  rlang,
+  purrr,
+  sf,
+  readr
 Suggests: 
   testthat,
   knitr,
