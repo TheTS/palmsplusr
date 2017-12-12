@@ -11,20 +11,24 @@
 #' @export
 palms_calc_palmsplus <- function(data) {
 
+  if (!exists("palmsplus_fields")) stop("No palmsplus fields have been added.")
+
   field_args <- setNames(palmsplus_fields[[2]], palmsplus_fields[[1]]) %>%
     lapply(parse_expr)
 
-  domain_args <- setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
-    lapply(parse_expr)
+  if (exists("palmsplus_domains")) {
+    domain_args <- setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
+      lapply(parse_expr)
 
-  args <- c(field_args, domain_args)
+    field_args <- c(field_args, domain_args)
+  }
 
   x <- list()
   for (i in unique(data$identifier)) {
 
     x[[i]] <- data %>%
       filter(identifier == i) %>%
-      mutate(!!! args) %>%
+      mutate(!!! field_args) %>%
       mutate_if(is.logical, as.integer)
 
     cat("Computed palmsplus for:", i, "\n")

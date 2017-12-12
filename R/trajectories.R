@@ -18,11 +18,12 @@ palms_calc_trajectories <- function(data) {
   args <- setNames(args[[2]], args[[1]]) %>% lapply(parse_expr)
   args_after <- setNames(args_after[[2]], args_after[[1]]) %>% lapply(parse_expr)
 
-  args_locations <- setNames(paste0("first(", trajectory_locations[[2]],
-                            ") & last(", trajectory_locations[[3]], ")"),
-                            trajectory_locations[[1]]) %>% lapply(parse_expr)
-
-  args <- c(args, args_locations)
+  if (exists("trajectory_locations")) {
+    args_locations <- setNames(paste0("first(", trajectory_locations[[2]],
+                                      ") & last(", trajectory_locations[[3]], ")"),
+                               trajectory_locations[[1]]) %>% lapply(parse_expr)
+    args <- c(args, args_locations)
+  }
 
   epoch <- palms_epoch_length(data)
 
