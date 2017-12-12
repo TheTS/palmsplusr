@@ -1,0 +1,100 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!--[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/TheTS/palmsplusr?branch=master&svg=true)](https://ci.appveyor.com/project/TheTS/palmsplusr)-->
+<!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
+<!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
+[![packageversion](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg?style=flat-square)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg?style=flat-square)](/commits/master)
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# palmsplusr: Post-PALMS accelerometer and GPS data processing
+
+The goal of palmsplusr is to ...
+
+### Installation
+
+```{r, eval = FALSE}
+library("devtools")
+install_github("TheTS/palmslusr")
+```
+
+
+### Load PALMS dataset
+```{r, echo = FALSE}
+palms <- read_csv(system.file("extdata", "one_participant.csv", package = "palmsplusr"))
+palms <- st_as_sf(palms, coords = c("lon", "lat"), crs = 4326)
+
+head(palms)
+```
+
+
+### Building palmsplus
+```{r}
+palms_add_field("weekday",    "dow < 6")
+palms_add_field("weekend",    "dow > 5")
+palms_add_field("indoors",    "iov == 3")
+palms_add_field("outdoors",   "iov == 1")
+palms_add_field("in_vehicle", "iov == 2")
+```
+
+```{r}
+home <- read_sf(system.file("extdata/shapefiles/", "home.shp", package = "palmsplusr"))
+home.buffer <- palms_buffer(point = home, distance = 100, crs = 2193)
+
+palms_add_field("at_home",   "palms_in_polygon(., filter(home.buffer, identifier == i), \"identifier\")")
+```
+
+```{r}
+palmsplus <- palms_calc_palmsplus(palms)
+head(palmsplus)
+```
+
+### Building days
+```{r}
+palms_add_domain("d_home",      "at_home")
+```
+
+```{r}
+days <- palms_calc_days(palmsplus)
+head(days)
+```
+
+
+### Building trajectories
+```{r}
+palms_add_trajectory_field("mot",       "first(tripmot)")
+palms_add_trajectory_field("wear",      "sum(activityintensity >= 0) * epoch")
+palms_add_trajectory_field("sedentary", "sum(activityintensity == 0) * epoch")
+palms_add_trajectory_field("light",     "sum(activityintensity == 1) * epoch")
+palms_add_trajectory_field("moderate",  "sum(activityintensity == 2) * epoch")
+palms_add_trajectory_field("vigorous",  "sum(activityintensity == 3) * epoch")
+palms_add_trajectory_field("mvpa",      "moderate + vigorous")
+```
+
+```{r}
+trajectories <- palms_calc_trajectories(palms)
+head(trajectories)
+```
+
+
+### Summary plot
+```{r}
+palms_plot(trajectories)
+```
+
+
+
+
+
