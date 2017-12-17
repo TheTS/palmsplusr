@@ -15,6 +15,8 @@
 palms_add_domain <- function(name, formula) {
   if (!exists("palmsplus_domains"))
     palmsplus_domains <<- tibble(name = name, formula = formula)
+  else if (name %in% palmsplus_domains$name)
+    stop(name, " already exists in palmsplus_domains")
   else
     palmsplus_domains <<- rbind(palmsplus_domains, c(name, formula))
 }
@@ -37,6 +39,8 @@ palms_add_domain <- function(name, formula) {
 palms_add_field <- function(name, formula, domain_field = FALSE) {
   if (!exists("palmsplus_fields"))
     palmsplus_fields <<- tibble(name = name, formula = formula, domain_field = domain_field)
+  else if (name %in% palmsplus_fields$name)
+    stop(name, " already exists in palmsplus_fields")
   else
     palmsplus_fields <<- rbind(palmsplus_fields, c(name, formula, domain_field))
 }
@@ -58,6 +62,8 @@ palms_add_field <- function(name, formula, domain_field = FALSE) {
 palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE) {
   if (!exists("trajectory_fields"))
     trajectory_fields <<- tibble(name = name, formula = formula, after_conversion = after_conversion)
+  else if (name %in% trajectory_fields$name)
+    stop(name, " already exists in trajectory_fields")
   else
     trajectory_fields <<- rbind(trajectory_fields, c(name, formula, after_conversion))
 }
@@ -80,6 +86,8 @@ palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE) 
 palms_add_trip_location <- function(name, start_criteria, end_criteria) {
   if (!exists("trajectory_locations"))
     trajectory_locations <<- tibble(name = name, start_criteria = start_criteria, end_criteria = end_criteria)
+  else if (name %in% trajectory_locations$name)
+    stop(name, " already exists in trajectory_locations")
   else
     trajectory_locations <<- rbind(trajectory_locations, c(name, start_criteria, end_criteria))
 }
