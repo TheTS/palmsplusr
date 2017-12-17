@@ -24,15 +24,19 @@ palms_calc_palmsplus <- function(data) {
   }
 
   x <- list()
-  for (i in unique(data$identifier)) {
+  j <- 1
+  len <- length(unique(data$identifier))
 
+  for (i in unique(data$identifier)) {
     x[[i]] <- data %>%
       filter(identifier == i) %>%
       mutate(!!! field_args) %>%
       mutate_if(is.logical, as.integer)
 
-    cat("Computed palmsplus for:", i, "\n")
+    cat("[", j, "/", len, "] Computed palmsplus for: ", i, "\n", sep = "")
+    j <- j + 1
   }
 
-  return(do.call(rbind, x))
+  data <- data.table::rbindlist(x) %>%
+    st_set_geometry(data$geometry)
 }

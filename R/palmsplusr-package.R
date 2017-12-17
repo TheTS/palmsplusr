@@ -10,4 +10,5 @@
 #' @importFrom rlang parse_expr
 #' @importFrom stats setNames aggregate
 #' @importFrom purrr reduce
+#' @importFrom data.table rbindlist
 NULL

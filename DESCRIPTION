@@ -17,7 +17,8 @@ Imports:
   rlang,
   purrr,
   sf,
-  readr
+  readr,
+  data.table
 Suggests: 
   testthat,
   knitr,
