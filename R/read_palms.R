@@ -28,10 +28,10 @@
 #' @export
 read_palms <- function(file) {
   palms <- read_csv(file)
-  setNames(palms, tolower(names(palms)))
+  palms <- setNames(palms, tolower(names(palms)))
 
   check_names <- c("identifier",
-                   "palms_datetime",
+                   "datetime",
                    "dow",
                    "lon",
                    "lat",
@@ -48,13 +48,13 @@ read_palms <- function(file) {
   miss <- setdiff(check_names, names(palms))
 
   if (length(miss) > 0)
-    stop("Your palms input file is missing columns: ", miss)
+    stop("Your palms input file is missing columns: ", paste(miss, sep = ", "))
 
 
   extra <- setdiff(names(palms), check_names)
 
   if (length(extra) > 0)
-    message("Your palms input file has extra columns: ", extra, "\n")
+    message("Your palms input file has extra columns: ", paste(extra, sep = ", "), "\n")
 
   message("Column name check passed. Converting to sf dataframe...\n")
   return(st_as_sf(palms, coords = c("lon", "lat"), crs = 4326))

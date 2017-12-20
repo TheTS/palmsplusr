@@ -1,4 +1,4 @@
-"identifier","palms_datetime","dow","lat","lon","fixtypecode","iov","tripnumber","triptype","tripmot","activity","activityintensity","activityboutnumber","sedentaryboutnumber"
+"identifier","dateTime","dow","lat","lon","fixTypeCode","iov","tripNumber","tripType","tripMOT","activity","activityIntensity","activityBoutNumber","sedentaryBoutNumber"
 "BC0627",2013-08-26 11:08:45,1,-36.80079465,174.69962969,2,0,1,1,1,0,0,0,2
 "BC0627",2013-08-26 11:09:00,1,-36.80054081,174.69989964,1,1,1,2,1,118,1,0,2
 "BC0627",2013-08-26 11:09:15,1,-36.80054587,174.69991209,1,0,1,2,1,312,1,0,0

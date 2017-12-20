@@ -20,10 +20,10 @@ palms_calc_days <- function(data) {
 
   data <- data %>%
     st_set_geometry(NULL) %>%
-    select(identifier, palms_datetime, domains, fields) %>%
-    mutate_at(vars(-identifier,-palms_datetime), funs(. * epoch / 60)) %>%
-    group_by(identifier, date = as.Date(palms_datetime)) %>%
-    select(-palms_datetime)
+    select(identifier, datetime, domains, fields) %>%
+    mutate_at(vars(-identifier,-datetime), funs(. * epoch / 60)) %>%
+    group_by(identifier, date = as.Date(datetime)) %>%
+    select(-datetime)
 
   x <- list()
   for (i in domains) {

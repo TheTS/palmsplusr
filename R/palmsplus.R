@@ -1,6 +1,7 @@
 #' Adds additional columns to PALMS data that represent domains and fields
 #'
 #' @param data The palms data
+#' @param verbose Print progress after each iteration. Default is \code{TRUE}.
 #'
 #' @return The input data with additional columns specified in
 #' \code{palms_add_field} and \code{palms_add_domain}.
@@ -9,7 +10,7 @@
 #' #palmsplus <- palms_calc_palmsplus(palms)
 #'
 #' @export
-palms_calc_palmsplus <- function(data) {
+palms_calc_palmsplus <- function(data, verbose = TRUE) {
 
   if (!exists("palmsplus_fields")) stop("No palmsplus fields have been added.")
 
@@ -27,13 +28,14 @@ palms_calc_palmsplus <- function(data) {
   j <- 1
   len <- length(unique(data$identifier))
 
-  for (i in unique(data$identifier)) {
-    x[[i]] <- data %>%
-      filter(identifier == i) %>%
+  for (identifier in unique(data$identifier)) {
+    x[[identifier]] <- data %>%
+      filter(identifier == identifier) %>%
       mutate(!!! field_args) %>%
       mutate_if(is.logical, as.integer)
 
-    cat("[", j, "/", len, "] Computed palmsplus for: ", i, "\n", sep = "")
+    if (verbose == TRUE)
+      cat("[", j, "/", len, "] Computed palmsplus for: ", identifier, "\n", sep = "")
     j <- j + 1
   }
 

@@ -2,8 +2,10 @@ Package: palmsplusr
 Type: Package
 Title: Process GPS and accelerometer data retrieved from PALMS
 Version: 0.1.0
-Authors@R: person("Tom", "Stewart", role = c("aut", "cre"), email = "tom.stewart@aut.ac.nz")
+Authors@R: as.person("Tom Stewart <tom.stewart@aut.ac.nz> [aut, cre]")
 Maintainer: Tom Stewart <tom.stewart@aut.ac.nz>
+URL: http://thets.github.io/palmsplusr/
+BugReports: https://github.com/TheTS/palmsplusr/issues
 Description: This package makes it easier to analyse physical activity
     and travel data obtained from the Personal Activity Location Measurement
     System (PALMS).

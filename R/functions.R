@@ -165,7 +165,7 @@ palms_in_time <- function(data, pid, timetable, participant_basis, start_col, en
     select(UQ(as.name(start_col)), UQ(as.name(end_col))) %>%
     mutate_all(as.POSIXct)
 
-  data$palms_datetime %in% unlist(Map(`:`, dates[[1]], dates[[2]]))
+  data$datetime %in% unlist(Map(`:`, dates[[1]], dates[[2]]))
 }
 
 #' Returns the epoch length of the PALMS dataset
@@ -182,7 +182,7 @@ palms_in_time <- function(data, pid, timetable, participant_basis, start_col, en
 palms_epoch_length <- function(data) {
   times <- data[1:2,] %>%
     st_set_geometry(NULL) %>%
-    select(palms_datetime) %>%
+    select(datetime) %>%
     as.data.frame()
 
   return(as.numeric(difftime(times[2,1], times[1,1], units = "secs")))

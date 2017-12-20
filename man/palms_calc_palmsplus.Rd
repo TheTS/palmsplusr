@@ -4,10 +4,12 @@
 \alias{palms_calc_palmsplus}
 \title{Adds additional columns to PALMS data that represent domains and fields}
 \usage{
-palms_calc_palmsplus(data)
+palms_calc_palmsplus(data, verbose = TRUE)
 }
 \arguments{
 \item{data}{The palms data}
+
+\item{verbose}{Print progress after each iteration. Default is \code{TRUE}.}
 }
 \value{
 The input data with additional columns specified in
