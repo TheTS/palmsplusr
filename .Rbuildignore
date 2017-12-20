@@ -5,3 +5,4 @@
 ^docs$
 ^plots$
 ^test.R$
+^pkgdown$

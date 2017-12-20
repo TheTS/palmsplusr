@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adds an aggregation field to the palmsplus_fields table. — palms_add_field â€¢ palmsplusr</title>
+<title>Reading PALMS data from a csv file — read_palms â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -87,42 +87,50 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Adds an aggregation field to the palmsplus_fields table.</h1>
+    <h1>Reading PALMS data from a csv file</h1>
     </div>
 
     
-    <p>Adds an aggregation field to the palmsplus_fields table.</p>
+    <p>Reading PALMS data from a csv file</p>
     
 
-    <pre class="usage"><span class='fu'>palms_add_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>domain_field</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>read_palms</span>(<span class='no'>file</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>The name of the field as a string.</p></td>
-    </tr>
-    <tr>
-      <th>formula</th>
-      <td><p>The formula as a string.</p></td>
-    </tr>
-    <tr>
-      <th>domain_field</th>
-      <td><p>Logical. If TRUE, this field will be summarised for each
-domain when <code>palms_calc_days</code> is run. If this is just an intermediary
-variable this should be FALSE.</p></td>
+      <th>file</th>
+      <td><p>Path to the file</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If the palmsplus_fields table is not present in the global environment,
-it will be created. If it already exists, the new field will be appended.</p>
+    <p>A sf dataframe of palms points.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>This functions checks for the following columns, and will fail if
+these are not present:</p><ul>
+<li><p>palms_datetime</p></li>
+<li><p>dow</p></li>
+<li><p>lon</p></li>
+<li><p>lat</p></li>
+<li><p>fixtypecode</p></li>
+<li><p>iov</p></li>
+<li><p>tripnumber</p></li>
+<li><p>triptype</p></li>
+<li><p>tripmot</p></li>
+<li><p>activity</p></li>
+<li><p>activityintensity</p></li>
+<li><p>activityboutnumber</p></li>
+<li><p>sedentaryboutnumber</p></li>
+</ul>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms_add_field("pedestrian", "tripmot == 1")
+    <pre class="examples"><div class='input'>#palms <- read_palms('palms_file.csv')
 
 </div></pre>
   </div>
@@ -132,6 +140,8 @@ it will be created. If it already exists, the new field will be appended.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

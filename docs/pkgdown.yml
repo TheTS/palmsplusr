@@ -1,0 +1,9 @@
+urls:
+  reference: http://thets.github.io/palmsplusr/reference
+  article: http://thets.github.io/palmsplusr/articles
+articles:
+  1-getting-started: 1-getting-started.html
+  2-complete-example: 2-complete-example.html
+  3-building-formulas: 3-building-formulas.html
+  4-ggplot2-palmsplusr: 4-ggplot2-palmsplusr.html
+

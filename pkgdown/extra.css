@@ -1,0 +1,5 @@
+table {
+  display: block;
+  margin-left: 15%;
+  overflow: auto;
+}

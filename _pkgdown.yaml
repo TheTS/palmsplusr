@@ -1,0 +1,37 @@
+url: http://thets.github.io/palmsplusr
+
+template:
+  params:
+    bootswatch: yeti
+
+navbar:
+  left:
+    - icon: fa-home fa-2x
+      href: index.html
+    - text: "Getting started"
+      href: articles/1-getting-started.html
+    - text: "Vignettes"
+      href: articles/index.html
+    - text: "Functions"
+      href: reference/index.html
+    - icon: fa-github fa-2x
+      href: http://github.com/TheTS/palmsplusr/
+
+reference:
+  - title: Read PALMS data
+    contents:
+    - read_palms
+  - title: Building field tables
+    contents:
+    - starts_with("palms_add")
+  - title: Calculations
+    contents:
+    - starts_with("palms_calc")
+  - title: Helpers
+    contents:
+    - palms_buffer
+    - palms_in_polygon
+    - palms_in_time
+    - palms_epoch_length
+    - palms_line_point
+    - palms_trip

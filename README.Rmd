@@ -51,7 +51,7 @@ The easiest way to install **palmsplusr** to using devtools:
 
 ```{r, eval = FALSE}
 library("devtools")
-install_github("TheTS/palmslusr")
+install_github("TheTS/palmsplusr")
 ```
 
 ## Documentation and Examples
