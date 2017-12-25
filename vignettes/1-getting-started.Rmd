@@ -231,9 +231,9 @@ Notice how the `trajectories` dataset now contains an extra column `home_home` w
 
 You can save all datasets as a csv file. As `palmsplus` and `trajecories` contain geometry, you can also save these as a ESRI shapefile:
 ```{r, eval=FALSE}
-write.csv(days, "palmsplus.csv", row.names = FALSE)
+write.csv(palmsplus, "palmsplus.csv", row.names = FALSE)
 write.csv(days, "days.csv", row.names = FALSE)
-write.csv(days, "trajectories.csv", row.names = FALSE)
+write.csv(trajectories, "trajectories.csv", row.names = FALSE)
 
 st_write(palmsplus, "palmsplus.shp")
 st_write(trajectories, "trajecories.shp")

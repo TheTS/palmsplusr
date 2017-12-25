@@ -47,7 +47,7 @@ Both fields and domains are created using four functions:
 
 ## Installation
 
-The easiest way to install **palmsplusr** to using devtools:
+The easiest way to install **palmsplusr** is using devtools:
 
 ```{r, eval = FALSE}
 library("devtools")

@@ -16,4 +16,113 @@ knitr::opts_chunk$set(
 )
 ```
 
-## TODO
+## Reading data
+
+It is wise to read in all data that you will need at the beginning. This includes the PALMS dataset, and any other shapefiles and csv files. Any geoprocessing, such as buffering can also be done here.
+
+```{r, eval=FALSE}
+library(palmsplusr)
+library(readr)
+library(sf)
+
+# Load PALMS dataset
+palms <- read_palms("D:/data/csv/palms_output_test.csv")
+
+# Load other csvs
+participant_basis <- read_csv("D:/data/csv/participant_basis.csv")
+class_timetable <- read_csv("D:/data/csv/class_timetable.csv")
+
+# Load shapefiles
+home <- read_sf("D:/shapefiles/home.shp")
+school <- read_sf("D:/shapefiles/school.shp")
+
+# Buffer home points
+home.buffer <- palms_buffer(point = home, distance = 100, crs = 2193)
+```
+
+## Creating field, domain, and trajectory location tables
+
+This section is the bulk of the setup. All formulas for building `palmsplus`, `days`, and `trajectories` are created. Notice that some fields are domain_fields so they will be aggregated for each domain when `days` is built. 
+
+```{r, eval=FALSE}
+# palmsplus fields (from palms dataset)
+palms_add_field("duration",   "1", TRUE)
+palms_add_field("weekday",    "dow < 6")
+palms_add_field("weekend",    "dow > 5")
+palms_add_field("indoors",    "iov == 3")
+palms_add_field("outdoors",   "iov == 1")
+palms_add_field("in_vehicle", "iov == 2")
+palms_add_field("inserted",   "fixtypecode == 6")
+palms_add_field("pedestrian", "tripmot == 1")
+palms_add_field("bicycle",    "tripmot == 2")
+palms_add_field("vehicle",    "tripmot == 3")
+palms_add_field("nonwear",    "activityintensity < 0",  TRUE)
+palms_add_field("wear",       "activityintensity >= 0", TRUE)
+palms_add_field("sedentary",  "activityintensity == 0", TRUE)
+palms_add_field("light",      "activityintensity == 1", TRUE)
+palms_add_field("moderate",   "activityintensity == 2", TRUE)
+palms_add_field("vigorous",   "activityintensity == 3", TRUE)
+palms_add_field("mvpa",       "activityintensity > 1",  TRUE)
+
+# palmsplus fields (from other files)
+palms_add_field("in_school_time", "palms_in_time(., i, class_timetable, participant_basis, \"school_start\", \"school_end\")")
+palms_add_field("in_recess1",     "palms_in_time(., i, class_timetable, participant_basis, \"recess1_start\", \"recess1_end\")")
+palms_add_field("in_recess2",     "palms_in_time(., i, class_timetable, participant_basis, \"recess2_start\", \"recess2_end\")")
+palms_add_field("at_home",        "palms_in_polygon(., filter(home.buffer, identifier == i), \"identifier\")")
+palms_add_field("at_school",      "palms_in_polygon(., filter(school, school_id == participant_basis %>% filter(identifier == i) %>% pull(school_id)))")
+
+# days domains
+palms_add_domain("d_all",       "1")
+palms_add_domain("d_home",      "at_home")
+palms_add_domain("d_school",    "(!at_home & at_school & in_school_time)")
+palms_add_domain("d_transport", "!at_home & !(at_school & in_school_time) & (pedestrian | bicycle | vehicle)")
+palms_add_domain("d_leisure",   "!at_home & !(at_school & in_school_time) & !pedestrian & !bicycle & !vehicle")
+
+# trajectory fields
+palms_add_trajectory_field("mot",       "first(tripmot)")
+palms_add_trajectory_field("date",      "first(as.Date(datetime))")
+palms_add_trajectory_field("start",     "datetime[triptype==1]")
+palms_add_trajectory_field("end",       "datetime[triptype==4]")
+palms_add_trajectory_field("duration",  "as.numeric(difftime(end, start, units = \"secs\") + epoch)")
+palms_add_trajectory_field("nonwear",   "sum(activityintensity < 0) * epoch")
+palms_add_trajectory_field("wear",      "sum(activityintensity >= 0) * epoch")
+palms_add_trajectory_field("sedentary", "sum(activityintensity == 0) * epoch")
+palms_add_trajectory_field("light",     "sum(activityintensity == 1) * epoch")
+palms_add_trajectory_field("moderate",  "sum(activityintensity == 2) * epoch")
+palms_add_trajectory_field("vigorous",  "sum(activityintensity == 3) * epoch")
+palms_add_trajectory_field("mvpa",      "moderate + vigorous")
+palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
+palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE)
+
+# trajectory locations
+palms_add_trip_location("home_school",   "at_home",   "at_school")
+palms_add_trip_location("school_home",   "at_school", "at_home")
+palms_add_trip_location("home_home",     "at_home",   "at_home")
+palms_add_trip_location("school_school", "at_school", "at_school")
+```
+
+## Build palmsplus, days, and trajectories
+
+Once all of the formula tables are created, it is very simple to build palmsplus, and then create days and trajectories.
+
+```{r, eval=FALSE}
+# Build palmsplus
+palmsplus <- palms_calc_palmsplus(palms)
+
+# Build days
+days <- palms_calc_days(palmsplus)
+
+# Build trajectories
+trajectories <- palms_calc_trajectories(palmsplus)
+```
+
+## Saving results
+
+```{r, eval=FALSE}
+write.csv(palmsplus, "palmsplus.csv", row.names = FALSE)
+write.csv(days, "days.csv", row.names = FALSE)
+write.csv(trajectories, "trajectories.csv", row.names = FALSE)
+
+st_write(palmsplus, "palmsplus.shp")
+st_write(trajectories, "trajecories.shp")
+```
