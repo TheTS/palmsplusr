@@ -27,3 +27,12 @@ TODO
 
 TODO
 
+```{r, eval=FALSE}
+  for (i in unique(data$identifier)) {
+    x[[i]] <- data %>%
+      filter(identifier == i) %>%
+      mutate(!!! field_args) %>%
+      mutate_if(is.logical, as.integer)
+  }
+```
+

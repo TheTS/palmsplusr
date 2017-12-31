@@ -6,7 +6,7 @@ PALMSplus for R
 <!--[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/TheTS/palmsplusr?branch=master&svg=true)](https://ci.appveyor.com/project/TheTS/palmsplusr)-->
 <!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
 <!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
-[![Project Status](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2017--12--20-yellowgreen.svg)](/commits/master)
+[![Project Status](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--01-yellowgreen.svg)](/commits/master)
 
 Overview
 --------
@@ -35,11 +35,11 @@ Both fields and domains are created using four functions:
 Installation
 ------------
 
-The easiest way to install **palmsplusr** to using devtools:
+The easiest way to install **palmsplusr** is using devtools:
 
 ``` r
 library("devtools")
-install_github("TheTS/palmslusr")
+install_github("TheTS/palmsplusr")
 ```
 
 Documentation and Examples

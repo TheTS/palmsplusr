@@ -11,7 +11,8 @@
 #' @export
 palms_calc_days <- function(data) {
 
-  if (!exists("palmsplus_domains")) stop("No palmsplus domains have been added.")
+  if (!exists("palmsplus_domains"))
+    stop("No palmsplus domains have been added. Remember to rebuild palmsplus after adding new domains.")
 
   domains <- palmsplus_domains[[1]]
   fields <- palmsplus_fields %>% filter(domain_field == TRUE) %>% pull(name)

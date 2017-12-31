@@ -81,7 +81,7 @@ plot(home.points[, "identifier"], col = "red", add = TRUE)
 A new field called *at_home* is added. The formula for this field checks whether each point in `palms` falls inside these polygons. In the formula, notice how the home.buffer object is filtered by participant identifier. This is so each person is linked with their own home. The last quoted "identifier" dissolves the polygons by identifier. For a more detailed explanation about palmsplus formulas, please see [this article](https://thets.github.io/palmsplusr/articles/3-building-formulas.html).
 
 ```{r}
-palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == identifier), \"identifier\")")
+palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == identifier), identifier)")
 ```
 
 Once all of the fields have been added, you can build the `palmsplus` dataset using the `palms_calc_palmsplus()` function. This takes the `palms` dataset as input:

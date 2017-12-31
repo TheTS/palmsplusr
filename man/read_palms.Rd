@@ -19,7 +19,7 @@ Reading PALMS data from a csv file
 This functions checks for the following columns, and will fail if
 these are not present:
 \itemize{
-\item palms_datetime
+\item datetime
 \item dow
 \item lon
 \item lat

@@ -28,15 +28,16 @@ palms_calc_palmsplus <- function(data, verbose = TRUE) {
   j <- 1
   len <- length(unique(data$identifier))
 
-  for (identifier in unique(data$identifier)) {
-    x[[identifier]] <- data %>%
-      filter(identifier == identifier) %>%
+  for (i in unique(data$identifier)) {
+    x[[i]] <- data %>%
+      filter(identifier == i) %>%
       mutate(!!! field_args) %>%
       mutate_if(is.logical, as.integer)
 
-    if (verbose == TRUE)
-      cat("[", j, "/", len, "] Computed palmsplus for: ", identifier, "\n", sep = "")
-    j <- j + 1
+    if (verbose) {
+      cat("[", j, "/", len, "] Computed palmsplus for: ", i, "\n", sep = "")
+      j <- j + 1
+    }
   }
 
   data <- data.table::rbindlist(x) %>%

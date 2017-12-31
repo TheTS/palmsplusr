@@ -127,10 +127,11 @@ palms_buffer <- function(point, distance = 100, crs = 2193) {
 #'
 #' @export
 palms_in_polygon <- function(data, polygons, collapse_var = NULL){
-  if (!is.null(collapse_var)) {
-    collapse_var <- as.name(collapse_var)
+
+  collapse_var <- quo_text(enquo(collapse_var))
+
+   if (!(collapse_var == "NULL"))
     polygons <- aggregate(polygons, list(polygons[[collapse_var]]), function(x) x[1])
-  }
 
   suppressMessages( # Supresses the 'planar coordinates' warning
     st_contains(polygons, data, sparse = FALSE) %>% as.vector(.)
@@ -155,17 +156,19 @@ palms_in_polygon <- function(data, polygons, collapse_var = NULL){
 #' #data$in_recess <- palms_in_time(data, "BC0627", ct, pb, "recess_start", "recess_end")
 #'
 #' @export
-palms_in_time <- function(data, pid, timetable, participant_basis, start_col, end_col) {
+palms_in_time <- function(data, pid, timetable, basis, start_col, end_col) {
+  start_col <- enquo(start_col)
+  end_col <- enquo(end_col)
 
-  s_id <- as.numeric(participant_basis[participant_basis$identifier == pid, "school_id"])
-  c_id <- as.numeric(participant_basis[participant_basis$identifier == pid, "class_id"])
+  s_id <- as.numeric(basis[basis$identifier == pid, "school_id"])
+  c_id <- as.numeric(basis[basis$identifier == pid, "class_id"])
 
   dates <- timetable %>%
     filter((school_id == s_id) & (class_id == c_id)) %>%
-    select(UQ(as.name(start_col)), UQ(as.name(end_col))) %>%
+    select(!!start_col, !!end_col) %>%
     mutate_all(as.POSIXct)
 
-  data$datetime %in% unlist(Map(`:`, dates[[1]], dates[[2]]))
+  as.vector(data$datetime %in% unlist(Map(`:`, dates[[1]], dates[[2]])))
 }
 
 #' Returns the epoch length of the PALMS dataset
@@ -204,9 +207,9 @@ palms_epoch_length <- function(data) {
 palms_line_point <- function(line, first_point) {
   x <- st_cast(line, "POINT")
   if (first_point)
-    return(x[[1]])
+    return(st_sfc(x[[1]], crs = st_crs(line)))
   else
-    return(x[[length(x)]])
+    return(st_sfc(x[[length(x)]], crs = st_crs(line)))
 }
 
 #' Returns true if a LINESTRING starts and ends in specific polygons
@@ -234,3 +237,12 @@ palms_trip <- function(line, start_loc, end_loc, collapse_start=NULL, collapse_e
 
   return(start & end)
 }
+
+#' @export
+palms_remove_tables <- function() {
+  if (exists("palmsplus_domains")) {rm(palmsplus_domains, envir =  globalenv())}
+  if (exists("palmsplus_fields")) {rm(palmsplus_fields, envir =  globalenv())}
+  if (exists("trajectory_fields")) {rm(trajectory_fields, envir =  globalenv())}
+  if (exists("trajectory_locations")) {rm(trajectory_locations, envir =  globalenv())}
+}
+

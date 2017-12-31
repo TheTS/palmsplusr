@@ -7,8 +7,9 @@
 #' @name palmsplusr
 #' @docType package
 #' @import dplyr
-#' @importFrom rlang parse_expr
+#' @importFrom rlang parse_expr quo_text
 #' @importFrom stats setNames aggregate
 #' @importFrom purrr reduce
-#' @importFrom data.table rbindlist
+#' @importFrom data.table rbindlist rleid
+#' @importFrom tidyr gather unite spread
 NULL

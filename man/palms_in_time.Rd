@@ -4,7 +4,7 @@
 \alias{palms_in_time}
 \title{Returns a logical vector if points are within a time period}
 \usage{
-palms_in_time(data, pid, timetable, participant_basis, start_col, end_col)
+palms_in_time(data, pid, timetable, basis, start_col, end_col)
 }
 \arguments{
 \item{data}{The data points}
@@ -13,11 +13,11 @@ palms_in_time(data, pid, timetable, participant_basis, start_col, end_col)
 
 \item{timetable}{The class timetable table}
 
-\item{participant_basis}{The participant basis table}
-
 \item{start_col}{The column in \code{timetable} containing period start times}
 
 \item{end_col}{The column in \code{timetable} containing period end times}
+
+\item{participant_basis}{The participant basis table}
 }
 \value{
 A logical vector the length of the input data points.
