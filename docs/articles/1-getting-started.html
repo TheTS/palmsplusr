@@ -65,7 +65,7 @@
     <div class="page-header toc-ignore">
       <h1>Getting started with palmsplusr</h1>
             
-            <h4 class="date">2017-12-20</h4>
+            <h4 class="date">2018-01-01</h4>
           </div>
 
     
@@ -180,7 +180,7 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <span class="kw">plot</span>(home.points[, <span class="st">"identifier"</span>], <span class="dt">col =</span> <span class="st">"red"</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="1-getting-started_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>A new field called <em>at_home</em> is added. The formula for this field checks whether each point in <code>palms</code> falls inside these polygons. In the formula, notice how the home.buffer object is filtered by participant identifier. This is so each person is linked with their own home. The last quoted “identifier” dissolves the polygons by identifier. For a more detailed explanation about palmsplus formulas, please see <a href="https://thets.github.io/palmsplusr/articles/3-building-formulas.html">this article</a>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == identifier), </span><span class="ch">\"</span><span class="st">identifier</span><span class="ch">\"</span><span class="st">)"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == identifier), identifier)"</span>)</code></pre></div>
 <p>Once all of the fields have been added, you can build the <code>palmsplus</code> dataset using the <code><a href="../reference/palms_calc_palmsplus.html">palms_calc_palmsplus()</a></code> function. This takes the <code>palms</code> dataset as input:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_calc_palmsplus.html">palms_calc_palmsplus</a></span>(palms)
 <span class="co">#&gt; [1/1] Computed palmsplus for: BC0627</span></code></pre></div>
@@ -375,9 +375,9 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <h2 class="hasAnchor">
 <a href="#saving-geometry-and-results" class="anchor"></a>Saving geometry and results</h2>
 <p>You can save all datasets as a csv file. As <code>palmsplus</code> and <code>trajecories</code> contain geometry, you can also save these as a ESRI shapefile:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(days, <span class="st">"palmsplus.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(palmsplus, <span class="st">"palmsplus.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
 <span class="kw">write.csv</span>(days, <span class="st">"days.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
-<span class="kw">write.csv</span>(days, <span class="st">"trajectories.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+<span class="kw">write.csv</span>(trajectories, <span class="st">"trajectories.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
 
 <span class="kw">st_write</span>(palmsplus, <span class="st">"palmsplus.shp"</span>)
 <span class="kw">st_write</span>(trajectories, <span class="st">"trajecories.shp"</span>)</code></pre></div>

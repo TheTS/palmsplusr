@@ -65,15 +65,31 @@
     <div class="page-header toc-ignore">
       <h1>Building formulas</h1>
             
-            <h4 class="date">2017-12-20</h4>
+            <h4 class="date">2018-01-01</h4>
           </div>
 
     
     
 <div class="contents">
-<div id="todo" class="section level2">
+<div id="palmsplus-formulas" class="section level2">
 <h2 class="hasAnchor">
-<a href="#todo" class="anchor"></a>TODO</h2>
+<a href="#palmsplus-formulas" class="anchor"></a>palmsplus formulas</h2>
+<ul>
+<li>palms_in_time</li>
+<li>palms_in_polygon</li>
+</ul>
+<p>TODO</p>
+</div>
+<div id="trajectory-formulas" class="section level2">
+<h2 class="hasAnchor">
+<a href="#trajectory-formulas" class="anchor"></a>trajectory formulas</h2>
+<p>TODO</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">unique</span>(data<span class="op">$</span>identifier)) {
+    x[[i]] &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">filter</span>(identifier <span class="op">==</span><span class="st"> </span>i) <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">mutate</span>(<span class="op">!!!</span><span class="st"> </span>field_args) <span class="op">%&gt;%</span>
+<span class="st">      </span><span class="kw">mutate_if</span>(is.logical, as.integer)
+  }</code></pre></div>
 </div>
 </div>
   </div>
@@ -83,7 +99,8 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#todo">TODO</a></li>
+<li><a href="#palmsplus-formulas">palmsplus formulas</a></li>
+      <li><a href="#trajectory-formulas">trajectory formulas</a></li>
       </ul>
 </div>
       </div>

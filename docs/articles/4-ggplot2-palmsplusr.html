@@ -65,15 +65,49 @@
     <div class="page-header toc-ignore">
       <h1>ggplot2 and palmsplusr</h1>
             
-            <h4 class="date">2017-12-20</h4>
+            <h4 class="date">2018-01-01</h4>
           </div>
 
     
     
 <div class="contents">
-<div id="todo" class="section level2">
+<div id="install-ggplot2" class="section level2">
 <h2 class="hasAnchor">
-<a href="#todo" class="anchor"></a>TODO</h2>
+<a href="#install-ggplot2" class="anchor"></a>Install ggplot2</h2>
+<p>The development version of ggplot2 contains spatial plotting functions so it needs to be installed from Github. You will need to install devtools if you haven’t already.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"tidyverse/ggplot2"</span>)</code></pre></div>
+</div>
+<div id="plotting" class="section level2">
+<h2 class="hasAnchor">
+<a href="#plotting" class="anchor"></a>Plotting</h2>
+<p>The <code>geom_sf</code> is a new ggplot2 geom specifically for plotting simple features. You can plot points, lines, and polygons. Here is an example of looping through all participants, plotting their trajcetories, school and home on a map before saving it to file.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+
+<span class="co"># Loop through all unique identifiers</span>
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">unique</span>(trajectories<span class="op">$</span>identifier)) {
+  
+  <span class="co"># Get geometry for this person only</span>
+  t &lt;-<span class="st"> </span>trajectories <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(identifier <span class="op">==</span><span class="st"> </span>i)
+  h &lt;-<span class="st"> </span>home.buffer <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(identifier <span class="op">==</span><span class="st"> </span>i)
+  s &lt;-<span class="st"> </span>school <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(school_id <span class="op">==</span><span class="st"> </span><span class="kw">as.numeric</span>(participant_basis[participant_basis<span class="op">$</span>identifier <span class="op">==</span><span class="st"> </span>i, <span class="st">"school_id"</span>]))
+
+  <span class="co"># Plot the 3 geometry layers + add colours and title</span>
+  p &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> t, <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw">factor</span>(mot))) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> h, <span class="kw">aes</span>(<span class="dt">fill =</span> <span class="st">"h"</span>), <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> s, <span class="kw">aes</span>(<span class="dt">fill =</span> <span class="st">"s"</span>), <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Home (100m)"</span>, <span class="st">"Schoolyard"</span>), 
+                      <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"#E01616"</span>, <span class="st">"#000080"</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>), 
+                       <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Walk"</span>, <span class="st">"Bicycle"</span>, <span class="st">"Vehicle"</span>),
+                       <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"1"</span> =<span class="st"> "forestgreen"</span>,<span class="st">"2"</span> =<span class="st"> "#1874CD"</span>,<span class="st">"3"</span> =<span class="st"> "#EE7600"</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> i, <span class="dt">colour =</span> <span class="st">"Trajectories"</span>, <span class="dt">fill =</span> <span class="st">"Polygons"</span>)
+
+  <span class="co"># Save the plot to file</span>
+  <span class="kw">ggsave</span>(<span class="dt">file =</span> <span class="kw">file.path</span>(<span class="st">"plots"</span>, <span class="kw">paste0</span>(i, <span class="st">".png"</span>)), <span class="dt">plot =</span> p, <span class="dt">width =</span> <span class="dv">18</span>, 
+         <span class="dt">height =</span> <span class="dv">18</span>, <span class="dt">units =</span> <span class="st">"cm"</span>)
+}</code></pre></div>
 </div>
 </div>
   </div>
@@ -83,7 +117,8 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#todo">TODO</a></li>
+<li><a href="#install-ggplot2">Install ggplot2</a></li>
+      <li><a href="#plotting">Plotting</a></li>
       </ul>
 </div>
       </div>

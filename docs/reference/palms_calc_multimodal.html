@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Reading PALMS data from a csv file — read_palms â€¢ palmsplusr</title>
+<title>Build multimodal trips from trajectories — palms_calc_multimodal â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -87,50 +87,43 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Reading PALMS data from a csv file</h1>
+    <h1>Build multimodal trips from trajectories</h1>
     </div>
 
     
-    <p>Reading PALMS data from a csv file</p>
+    <p>Build multimodal trips from trajectories</p>
     
 
-    <pre class="usage"><span class='fu'>read_palms</span>(<span class='no'>file</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_calc_multimodal</span>(<span class='no'>data</span>, <span class='no'>spatial</span>, <span class='no'>temporal</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>file</th>
-      <td><p>Path to the file</p></td>
+      <th>data</th>
+      <td><p>The trajectories object built with <code>palms_calc_trajectories</code>.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Print progress after each step. Default is <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>spatial_threshold</th>
+      <td><p>Spatial threshold in meters</p></td>
+    </tr>
+    <tr>
+      <th>temporal_threshold</th>
+      <td><p>Temporal threshold in minutes</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A sf dataframe of palms points.</p>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>This functions checks for the following columns, and will fail if
-these are not present:</p><ul>
-<li><p>datetime</p></li>
-<li><p>dow</p></li>
-<li><p>lon</p></li>
-<li><p>lat</p></li>
-<li><p>fixtypecode</p></li>
-<li><p>iov</p></li>
-<li><p>tripnumber</p></li>
-<li><p>triptype</p></li>
-<li><p>tripmot</p></li>
-<li><p>activity</p></li>
-<li><p>activityintensity</p></li>
-<li><p>activityboutnumber</p></li>
-<li><p>sedentaryboutnumber</p></li>
-</ul>
+    <p>The input trajectories LINESTRING geometry, collapsed into multimodal trips</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms <- read_palms('palms_file.csv')
+    <pre class="examples"><div class='input'>#multimodal <- palms_calc_multimodal(trajectories, 200, 10)
 
 </div></pre>
   </div>
@@ -140,8 +133,6 @@ these are not present:</p><ul>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
