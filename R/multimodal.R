@@ -15,6 +15,7 @@
 palms_calc_multimodal <- function(data, spatial, temporal, verbose = TRUE) {
 
   if(verbose) cat('Calculating multimodal eligibility...')
+
   # Determine if a trajectory meets satial and temporal criteria
   data <- data %>%
     arrange(identifier, tripnumber) %>%
@@ -109,6 +110,7 @@ palms_calc_multimodal <- function(data, spatial, temporal, verbose = TRUE) {
 
   x <- bind_rows(tibble(geometry))
   st_geometry(df) <- st_as_sfc(geometry, crs = 4326)
+
   if(verbose) cat('done\n')
 
   return(df)

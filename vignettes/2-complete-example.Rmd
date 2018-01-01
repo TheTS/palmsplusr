@@ -65,10 +65,10 @@ palms_add_field("vigorous",   "activityintensity == 3", TRUE)
 palms_add_field("mvpa",       "activityintensity > 1",  TRUE)
 
 # palmsplus fields (from other files)
-palms_add_field("in_school_time", "palms_in_time(., i, class_timetable, participant_basis, \"school_start\", \"school_end\")")
-palms_add_field("in_recess1",     "palms_in_time(., i, class_timetable, participant_basis, \"recess1_start\", \"recess1_end\")")
-palms_add_field("in_recess2",     "palms_in_time(., i, class_timetable, participant_basis, \"recess2_start\", \"recess2_end\")")
-palms_add_field("at_home",        "palms_in_polygon(., filter(home.buffer, identifier == i), \"identifier\")")
+palms_add_field("in_school_time", "palms_in_time(., i, class_timetable, participant_basis, school_start, school_end)")
+palms_add_field("in_recess1",     "palms_in_time(., i, class_timetable, participant_basis, recess1_start, recess1_end)")
+palms_add_field("in_recess2",     "palms_in_time(., i, class_timetable, participant_basis, recess2_start, recess2_end)")
+palms_add_field("at_home",        "palms_in_polygon(., filter(home.buffer, identifier == i), identifier)")
 palms_add_field("at_school",      "palms_in_polygon(., filter(school, school_id == participant_basis %>% filter(identifier == i) %>% pull(school_id)))")
 
 # days domains
@@ -103,7 +103,7 @@ palms_add_trip_location("school_school", "at_school", "at_school")
 
 ## Build palmsplus, days, and trajectories
 
-Once all of the formula tables are created, it is very simple to build palmsplus, and then create days and trajectories.
+Once all of the formula tables are created, it is very simple to build palmsplus, and then create days and trajectories (and multimodal trips).
 
 ```{r, eval=FALSE}
 # Build palmsplus
@@ -114,6 +114,9 @@ days <- palms_calc_days(palmsplus)
 
 # Build trajectories
 trajectories <- palms_calc_trajectories(palmsplus)
+
+# Build multimodal trips
+multimodal <- palms_calc_multimodal(trajectories, 200, 10)
 ```
 
 ## Saving results
@@ -122,7 +125,9 @@ trajectories <- palms_calc_trajectories(palmsplus)
 write.csv(palmsplus, "palmsplus.csv", row.names = FALSE)
 write.csv(days, "days.csv", row.names = FALSE)
 write.csv(trajectories, "trajectories.csv", row.names = FALSE)
+write.csv(multimodal, "multimodal.csv", row.names = FALSE)
 
 st_write(palmsplus, "palmsplus.shp")
 st_write(trajectories, "trajecories.shp")
+st_write(multimodal, "multimodal.shp")
 ```
