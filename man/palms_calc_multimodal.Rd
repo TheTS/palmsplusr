@@ -4,16 +4,17 @@
 \alias{palms_calc_multimodal}
 \title{Build multimodal trips from trajectories}
 \usage{
-palms_calc_multimodal(data, spatial, temporal, verbose = TRUE)
+palms_calc_multimodal(data, spatial_threshold, temporal_threshold,
+  verbose = TRUE)
 }
 \arguments{
 \item{data}{The trajectories object built with \code{palms_calc_trajectories}.}
 
-\item{verbose}{Print progress after each step. Default is \code{TRUE}.}
-
 \item{spatial_threshold}{Spatial threshold in meters}
 
 \item{temporal_threshold}{Temporal threshold in minutes}
+
+\item{verbose}{Print progress after each step. Default is \code{TRUE}.}
 }
 \value{
 The input trajectories LINESTRING geometry, collapsed into multimodal trips

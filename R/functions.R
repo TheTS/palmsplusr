@@ -143,7 +143,7 @@ palms_in_polygon <- function(data, polygons, collapse_var = NULL){
 #' @param data The data points
 #' @param pid The participant identifier
 #' @param timetable The class timetable table
-#' @param participant_basis The participant basis table
+#' @param basis The participant basis table
 #' @param start_col The column in \code{timetable} containing period start times
 #' @param end_col The column in \code{timetable} containing period end times
 #'

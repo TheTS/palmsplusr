@@ -7,9 +7,12 @@
 #' @name palmsplusr
 #' @docType package
 #' @import dplyr
+#' @import sf
 #' @importFrom rlang parse_expr quo_text
-#' @importFrom stats setNames aggregate
+#' @importFrom stats setNames aggregate start end
 #' @importFrom purrr reduce
 #' @importFrom data.table rbindlist rleid
+#' @importFrom geosphere distGeo
+#' @importFrom readr read_csv
 #' @importFrom tidyr gather unite spread
 NULL

@@ -12,7 +12,8 @@
 #' #multimodal <- palms_calc_multimodal(trajectories, 200, 10)
 #'
 #' @export
-palms_calc_multimodal <- function(data, spatial, temporal, verbose = TRUE) {
+palms_calc_multimodal <- function(data, spatial_threshold,
+                                  temporal_threshold, verbose = TRUE) {
 
   if(verbose) cat('Calculating multimodal eligibility...')
 
@@ -26,13 +27,13 @@ palms_calc_multimodal <- function(data, spatial, temporal, verbose = TRUE) {
     ungroup() %>%
     mutate(end_prev = lag(end_point, default = start_point[1])) %>%
     group_by(identifier, tripnumber) %>%
-    mutate(distance_diff = geosphere::distGeo(
+    mutate(distance_diff = distGeo(
       matrix(c(st_as_sfc(end_prev, crs = 4326)[[1]][1],
                st_as_sfc(end_prev, crs = 4326)[[1]][2]), ncol = 2),
       matrix(c(st_as_sfc(start_point, crs = 4326)[[1]][1],
                st_as_sfc(start_point, crs = 4326)[[1]][2]), ncol = 2))) %>%
     ungroup() %>%
-    mutate(mmt_criteria = ((distance_diff < spatial) & (time_diff < temporal)),
+    mutate(mmt_criteria = ((distance_diff < spatial_threshold) & (time_diff < temporal_threshold)),
            mmt_number = NA)
 
   if(verbose) cat('done\nAssigning trip numbers...')

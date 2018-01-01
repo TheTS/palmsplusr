@@ -1,6 +1,6 @@
 Package: palmsplusr
 Type: Package
-Title: Process GPS and accelerometer data retrieved from PALMS
+Title: Process PALMS output data
 Version: 0.1.0
 Authors@R: as.person("Tom Stewart <tom.stewart@aut.ac.nz> [aut, cre]")
 Maintainer: Tom Stewart <tom.stewart@aut.ac.nz>
@@ -14,12 +14,14 @@ Encoding: UTF-8
 LazyData: true
 Depends:
   R (>= 3.2.4),
-  dplyr (>= 0.7.1)
+  dplyr (>= 0.7.1),
+  sf (>= 0.5)
 Imports:
   rlang,
   purrr,
-  sf,
   readr,
+  tidyr,
+  geosphere,
   data.table
 Suggests: 
   testthat,
