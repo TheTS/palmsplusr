@@ -1,9 +1,9 @@
 
-#' Reading PALMS data from a csv file
+#' Read PALMS data from a csv file
 #'
-#' @param file Path to the file
+#' @param file Path to the PALMS csv file.
 #'
-#' @return A sf dataframe of palms points.
+#' @return A \code{sf data.frame} of PALMS data represented as \code{POINT} geometry.
 #'
 #' @details This functions checks for the following columns, and will fail if
 #' these are not present:
@@ -23,7 +23,9 @@
 #' \item sedentaryboutnumber
 #' }
 #' @examples
-#' #palms <- read_palms('palms_file.csv')
+#' \dontrun{
+#' palms <- read_palms('palms_file.csv')
+#' }
 #'
 #' @export
 read_palms <- function(file) {

@@ -2,29 +2,30 @@
 % Please edit documentation in R/functions.R
 \name{palms_trip}
 \alias{palms_trip}
-\title{Returns true if a LINESTRING starts and ends in specific polygons}
+\title{Check if a trajectory LINESTRING starts and ends inside specified polygons}
 \usage{
 palms_trip(line, start_loc, end_loc, collapse_start = NULL,
   collapse_end = NULL)
 }
 \arguments{
-\item{line}{The line geometry}
+\item{line}{The \code{LINESTRING} geometry.}
 
-\item{start_loc}{A polygon representing the start location}
+\item{start_loc}{A polygon representing the start location.}
 
-\item{end_loc}{A polygon representing the end location}
+\item{end_loc}{A polygon representing the end location.}
 
 \item{collapse_start}{An optional parameter for aggragating polygons.
-See \code{\link{palms_in_polygon}}.}
+See \code{\link{palms_in_polygon}} for details.}
 
-\item{collapse_end}{An optional parameter for aggragating polygons.}
+\item{collapse_end}{An optional parameter for aggragating polygons.
+See \code{\link{palms_in_polygon}} for details.}
 }
 \value{
-A logical. True if the LINESTRING starts inside \code{start_loc} and
-ends inside \code{end_loc}.
+A logical. \code{TRUE} if the \code{LINESTRING} starts inside
+\code{start_loc} and ends inside \code{end_loc}.
 }
 \description{
-Returns true if a LINESTRING starts and ends in specific polygons
+Check if a trajectory LINESTRING starts and ends inside specified polygons
 }
 \examples{
 #school_trip <- palms_trip(line, home, school)

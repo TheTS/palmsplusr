@@ -2,27 +2,28 @@
 % Please edit documentation in R/functions.R
 \name{palms_add_field}
 \alias{palms_add_field}
-\title{Adds an aggregation field to the palmsplus_fields table.}
+\title{Add an aggregation field to the palmsplus_fields table.}
 \usage{
 palms_add_field(name, formula, domain_field = FALSE)
 }
 \arguments{
 \item{name}{The name of the field as a string.}
 
-\item{formula}{The formula as a string.}
+\item{formula}{The formula as a string. The formula can contain other fields
+previously specified.}
 
-\item{domain_field}{Logical. If TRUE, this field will be summarised for each
-domain when \code{palms_calc_days} is run. If this is just an intermediary
-variable this should be FALSE.}
+\item{domain_field}{Logical. If \code{TRUE}, this field will be summarised for each
+\emph{domain} when \code{palms_build_days} is run.}
 }
 \value{
 If the palmsplus_fields table is not present in the global environment,
 it will be created. If it already exists, the new field will be appended.
 }
 \description{
-Adds an aggregation field to the palmsplus_fields table.
+Add an aggregation field to the palmsplus_fields table.
 }
 \examples{
-#palms_add_field("pedestrian", "tripmot == 1")
+palms_add_field("pedestrian", "tripmot == 1")
+palms_add_field("moving", "pedestrian | tripmot == 2") #notice this contains previous field
 
 }

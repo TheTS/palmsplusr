@@ -2,18 +2,18 @@
 % Please edit documentation in R/read_palms.R
 \name{read_palms}
 \alias{read_palms}
-\title{Reading PALMS data from a csv file}
+\title{Read PALMS data from a csv file}
 \usage{
 read_palms(file)
 }
 \arguments{
-\item{file}{Path to the file}
+\item{file}{Path to the PALMS csv file.}
 }
 \value{
-A sf dataframe of palms points.
+A \code{sf data.frame} of PALMS data represented as \code{POINT} geometry.
 }
 \description{
-Reading PALMS data from a csv file
+Read PALMS data from a csv file
 }
 \details{
 This functions checks for the following columns, and will fail if
@@ -35,6 +35,8 @@ these are not present:
 }
 }
 \examples{
-#palms <- read_palms('palms_file.csv')
+\dontrun{
+palms <- read_palms('palms_file.csv')
+}
 
 }

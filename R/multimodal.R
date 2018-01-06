@@ -12,7 +12,7 @@
 #' #multimodal <- palms_calc_multimodal(trajectories, 200, 10)
 #'
 #' @export
-palms_calc_multimodal <- function(data, spatial_threshold,
+palms_build_multimodal <- function(data, spatial_threshold,
                                   temporal_threshold, verbose = TRUE) {
 
   if(verbose) cat('Calculating multimodal eligibility...')

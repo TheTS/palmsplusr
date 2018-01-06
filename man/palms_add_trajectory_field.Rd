@@ -2,24 +2,26 @@
 % Please edit documentation in R/functions.R
 \name{palms_add_trajectory_field}
 \alias{palms_add_trajectory_field}
-\title{Adds a trajectory field to the trajectory_fields table.}
+\title{Add a trajectory field to the trajectory_fields table.}
 \usage{
 palms_add_trajectory_field(name, formula, after_conversion = FALSE)
 }
 \arguments{
 \item{name}{The name of the field as a string.}
 
-\item{formula}{The formula as a string.}
+\item{formula}{The formula as a string. Note that these formulas act on all
+palmsplus points that are part of the same trip (\code{tripnumber}).}
 
-\item{after_conversion}{Logical. If TRUE, this field will be calculated after
-the trajectory LINESTRING has been created. For example, st_length().}
+\item{after_conversion}{Logical. If \code{TRUE}, this field will be calculated after
+the trajectory \code{LINESTRING} has been created. For example, a formula that
+contains \code{st_length()} can only be evaluated with geometry.}
 }
 \value{
 If the trajectory_fields table is not present in the global environment,
 it will be created. If it already exists, the new field will be appended.
 }
 \description{
-Adds a trajectory field to the trajectory_fields table.
+Add a trajectory field to the trajectory_fields table.
 }
 \examples{
 #palms_add_trajectory_field("mot", "first(tripmot)")

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a trajectory field to the trajectory_fields table. — palms_add_trajectory_field â€¢ palmsplusr</title>
+<title>Build multimodal trips from trajectories — palms_build_multimodal â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -105,43 +105,44 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a trajectory field to the trajectory_fields table.</h1>
+    <h1>Build multimodal trips from trajectories</h1>
     </div>
 
     
-    <p>Add a trajectory field to the trajectory_fields table.</p>
+    <p>Build multimodal trips from trajectories</p>
     
 
-    <pre class="usage"><span class='fu'>palms_add_trajectory_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>after_conversion</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_build_multimodal</span>(<span class='no'>data</span>, <span class='no'>spatial_threshold</span>, <span class='no'>temporal_threshold</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>The name of the field as a string.</p></td>
+      <th>data</th>
+      <td><p>The trajectories object built with <code>palms_calc_trajectories</code>.</p></td>
     </tr>
     <tr>
-      <th>formula</th>
-      <td><p>The formula as a string. Note that these formulas act on all
-palmsplus points that are part of the same trip (<code>tripnumber</code>).</p></td>
+      <th>spatial_threshold</th>
+      <td><p>Spatial threshold in meters</p></td>
     </tr>
     <tr>
-      <th>after_conversion</th>
-      <td><p>Logical. If <code>TRUE</code>, this field will be calculated after
-the trajectory <code>LINESTRING</code> has been created. For example, a formula that
-contains <code>st_length()</code> can only be evaluated with geometry.</p></td>
+      <th>temporal_threshold</th>
+      <td><p>Temporal threshold in minutes</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Print progress after each step. Default is <code>TRUE</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If the trajectory_fields table is not present in the global environment,
-it will be created. If it already exists, the new field will be appended.</p>
+    <p>The input trajectories LINESTRING geometry, collapsed into multimodal trips</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms_add_trajectory_field("mot", "first(tripmot)")
+    <pre class="examples"><div class='input'>#multimodal <- palms_calc_multimodal(trajectories, 200, 10)
 
 </div></pre>
   </div>

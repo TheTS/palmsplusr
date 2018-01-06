@@ -9,9 +9,17 @@ navbar:
     - icon: fa-home fa-2x
       href: index.html
     - text: "Getting started"
-      href: articles/1-getting-started.html
-    - text: "Vignettes"
-      href: articles/index.html
+      href: articles/article-1-getting-started.html
+    - text: "Articles"
+      menu:
+      - text: "Getting started"
+        href: articles/article-1-getting-started.html
+      - text: "A complete example"
+        href: articles/article-2-complete-example.html
+      - text: "Building formulas"
+        href: articles/article-3-building-formulas.html
+      - text: "ggplot2 and palmsplusr"
+        href: articles/article-4-ggplot2-palmsplusr.html
     - text: "Functions"
       href: reference/index.html
     - icon: fa-github fa-2x
@@ -21,17 +29,17 @@ reference:
   - title: Read PALMS data
     contents:
     - read_palms
-  - title: Building field tables
+  - title: Creating field tables
     contents:
     - starts_with("palms_add")
-  - title: Calculations
+  - title: Building datasets
     contents:
-    - starts_with("palms_calc")
+    - starts_with("palms_build")
   - title: Helpers
     contents:
     - palms_buffer
     - palms_in_polygon
     - palms_in_time
-    - palms_epoch_length
-    - palms_line_point
+    - palms_epoch
+    - palms_trajectory_point
     - palms_trip

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a trajectory field to the trajectory_fields table. — palms_add_trajectory_field â€¢ palmsplusr</title>
+<title>Add a trajectory location to the trajectory_locations table. — palms_add_trajectory_location â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -105,45 +105,56 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a trajectory field to the trajectory_fields table.</h1>
+    <h1>Add a trajectory location to the trajectory_locations table.</h1>
     </div>
 
     
-    <p>Add a trajectory field to the trajectory_fields table.</p>
+    <p>This function builds the trajectory_locations table, which is used
+by <code><a href='palms_build_trajectories.html'>palms_build_trajectories</a></code> to identify trajectories that start
+and end at specific locations. For example, a trip from home to work, or from
+school to a park. This is done by setting a start and end criteria.</p>
     
 
-    <pre class="usage"><span class='fu'>palms_add_trajectory_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>after_conversion</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_add_trajectory_location</span>(<span class='no'>name</span>, <span class='no'>start_criteria</span>, <span class='no'>end_criteria</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>name</th>
-      <td><p>The name of the field as a string.</p></td>
+      <td><p>The name of the trip as a string.</p></td>
     </tr>
     <tr>
-      <th>formula</th>
-      <td><p>The formula as a string. Note that these formulas act on all
-palmsplus points that are part of the same trip (<code>tripnumber</code>).</p></td>
+      <th>start_criteria</th>
+      <td><p>The start of the trip. This should evaluate to a boolean.
+For optimal speed, this should be a field pre-calculated in <code>palmsplus</code>.</p></td>
     </tr>
     <tr>
-      <th>after_conversion</th>
-      <td><p>Logical. If <code>TRUE</code>, this field will be calculated after
-the trajectory <code>LINESTRING</code> has been created. For example, a formula that
-contains <code>st_length()</code> can only be evaluated with geometry.</p></td>
+      <th>end_criteria</th>
+      <td><p>The end of the trip. This should evaluate to a boolean.
+For optimal speed, this should be a field pre-calculated in <code>palmsplus</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If the trajectory_fields table is not present in the global environment,
-it will be created. If it already exists, the new field will be appended.</p>
+    <p>If the trajectory_locations table is not present in the global environment,
+it will be created. If it already exists, the new location will be appended.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms_add_trajectory_field("mot", "first(tripmot)")
+    <pre class="examples"><div class='input'><span class='co'># A full example workflow</span>
+<span class='fu'>data</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"palms"</span>, <span class='st'>"home"</span>, <span class='st'>"school"</span>, <span class='st'>"participant_basis"</span>))
 
-</div></pre>
+<span class='no'>home.buffer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_buffer.html'>palms_buffer</a></span>(<span class='no'>home</span>, <span class='kw'>distance</span> <span class='kw'>=</span> <span class='fl'>100</span>)
+
+<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"at_home"</span>, <span class='st'>"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)
+<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"at_school"</span>, <span class='st'>"palms_in_polygon(., filter(school, school_id == participant_basis %&gt;%
+                                                  filter(identifier == i) %&gt;% pull(school_id)))"</span>)
+<span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; <span class='error'>Error in mutate_impl(.data, dots): Evaluation error: object 'home.buffer' not found.</span></div><div class='input'>
+<span class='fu'>palms_add_trajectory_location</span>(<span class='st'>"home_school"</span>, <span class='st'>"at_home"</span>, <span class='st'>"at_school"</span>)
+
+<span class='no'>trajectories</span> <span class='kw'>&lt;-</span> <span class='no'>palms_build_trajectories</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

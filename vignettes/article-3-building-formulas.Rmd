@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 
 * palms_in_time
 * palms_in_polygon
+* palms_epoch
 
 TODO
 

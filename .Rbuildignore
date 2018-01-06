@@ -6,3 +6,4 @@
 ^plots$
 ^test.R$
 ^pkgdown$
+^_pkgdown.yaml

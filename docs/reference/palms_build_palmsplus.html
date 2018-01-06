@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a trajectory field to the trajectory_fields table. — palms_add_trajectory_field â€¢ palmsplusr</title>
+<title>Build the palmsplus dataset — palms_build_palmsplus â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -105,53 +105,43 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a trajectory field to the trajectory_fields table.</h1>
+    <h1>Build the palmsplus dataset</h1>
     </div>
 
     
-    <p>Add a trajectory field to the trajectory_fields table.</p>
+    <p>Build the <code>palmsplus</code> dataset by adding additional columns to the PALMS dataset.
+The additional columns are specified using <code><a href='palms_add_field.html'>palms_add_field</a></code>, <code><a href='palms_add_domain.html'>palms_add_domain</a></code>,
+<code><a href='palms_add_trajectory_field.html'>palms_add_trajectory_field</a></code>, and <code><a href='palms_add_trajectory_location.html'>palms_add_trajectory_location</a></code>.</p>
     
 
-    <pre class="usage"><span class='fu'>palms_add_trajectory_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>after_conversion</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_build_palmsplus</span>(<span class='no'>data</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>The name of the field as a string.</p></td>
+      <th>data</th>
+      <td><p>The PALMS data obtained using <code><a href='read_palms.html'>read_palms</a></code>.</p></td>
     </tr>
     <tr>
-      <th>formula</th>
-      <td><p>The formula as a string. Note that these formulas act on all
-palmsplus points that are part of the same trip (<code>tripnumber</code>).</p></td>
-    </tr>
-    <tr>
-      <th>after_conversion</th>
-      <td><p>Logical. If <code>TRUE</code>, this field will be calculated after
-the trajectory <code>LINESTRING</code> has been created. For example, a formula that
-contains <code>st_length()</code> can only be evaluated with geometry.</p></td>
+      <th>verbose</th>
+      <td><p>Print progress to console after each iteration. Default is <code>TRUE</code>.</p></td>
     </tr>
     </table>
     
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>If the trajectory_fields table is not present in the global environment,
-it will be created. If it already exists, the new field will be appended.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms_add_trajectory_field("mot", "first(tripmot)")
+    <pre class="examples"><div class='input'><span class='fu'>data</span>(<span class='st'>"palms"</span>)
 
+<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"weekend"</span>, <span class='st'>"dow &gt; 5"</span>)
+<span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_palmsplus</span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; <span class='error'>Error in mutate_impl(.data, dots): Evaluation error: object 'home.buffer' not found.</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#value">Value</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 

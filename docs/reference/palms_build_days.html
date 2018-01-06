@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a trajectory field to the trajectory_fields table. — palms_add_trajectory_field â€¢ palmsplusr</title>
+<title>Calculate day-level summaries from the palmsplus dataset — palms_build_days â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -105,44 +105,48 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a trajectory field to the trajectory_fields table.</h1>
+    <h1>Calculate day-level summaries from the palmsplus dataset</h1>
     </div>
 
     
-    <p>Add a trajectory field to the trajectory_fields table.</p>
+    <p>Build a days dataset by summarising <code>palmsplus</code>
+by day and person (<code>identifier</code>). Not all variables in <code>palmsplus</code>
+are summarised, only those specified using <code><a href='palms_add_field.html'>palms_add_field</a></code> with
+the argument <code>domain_field = TRUE</code>. By default, a <code>duration</code> field
+is added (e.g., the total minutes per day).</p>
+<p>All data are summarised by default. However, additional aggragation <em>domains</em>
+can be specified using <code><a href='palms_add_domain.html'>palms_add_domain</a></code> before building palmsplus.
+Domains are a subset of data, such as during school time. All <code>domain_field</code>
+variables will be summarised for each <em>domain</em> seperatly.</p>
     
 
-    <pre class="usage"><span class='fu'>palms_add_trajectory_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>after_conversion</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_build_days</span>(<span class='no'>data</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>name</th>
-      <td><p>The name of the field as a string.</p></td>
-    </tr>
-    <tr>
-      <th>formula</th>
-      <td><p>The formula as a string. Note that these formulas act on all
-palmsplus points that are part of the same trip (<code>tripnumber</code>).</p></td>
-    </tr>
-    <tr>
-      <th>after_conversion</th>
-      <td><p>Logical. If <code>TRUE</code>, this field will be calculated after
-the trajectory <code>LINESTRING</code> has been created. For example, a formula that
-contains <code>st_length()</code> can only be evaluated with geometry.</p></td>
+      <th>data</th>
+      <td><p>The palmsplus data obtained from <code><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If the trajectory_fields table is not present in the global environment,
-it will be created. If it already exists, the new field will be appended.</p>
+    <p>A table summarised by day.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms_add_trajectory_field("mot", "first(tripmot)")
+    <pre class="examples"><div class='input'><span class='fu'>data</span>(<span class='st'>"palms"</span>)
 
+<span class='co'># Add a field, and make it a domain_field</span>
+<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"mvpa"</span>, <span class='st'>"activityintensity &gt; 1"</span>, <span class='fl'>TRUE</span>)
+
+<span class='fu'><a href='palms_add_domain.html'>palms_add_domain</a></span>(<span class='st'>"walking"</span>, <span class='st'>"tripmot == 3"</span>)
+<span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; <span class='error'>Error in mutate_impl(.data, dots): Evaluation error: object 'home.buffer' not found.</span></div><div class='input'>
+<span class='co'># This will have 'walking' and 'total' domains</span>
+<span class='co'># Each domain will have 'duration' and 'mvpa' fields</span>
+<span class='no'>days</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_days</span>(<span class='no'>palmsplus</span>)</div><div class='output co'>#&gt; <span class='error'>Error in data$total &lt;- 1: object 'palmsplus' not found</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns a logical vector if points are within a time period — palms_in_time â€¢ palmsplusr</title>
+<title>Check if points fall between a start and end time — palms_in_time â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -58,10 +58,28 @@
   </a>
 </li>
 <li>
-  <a href="../articles/1-getting-started.html">Getting started</a>
+  <a href="../articles/article-1-getting-started.html">Getting started</a>
 </li>
-<li>
-  <a href="../articles/index.html">Vignettes</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/article-1-getting-started.html">Getting started</a>
+    </li>
+    <li>
+      <a href="../articles/article-2-complete-example.html">A complete example</a>
+    </li>
+    <li>
+      <a href="../articles/article-3-building-formulas.html">Building formulas</a>
+    </li>
+    <li>
+      <a href="../articles/article-4-ggplot2-palmsplusr.html">ggplot2 and palmsplusr</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../reference/index.html">Functions</a>
@@ -87,11 +105,17 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns a logical vector if points are within a time period</h1>
+    <h1>Check if points fall between a start and end time</h1>
     </div>
 
     
-    <p>Returns a logical vector if points are within a time period</p>
+    <p>Returns a logical vector the length of the input <code>data</code> points.
+This checks if each point falls between a start and end time. This is designed
+to work with a <code>timetable</code> and <code>participant basis</code> file.</p><ul>
+<li><p><code>timetable</code> contains a list of start and end times for different periods
+of the day, for different groups of people (e.g., classrooms).</p></li>
+<li><p><code>participant basis</code> contains a list of identifiers and group membership.</p></li>
+</ul>
     
 
     <pre class="usage"><span class='fu'>palms_in_time</span>(<span class='no'>data</span>, <span class='no'>pid</span>, <span class='no'>timetable</span>, <span class='no'>basis</span>, <span class='no'>start_col</span>, <span class='no'>end_col</span>)</pre>
@@ -101,27 +125,27 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>data</th>
-      <td><p>The data points</p></td>
+      <td><p>The data points.</p></td>
     </tr>
     <tr>
       <th>pid</th>
-      <td><p>The participant identifier</p></td>
+      <td><p>The participant identifier.</p></td>
     </tr>
     <tr>
       <th>timetable</th>
-      <td><p>The class timetable table</p></td>
+      <td><p>The timetable table.</p></td>
+    </tr>
+    <tr>
+      <th>basis</th>
+      <td><p>The participant basis table.</p></td>
     </tr>
     <tr>
       <th>start_col</th>
-      <td><p>The column in <code>timetable</code> containing period start times</p></td>
+      <td><p>The column in <code>timetable</code> containing the start time.</p></td>
     </tr>
     <tr>
       <th>end_col</th>
-      <td><p>The column in <code>timetable</code> containing period end times</p></td>
-    </tr>
-    <tr>
-      <th>participant_basis</th>
-      <td><p>The participant basis table</p></td>
+      <td><p>The column in <code>timetable</code> containing the end time.</p></td>
     </tr>
     </table>
     
@@ -131,12 +155,10 @@
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#data <- ...
-#ct <- read.csv("class_timetable.csv")
-#pb <- read.csv("participant_basis.csv")
-#data$in_recess <- palms_in_time(data, "BC0627", ct, pb, "recess_start", "recess_end")
+    <pre class="examples"><div class='input'><span class='fu'>data</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"palms"</span>, <span class='st'>"participant_basis"</span>, <span class='st'>"class_timetable"</span>))
 
-</div></pre>
+<span class='no'>in_school</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_in_time</span>(<span class='no'>palms</span>, <span class='st'>"BC0627"</span>, <span class='no'>class_timetable</span>,
+                           <span class='no'>participant_basis</span>, <span class='no'>school_start</span>, <span class='no'>school_end</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

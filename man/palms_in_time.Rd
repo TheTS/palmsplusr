@@ -2,33 +2,40 @@
 % Please edit documentation in R/functions.R
 \name{palms_in_time}
 \alias{palms_in_time}
-\title{Returns a logical vector if points are within a time period}
+\title{Check if points fall between a start and end time}
 \usage{
 palms_in_time(data, pid, timetable, basis, start_col, end_col)
 }
 \arguments{
-\item{data}{The data points}
+\item{data}{The data points.}
 
-\item{pid}{The participant identifier}
+\item{pid}{The participant identifier.}
 
-\item{timetable}{The class timetable table}
+\item{timetable}{The timetable table.}
 
-\item{basis}{The participant basis table}
+\item{basis}{The participant basis table.}
 
-\item{start_col}{The column in \code{timetable} containing period start times}
+\item{start_col}{The column in \code{timetable} containing the start time.}
 
-\item{end_col}{The column in \code{timetable} containing period end times}
+\item{end_col}{The column in \code{timetable} containing the end time.}
 }
 \value{
 A logical vector the length of the input data points.
 }
 \description{
-Returns a logical vector if points are within a time period
+Returns a logical vector the length of the input \code{data} points.
+This checks if each point falls between a start and end time. This is designed
+to work with a \code{timetable} and \code{participant basis} file.
+\itemize{
+\item \code{timetable} contains a list of start and end times for different periods
+of the day, for different groups of people (e.g., classrooms).
+\item \code{participant basis} contains a list of identifiers and group membership.
+}
 }
 \examples{
-#data <- ...
-#ct <- read.csv("class_timetable.csv")
-#pb <- read.csv("participant_basis.csv")
-#data$in_recess <- palms_in_time(data, "BC0627", ct, pb, "recess_start", "recess_end")
+data(list = c("palms", "participant_basis", "class_timetable"))
+
+in_school <- palms_in_time(palms, "BC0627", class_timetable,
+                           participant_basis, school_start, school_end)
 
 }

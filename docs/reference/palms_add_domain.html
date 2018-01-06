@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Adds an aggregation domain to the palmsplus_domains table. — palms_add_domain â€¢ palmsplusr</title>
+<title>Add an aggregation domain to the palmsplus_domains table. — palms_add_domain â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -58,10 +58,28 @@
   </a>
 </li>
 <li>
-  <a href="../articles/1-getting-started.html">Getting started</a>
+  <a href="../articles/article-1-getting-started.html">Getting started</a>
 </li>
-<li>
-  <a href="../articles/index.html">Vignettes</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/article-1-getting-started.html">Getting started</a>
+    </li>
+    <li>
+      <a href="../articles/article-2-complete-example.html">A complete example</a>
+    </li>
+    <li>
+      <a href="../articles/article-3-building-formulas.html">Building formulas</a>
+    </li>
+    <li>
+      <a href="../articles/article-4-ggplot2-palmsplusr.html">ggplot2 and palmsplusr</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../reference/index.html">Functions</a>
@@ -87,11 +105,11 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Adds an aggregation domain to the palmsplus_domains table.</h1>
+    <h1>Add an aggregation domain to the palmsplus_domains table.</h1>
     </div>
 
     
-    <p>Adds an aggregation domain to the palmsplus_domains table.</p>
+    <p>Add an aggregation domain to the palmsplus_domains table.</p>
     
 
     <pre class="usage"><span class='fu'>palms_add_domain</span>(<span class='no'>name</span>, <span class='no'>formula</span>)</pre>
@@ -105,9 +123,10 @@
     </tr>
     <tr>
       <th>formula</th>
-      <td><p>The formula as a string. The formula can contain variables
-that are created with <code>palms_add_field</code>. Make sure to escape quotation
-marks that are part of the formula.</p></td>
+      <td><p>The formula as a string. This should evaluate to a boolean.
+The formula can contain variables already created with <code>palms_add_field</code>
+or other previously specified domains.</p>
+<p>Make sure to escape quotation marks that are part of the formula.</p></td>
     </tr>
     </table>
     
@@ -118,9 +137,7 @@ it will be created. If it already exists, the new domain will be appended.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>#palms_add_domain("d_home", "at_home")
-
-</div></pre>
+    <pre class="examples"><div class='input'><span class='fu'>palms_add_domain</span>(<span class='st'>"home"</span>, <span class='st'>"at_home"</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

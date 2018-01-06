@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Returns the start or end point of a LINESTRING — palms_line_point â€¢ palmsplusr</title>
+<title>Get the start or end point of a LINESTRING — palms_line_point â€¢ palmsplusr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -87,11 +87,12 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Returns the start or end point of a LINESTRING</h1>
+    <h1>Get the start or end point of a LINESTRING</h1>
     </div>
 
     
-    <p>Returns the start or end point of a LINESTRING</p>
+    <p>This is equivalent to ST_StartPoint and ST_EndPoint in PostGIS.
+This is mainly used as a helper function for calculating trajectory locations.</p>
     
 
     <pre class="usage"><span class='fu'>palms_line_point</span>(<span class='no'>line</span>, <span class='no'>first_point</span>)</pre>
@@ -101,18 +102,19 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>line</th>
-      <td><p>The line geometry</p></td>
+      <td><p>The <code>LINESTRING</code> geometry</p></td>
     </tr>
     <tr>
       <th>first_point</th>
-      <td><p>Logical. If true, the first point will be returned.</p></td>
+      <td><p>Logical. If <code>TRUE</code>, the first point will be returned,
+else the end point will be returned.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A POINT geometry feature representing the first or last point in the
-LINESTRING</p>
+LINESTRING.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>

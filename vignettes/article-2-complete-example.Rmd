@@ -22,8 +22,6 @@ It is wise to read in all data that you will need at the beginning. This include
 
 ```{r, eval=FALSE}
 library(palmsplusr)
-library(readr)
-library(sf)
 
 # Load PALMS dataset
 palms <- read_palms("D:/data/csv/palms_output_test.csv")
@@ -38,6 +36,9 @@ school <- read_sf("D:/shapefiles/school.shp")
 
 # Buffer home points
 home.buffer <- palms_buffer(point = home, distance = 100, crs = 2193)
+
+# Epoch used in some formulas below
+epoch <- palms_epoch(palms)
 ```
 
 ## Creating field, domain, and trajectory location tables
@@ -46,7 +47,6 @@ This section is the bulk of the setup. All formulas for building `palmsplus`, `d
 
 ```{r, eval=FALSE}
 # palmsplus fields (from palms dataset)
-palms_add_field("duration",   "1", TRUE)
 palms_add_field("weekday",    "dow < 6")
 palms_add_field("weekend",    "dow > 5")
 palms_add_field("indoors",    "iov == 3")
@@ -72,7 +72,6 @@ palms_add_field("at_home",        "palms_in_polygon(., filter(home.buffer, ident
 palms_add_field("at_school",      "palms_in_polygon(., filter(school, school_id == participant_basis %>% filter(identifier == i) %>% pull(school_id)))")
 
 # days domains
-palms_add_domain("d_all",       "1")
 palms_add_domain("d_home",      "at_home")
 palms_add_domain("d_school",    "(!at_home & at_school & in_school_time)")
 palms_add_domain("d_transport", "!at_home & !(at_school & in_school_time) & (pedestrian | bicycle | vehicle)")
@@ -107,16 +106,16 @@ Once all of the formula tables are created, it is very simple to build palmsplus
 
 ```{r, eval=FALSE}
 # Build palmsplus
-palmsplus <- palms_calc_palmsplus(palms)
+palmsplus <- palms_build_palmsplus(palms)
 
 # Build days
-days <- palms_calc_days(palmsplus)
+days <- palms_build_days(palmsplus)
 
 # Build trajectories
-trajectories <- palms_calc_trajectories(palmsplus)
+trajectories <- palms_build_trajectories(palmsplus)
 
 # Build multimodal trips
-multimodal <- palms_calc_multimodal(trajectories, 200, 10)
+multimodal <- palms_build_multimodal(trajectories, 200, 10)
 ```
 
 ## Saving results

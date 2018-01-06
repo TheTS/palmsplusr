@@ -21,8 +21,6 @@ knitr::opts_chunk$set(
 A PALMS dataset (in csv format) is read in using the `read_palms()` function. This function checks that all required column names are present before converting the csv file to a spatial object. If columns are missing you will receive an error message.
 ```{r message=FALSE, warning=FALSE}
 library(palmsplusr)
-library(readr)
-library(sf)
 
 palms <- read_palms(system.file("extdata", "one_participant.csv", package = "palmsplusr"))
 names(palms)
@@ -44,7 +42,6 @@ plot(palms[, c("activity", "tripnumber")])
 
 The palmsplus build process adds additional columns to the input `palms` dataset shown above. However, the user needs to specify what columns to add, and how to calculate them. This is done by creating a table with the name of the column and the formula used to calculate it. The function `palms_add_field(name, formula, domain_field = FALSE)` is used to make this table:
 ```{r}
-palms_add_field("duration",   "1", TRUE)
 palms_add_field("weekday",    "dow < 6")
 palms_add_field("weekend",    "dow > 5")
 palms_add_field("indoors",    "iov == 3", TRUE)
@@ -74,8 +71,8 @@ home.points <- read_sf(system.file("extdata/shapefiles/", "home.shp", package = 
 home.buffer <- palms_buffer(point = home.points, distance = 100)
 
 # Plot
-plot(home.buffer[, "identifier"], key.pos = 1)
-plot(home.points[, "identifier"], col = "red", add = TRUE)
+plot(home.buffer[, "home_id"], key.pos = 1)
+plot(home.points[, "home_id"], col = "red", add = TRUE)
 ```
 
 A new field called *at_home* is added. The formula for this field checks whether each point in `palms` falls inside these polygons. In the formula, notice how the home.buffer object is filtered by participant identifier. This is so each person is linked with their own home. The last quoted "identifier" dissolves the polygons by identifier. For a more detailed explanation about palmsplus formulas, please see [this article](https://thets.github.io/palmsplusr/articles/3-building-formulas.html).
@@ -84,12 +81,12 @@ A new field called *at_home* is added. The formula for this field checks whether
 palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == identifier), identifier)")
 ```
 
-Once all of the fields have been added, you can build the `palmsplus` dataset using the `palms_calc_palmsplus()` function. This takes the `palms` dataset as input:
+Once all of the fields have been added, you can build the `palmsplus` dataset using the `palms_build_palmsplus()` function. This takes the `palms` dataset as input:
 ```{r}
-palmsplus <- palms_calc_palmsplus(palms)
+palmsplus <- palms_build_palmsplus(palms)
 ```
 
-When printing the column names of the `palmsplus` dataset, you will notice it contains 24 columns: the original 13 plus the 11 that were added as fields.
+When printing the column names of the `palmsplus` dataset, you will notice it contains 23 columns: the original 13 plus the 10 that were added as fields.
 
 ```{r}
 names(palmsplus)
@@ -115,16 +112,16 @@ palmsplus_domains
 ```
 
 ```{r echo=FALSE}
-knitr::kable(palmsplus_domains, , caption = "palmsplus_domains")
+knitr::kable(palmsplus_domains, caption = "palmsplus_domains")
 ```
 
 Notice how the domain formulas contain fields created earlier using `palms_add_field()`. This is possible because the fields table is evaluated before the domains table. It is also important to know that formulas are evaluated in the order they are specified, so one domain formula can contain another domain name.
 
-In a normal workflow, you would add domains before building `palmsplus`. This is because the `palms_calc_palmsplus()` function seen above adds additional columns to the `palmsplus` dataset specifying domain membership. The `palmsplus` dataset is them summarized into days. 
+In a normal workflow, you would add domains before building `palmsplus`. This is because the `palms_build_palmsplus()` function seen above adds additional columns to the `palmsplus` dataset specifying domain membership. The `palmsplus` dataset is them summarized into days. 
 
 Although I built `palmsplus` earlier, I will need rebuild it so the new domain columns are added.
 ```{r}
-palmsplus <- palms_calc_palmsplus(palms)
+palmsplus <- palms_build_palmsplus(palms)
 ```
 
 
@@ -134,12 +131,12 @@ Now when printing the `palmsplus` dataset there are 26 columns; two additional o
 names(palmsplus)
 ```
 
-The `palms_calc_days()` function can now be used to build `days` from the `palmsplus` dataset:
+The `palms_build_days()` function can now be used to build `days` from the `palmsplus` dataset:
 ```{r}
-days <- palms_calc_days(palmsplus)
+days <- palms_build_days(palmsplus)
 ```
 
-When looking at the first five rows of the `days` dataset, you will notice that three fields (*duration*, *indoors*, and *outdoors*) are summarized for each domain (*home* and *transport*). These three fields were summarized for each domain because they were specified as `domain_field = TRUE` when they were created (see [Building palmsplus](#building-palmsplus) above).
+When looking at the first five rows of the `days` dataset, you will notice that three fields (*duration*, *indoors*, and *outdoors*) are summarized for each domain (*total*, *home* and *transport*). These three fields were summarized for each domain because they were specified as `domain_field = TRUE` when they were created (see [Building palmsplus](#building-palmsplus) above). Note that the *duration* field and the *total* domain are included by default.
 
 
 ```{r}
@@ -151,9 +148,11 @@ head(days, n = 5)
 
 ## Building trajectories {#building-trajectories}
 
-Building trajectories is very similar to building `palmsplus`. Variables that you wish to calculate for each trajectory can be specified with the `palms_add_trajectoy_field()` function. 
+Building trajectories is very similar to building `palmsplus`. Variables that you wish to calculate for each trajectory can be specified with the `palms_add_trajectoy_field()` function. Notice the `palms_epoch` helper function is used here too, so the output will be in seconds.
 
 ```{r}
+epoch <- palms_epoch(palms)
+
 palms_add_trajectory_field("mot",       "first(tripmot)")
 palms_add_trajectory_field("wear",      "sum(activityintensity >= 0) * epoch")
 palms_add_trajectory_field("sedentary", "sum(activityintensity == 0) * epoch")
@@ -178,9 +177,9 @@ The `after_conversion` parameter dictates whether the fields are calculated befo
 palms_add_trajectory_field("length", "as.numeric(st_length(.))", TRUE)
 ```
 
-The `palms_calc_trajectories()` function is used to build trajectories from the `palmsplus` dataset:
+The `palms_build_trajectories()` function is used to build trajectories from the `palmsplus` dataset:
 ```{r}
-trajectories <- palms_calc_trajectories(palmsplus)
+trajectories <- palms_build_trajectories(palmsplus)
 ```
 
 This creates the `trajectories dataset, which has 1 row per trip, each containing the fields created above:
@@ -196,7 +195,7 @@ plot(trajectories[, "mot"], pal = c("orange", "blue"), key.pos = NULL)
 plot(home.buffer[, 1], col = "red", key.pos = NULL, add = TRUE)
 ```
 
-The last component of building trajectories is adding trip start and end locations. This is useful when you want to identify specific trips, such as trips to work or school. This is done with the function `palms_add_trip_location(name, start_criteria, end_criteria)`. 
+The last component of building trajectories is adding trip start and end locations. This is useful when you want to identify specific trips, such as trips to work or school. This is done with the function `palms_add_trajectory_location(name, start_criteria, end_criteria)`. 
 
 The `start_criteria` and `end_criteria` parameters should be fields already calculated in `palmsplus`. 
 This is required so variables only have to be calculated once (i.e., when `palmsplus` is built). This results in a significant performance benefit. 
@@ -204,7 +203,7 @@ This is required so variables only have to be calculated once (i.e., when `palms
 The following example is a trip that starts and ends *at_home* (i.e., inside the home.buffer).
 
 ```{r}
-palms_add_trip_location("home_home", "at_home", "at_home")
+palms_add_trajectory_location("home_home", "at_home", "at_home")
 ```
 
 ```{r, eval=FALSE}
@@ -217,7 +216,7 @@ knitr::kable(trajectory_locations, caption = "trajectory_locations")
 
 Now the `trajectories` dataset can be rebuilt. Additional columns will be added for each trip location:
 ```{r}
-trajectories <- palms_calc_trajectories(palmsplus)
+trajectories <- palms_build_trajectories(palmsplus)
 names(trajectories)
 ```
 

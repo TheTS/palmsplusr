@@ -21,7 +21,6 @@ test_that("Testing normal workflow", {
 
   palms_remove_tables()
 
-  palms_add_field("duration",   "1", TRUE)
   palms_add_field("weekday",    "dow < 6")
   palms_add_field("weekend",    "dow > 5")
   palms_add_field("indoors",    "iov == 3")
@@ -41,17 +40,20 @@ test_that("Testing normal workflow", {
 
   palms_add_domain("d_all",       "1")
 
+  epoch <- palms_epoch(palms)
+  expect_equal(epoch, 15)
+
   palms_add_trajectory_field("mot",       "first(tripmot)")
   palms_add_trajectory_field("date",      "first(as.Date(datetime))")
   palms_add_trajectory_field("start",     "datetime[triptype==1]")
   palms_add_trajectory_field("end",       "datetime[triptype==4]")
-  palms_add_trajectory_field("duration",  "as.numeric(difftime(end, start, units = \"secs\") + epoch)")
-  palms_add_trajectory_field("nonwear",   "sum(activityintensity < 0) * epoch")
-  palms_add_trajectory_field("wear",      "sum(activityintensity >= 0) * epoch")
-  palms_add_trajectory_field("sedentary", "sum(activityintensity == 0) * epoch")
-  palms_add_trajectory_field("light",     "sum(activityintensity == 1) * epoch")
-  palms_add_trajectory_field("moderate",  "sum(activityintensity == 2) * epoch")
-  palms_add_trajectory_field("vigorous",  "sum(activityintensity == 3) * epoch")
+  palms_add_trajectory_field("duration",  "as.numeric(difftime(end, start, units = \"secs\") + 15)")
+  palms_add_trajectory_field("nonwear",   "sum(activityintensity < 0) * 15")
+  palms_add_trajectory_field("wear",      "sum(activityintensity >= 0) * 15")
+  palms_add_trajectory_field("sedentary", "sum(activityintensity == 0) * 15")
+  palms_add_trajectory_field("light",     "sum(activityintensity == 1) * 15")
+  palms_add_trajectory_field("moderate",  "sum(activityintensity == 2) * 15")
+  palms_add_trajectory_field("vigorous",  "sum(activityintensity == 3) * 15")
   palms_add_trajectory_field("mvpa",      "moderate + vigorous")
   palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
   palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE)
@@ -60,19 +62,19 @@ test_that("Testing normal workflow", {
 
   # Check field/domain tables built correctly
   expect_length(unlist(palmsplus_domains), 2)
-  expect_length(unlist(palmsplus_fields), 51)
+  expect_length(unlist(palmsplus_fields), 48)
   expect_length(unlist(trajectory_fields), 42)
 
   # Check palmsplus
-  palmsplus <- palms_calc_palmsplus(palms)
+  palmsplus <- palms_build_palmsplus(palms)
   expect_equal(sum(palmsplus$mvpa), 791)
 
   # Check days
-  days <- palms_calc_days(palmsplus)
+  days <- palms_build_days(palmsplus)
   expect_equal(round(mean(days$d_all_mvpa, na.rm = TRUE), 2), 21.97)
 
   # Check trajectories
-  trajectories <- palms_calc_trajectories(palmsplus)
+  trajectories <- palms_build_trajectories(palmsplus)
   expect_equal(nrow(trajectories), 38)
 })
 

@@ -2,25 +2,28 @@
 % Please edit documentation in R/functions.R
 \name{palms_buffer}
 \alias{palms_buffer}
-\title{Returns a buffer (polygon) of the input geometry.}
+\title{Return a buffer (polygon) of the input geometry.}
 \usage{
 palms_buffer(point, distance = 100, crs = 2193)
 }
 \arguments{
-\item{point}{The point to buffer}
+\item{point}{The geometry to buffer}
 
-\item{distance}{The buffer distance. Default \code{100}.}
+\item{distance}{The buffer distance in meters. Default \code{100}.}
 
-\item{crs}{The projection to convert to before buffering. Default \code{2193}.}
+\item{crs}{The projection to convert to before buffering. Default \code{2193}.
+This is necessary as at units for ESPG:4326 (WGS 84) are degrees, not meters.}
 }
 \value{
 A polygon representing a buffer of the input feature. This is always
 returned in the ESPG:4326 projection.
 }
 \description{
-Returns a buffer (polygon) of the input geometry.
+Return a buffer (polygon) of the input geometry.
 }
 \examples{
-#p_buffer_1000 <- palms_buffer(p, 1000)
+data("home")
+
+home.buffer <- palms_buffer(home, 100)
 
 }

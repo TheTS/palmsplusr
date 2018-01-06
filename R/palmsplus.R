@@ -1,16 +1,21 @@
-#' Adds additional columns to PALMS data that represent domains and fields
+
+#' Build the palmsplus dataset
 #'
-#' @param data The palms data
-#' @param verbose Print progress after each iteration. Default is \code{TRUE}.
+#' @description Build the \code{palmsplus} dataset by adding additional columns to the PALMS dataset.
+#' The additional columns are specified using \code{\link{palms_add_field}}, \code{\link{palms_add_domain}},
+#' \code{\link{palms_add_trajectory_field}}, and \code{\link{palms_add_trajectory_location}}.
 #'
-#' @return The input data with additional columns specified in
-#' \code{palms_add_field} and \code{palms_add_domain}.
+#' @param data The PALMS data obtained using \code{\link{read_palms}}.
+#' @param verbose Print progress to console after each iteration. Default is \code{TRUE}.
 #'
 #' @examples
-#' #palmsplus <- palms_calc_palmsplus(palms)
+#' data("palms")
+#'
+#' palms_add_field("weekend", "dow > 5")
+#' palmsplus <- palms_build_palmsplus(palms)
 #'
 #' @export
-palms_calc_palmsplus <- function(data, verbose = TRUE) {
+palms_build_palmsplus <- function(data, verbose = TRUE) {
 
   if (!exists("palmsplus_fields")) stop("No palmsplus fields have been added.")
 

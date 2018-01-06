@@ -2,7 +2,7 @@
 % Please edit documentation in R/functions.R
 \name{palms_in_polygon}
 \alias{palms_in_polygon}
-\title{Returns a logical vector if input points are inside polygons}
+\title{Check if points fall inside a polygon}
 \usage{
 palms_in_polygon(data, polygons, collapse_var = NULL)
 }
@@ -15,13 +15,19 @@ palms_in_polygon(data, polygons, collapse_var = NULL)
 variable. Essentially this dissolves the polygon layer by \code{collapse_var}.}
 }
 \value{
-A logical vector the length of the input data points. Each polygon
-will return an additional column
+A logical vector the length of the input data points. If multiple
+polygons are present, an additional column will be returned for each.
 }
 \description{
-Returns a logical vector if input points are inside polygons
+Returns a logical vector the length of the input \code{data}
+points. This checks if each point falls inside \code{polygon}. Multiple
+polygons are supported (e.g., multiple homes, or parks).
 }
 \examples{
-#data$is_home <- palms_in_polygon(data, homes, "identifier")
+data(list = c("palms", "home"))
+
+home.buffer <- palms_buffer(home, distance = 100)
+
+at_home <- palms_in_polygon(palms, home.buffer)
 
 }

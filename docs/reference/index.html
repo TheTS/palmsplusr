@@ -58,10 +58,28 @@
   </a>
 </li>
 <li>
-  <a href="../articles/1-getting-started.html">Getting started</a>
+  <a href="../articles/article-1-getting-started.html">Getting started</a>
 </li>
-<li>
-  <a href="../articles/index.html">Vignettes</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/article-1-getting-started.html">Getting started</a>
+    </li>
+    <li>
+      <a href="../articles/article-2-complete-example.html">A complete example</a>
+    </li>
+    <li>
+      <a href="../articles/article-3-building-formulas.html">Building formulas</a>
+    </li>
+    <li>
+      <a href="../articles/article-4-ggplot2-palmsplusr.html">ggplot2 and palmsplusr</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="../reference/index.html">Functions</a>
@@ -113,12 +131,12 @@
           <td>
             <p><code><a href="read_palms.html">read_palms</a></code> </p>
           </td>
-          <td><p>Reading PALMS data from a csv file</p></td>
+          <td><p>Read PALMS data from a csv file</p></td>
         </tr>
       </tbody><tbody>
         <tr>
           <th colspan="2">
-            <h2 id="section-building-field-tables" class="hasAnchor"><a href="#section-building-field-tables" class="anchor"></a>Building field tables</h2>
+            <h2 id="section-creating-field-tables" class="hasAnchor"><a href="#section-creating-field-tables" class="anchor"></a>Creating field tables</h2>
             <p class="section-desc"></p>
           </th>
         </tr>
@@ -127,57 +145,57 @@
           <td>
             <p><code><a href="palms_add_domain.html">palms_add_domain</a></code> </p>
           </td>
-          <td><p>Adds an aggregation domain to the palmsplus_domains table.</p></td>
+          <td><p>Add an aggregation domain to the palmsplus_domains table.</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="palms_add_field.html">palms_add_field</a></code> </p>
           </td>
-          <td><p>Adds an aggregation field to the palmsplus_fields table.</p></td>
+          <td><p>Add an aggregation field to the palmsplus_fields table.</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="palms_add_trajectory_field.html">palms_add_trajectory_field</a></code> </p>
           </td>
-          <td><p>Adds a trajectory field to the trajectory_fields table.</p></td>
+          <td><p>Add a trajectory field to the trajectory_fields table.</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_add_trip_location.html">palms_add_trip_location</a></code> </p>
+            <p><code><a href="palms_add_trajectory_location.html">palms_add_trajectory_location</a></code> </p>
           </td>
-          <td><p>Adds a trip location to the trajectory_locations table.</p></td>
+          <td><p>Add a trajectory location to the trajectory_locations table.</p></td>
         </tr>
       </tbody><tbody>
         <tr>
           <th colspan="2">
-            <h2 id="section-calculations" class="hasAnchor"><a href="#section-calculations" class="anchor"></a>Calculations</h2>
+            <h2 id="section-building-datasets" class="hasAnchor"><a href="#section-building-datasets" class="anchor"></a>Building datasets</h2>
             <p class="section-desc"></p>
           </th>
         </tr>
         <tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_calc_days.html">palms_calc_days</a></code> </p>
+            <p><code><a href="palms_build_days.html">palms_build_days</a></code> </p>
           </td>
-          <td><p>Summarises palmsplus data by aggregation domain</p></td>
+          <td><p>Calculate day-level summaries from the palmsplus dataset</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_calc_multimodal.html">palms_calc_multimodal</a></code> </p>
+            <p><code><a href="palms_build_multimodal.html">palms_build_multimodal</a></code> </p>
           </td>
           <td><p>Build multimodal trips from trajectories</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_calc_palmsplus.html">palms_calc_palmsplus</a></code> </p>
+            <p><code><a href="palms_build_palmsplus.html">palms_build_palmsplus</a></code> </p>
           </td>
-          <td><p>Adds additional columns to PALMS data that represent domains and fields</p></td>
+          <td><p>Build the palmsplus dataset</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_calc_trajectories.html">palms_calc_trajectories</a></code> </p>
+            <p><code><a href="palms_build_trajectories.html">palms_build_trajectories</a></code> </p>
           </td>
-          <td><p>Build trajectories from trip points</p></td>
+          <td><p>Build trajectories from the palmsplus dataset</p></td>
         </tr>
       </tbody><tbody>
         <tr>
@@ -191,37 +209,37 @@
           <td>
             <p><code><a href="palms_buffer.html">palms_buffer</a></code> </p>
           </td>
-          <td><p>Returns a buffer (polygon) of the input geometry.</p></td>
+          <td><p>Return a buffer (polygon) of the input geometry.</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="palms_in_polygon.html">palms_in_polygon</a></code> </p>
           </td>
-          <td><p>Returns a logical vector if input points are inside polygons</p></td>
+          <td><p>Check if points fall inside a polygon</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="palms_in_time.html">palms_in_time</a></code> </p>
           </td>
-          <td><p>Returns a logical vector if points are within a time period</p></td>
+          <td><p>Check if points fall between a start and end time</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_epoch_length.html">palms_epoch_length</a></code> </p>
+            <p><code><a href="palms_epoch.html">palms_epoch</a></code> </p>
           </td>
-          <td><p>Returns the epoch length of the PALMS dataset</p></td>
+          <td><p>Get the epoch length of the PALMS dataset</p></td>
         </tr><tr>
           <!--  -->
           <td>
-            <p><code><a href="palms_line_point.html">palms_line_point</a></code> </p>
+            <p><code><a href="palms_trajectory_point.html">palms_trajectory_point</a></code> </p>
           </td>
-          <td><p>Returns the start or end point of a LINESTRING</p></td>
+          <td><p>Get the start or end point of a LINESTRING</p></td>
         </tr><tr>
           <!--  -->
           <td>
             <p><code><a href="palms_trip.html">palms_trip</a></code> </p>
           </td>
-          <td><p>Returns true if a LINESTRING starts and ends in specific polygons</p></td>
+          <td><p>Check if a trajectory LINESTRING starts and ends inside specified polygons</p></td>
         </tr>
       </tbody>
       </table>
@@ -232,8 +250,8 @@
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#section-read-palms-data">Read PALMS data</a></li>
-      <li><a href="#section-building-field-tables">Building field tables</a></li>
-      <li><a href="#section-calculations">Calculations</a></li>
+      <li><a href="#section-creating-field-tables">Creating field tables</a></li>
+      <li><a href="#section-building-datasets">Building datasets</a></li>
       <li><a href="#section-helpers">Helpers</a></li>
     </ul>
   </div>

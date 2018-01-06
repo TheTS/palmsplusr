@@ -94,7 +94,8 @@
     <p>Build multimodal trips from trajectories</p>
     
 
-    <pre class="usage"><span class='fu'>palms_calc_multimodal</span>(<span class='no'>data</span>, <span class='no'>spatial</span>, <span class='no'>temporal</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_calc_multimodal</span>(<span class='no'>data</span>, <span class='no'>spatial_threshold</span>, <span class='no'>temporal_threshold</span>,
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -104,16 +105,16 @@
       <td><p>The trajectories object built with <code>palms_calc_trajectories</code>.</p></td>
     </tr>
     <tr>
-      <th>verbose</th>
-      <td><p>Print progress after each step. Default is <code>TRUE</code>.</p></td>
-    </tr>
-    <tr>
       <th>spatial_threshold</th>
       <td><p>Spatial threshold in meters</p></td>
     </tr>
     <tr>
       <th>temporal_threshold</th>
       <td><p>Temporal threshold in minutes</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>Print progress after each step. Default is <code>TRUE</code>.</p></td>
     </tr>
     </table>
     
