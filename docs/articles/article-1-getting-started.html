@@ -83,7 +83,7 @@
     <div class="page-header toc-ignore">
       <h1>Getting started with palmsplusr</h1>
             
-            <h4 class="date">2018-01-07</h4>
+            <h4 class="date">2018-01-08</h4>
           </div>
 
     
@@ -284,42 +284,58 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <th align="left">name</th>
 <th align="left">formula</th>
 <th align="left">after_conversion</th>
+<th align="left">multimodal_field</th>
+<th align="left">multimodal_function</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">mot</td>
 <td align="left">first(tripmot)</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 <tr class="even">
 <td align="left">wear</td>
 <td align="left">sum(activityintensity &gt;= 0) * epoch</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 <tr class="odd">
 <td align="left">sedentary</td>
 <td align="left">sum(activityintensity == 0) * epoch</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 <tr class="even">
 <td align="left">light</td>
 <td align="left">sum(activityintensity == 1) * epoch</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 <tr class="odd">
 <td align="left">moderate</td>
 <td align="left">sum(activityintensity == 2) * epoch</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 <tr class="even">
 <td align="left">vigorous</td>
 <td align="left">sum(activityintensity == 3) * epoch</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 <tr class="odd">
 <td align="left">mvpa</td>
 <td align="left">moderate + vigorous</td>
 <td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="left">sum</td>
 </tr>
 </tbody>
 </table>

@@ -112,7 +112,8 @@
     <p>Add a trajectory field to the trajectory_fields table.</p>
     
 
-    <pre class="usage"><span class='fu'>palms_add_trajectory_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>after_conversion</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>palms_add_trajectory_field</span>(<span class='no'>name</span>, <span class='no'>formula</span>, <span class='kw'>after_conversion</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>multimodal_field</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>multimodal_function</span> <span class='kw'>=</span> <span class='st'>"sum"</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -131,6 +132,16 @@ palmsplus points that are part of the same trip (<code>tripnumber</code>).</p></
       <td><p>Logical. If <code>TRUE</code>, this field will be calculated after
 the trajectory <code>LINESTRING</code> has been created. For example, a formula that
 contains <code>st_length()</code> can only be evaluated with geometry.</p></td>
+    </tr>
+    <tr>
+      <th>multimodal_field</th>
+      <td><p>Logical. If <code>TRUE</code>, this field will summarised
+if <code><a href='palms_build_multimodal.html'>palms_build_multimodal</a></code> is run. Default <code>TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>multimodal_function</th>
+      <td><p>The summary function to use when combining
+<code>multimodal_field</code> across segments. The default is <code>"sum"</code>.</p></td>
     </tr>
     </table>
     

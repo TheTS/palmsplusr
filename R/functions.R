@@ -57,6 +57,10 @@ palms_add_field <- function(name, formula, domain_field = FALSE) {
 #' @param after_conversion Logical. If \code{TRUE}, this field will be calculated after
 #' the trajectory \code{LINESTRING} has been created. For example, a formula that
 #' contains \code{st_length()} can only be evaluated with geometry.
+#' @param multimodal_field Logical. If \code{TRUE}, this field will summarised
+#' if \code{\link{palms_build_multimodal}} is run. Default \code{TRUE}.
+#' @param multimodal_function The summary function to use when combining
+#' \code{multimodal_field} across segments. The default is \code{"sum"}.
 #'
 #' @return If the trajectory_fields table is not present in the global environment,
 #' it will be created. If it already exists, the new field will be appended.
@@ -65,13 +69,22 @@ palms_add_field <- function(name, formula, domain_field = FALSE) {
 #' #palms_add_trajectory_field("mot", "first(tripmot)")
 #'
 #' @export
-palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE) {
+palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE,
+                                       multimodal_field = TRUE, multimodal_function = "sum") {
+  if (!multimodal_field) multimodal_function <- NA
+
   if (!exists("trajectory_fields"))
-    trajectory_fields <<- tibble(name = name, formula = formula, after_conversion = after_conversion)
+    trajectory_fields <<- tibble(name = name, formula = formula,
+                                 after_conversion = after_conversion,
+                                 multimodal_field = multimodal_field,
+                                 multimodal_function = multimodal_function)
   else if (name %in% trajectory_fields$name)
     stop(name, " already exists in trajectory_fields")
   else
-    trajectory_fields <<- rbind(trajectory_fields, c(name, formula, after_conversion))
+    trajectory_fields <<- rbind(trajectory_fields, c(name, formula,
+                                                     after_conversion,
+                                                     multimodal_field,
+                                                     multimodal_function))
 }
 
 #' Add a trajectory location to the trajectory_locations table.

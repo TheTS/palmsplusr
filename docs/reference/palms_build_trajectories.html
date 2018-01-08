@@ -135,15 +135,13 @@ and <code><a href='palms_add_trajectory_location.html'>palms_add_trajectory_loca
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='fu'>data</span>(<span class='st'>"palms"</span>)
 
-<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"mvpa"</span>, <span class='st'>"activityintensity &gt; 1"</span>, <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in palms_add_field("mvpa", "activityintensity &gt; 1", TRUE): mvpa already exists in palmsplus_fields</span></div><div class='input'><span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; <span class='error'>Error in mutate_impl(.data, dots): Evaluation error: object 'home.buffer' not found.</span></div><div class='input'>
+<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"mvpa"</span>, <span class='st'>"activityintensity &gt; 1"</span>, <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; <span class='error'>Error in palms_add_field("mvpa", "activityintensity &gt; 1", TRUE): mvpa already exists in palmsplus_fields</span></div><div class='input'><span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; [1/1] Computed palmsplus for: BC0627</div><div class='input'>
 <span class='co'># Just with default columns</span>
-<span class='no'>trajectories</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_trajectories</span>(<span class='no'>palmsplus</span>)</div><div class='output co'>#&gt; <span class='error'>Error in eval(lhs, parent, parent): object 'palmsplus' not found</span></div><div class='input'>
-<span class='co'># Adding new fields before building</span>
-<span class='fu'><a href='palms_add_trajectory_field.html'>palms_add_trajectory_field</a></span>(<span class='st'>"mot"</span>, <span class='st'>"first(tripmot)"</span>)
-<span class='fu'><a href='palms_add_trajectory_field.html'>palms_add_trajectory_field</a></span>(<span class='st'>"mvpa"</span>, <span class='st'>"sum(mvpa)"</span>)
+<span class='no'>trajectories</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_trajectories</span>(<span class='no'>palmsplus</span>)
 
-<span class='no'>trajectories</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_trajectories</span>(<span class='no'>palmsplus</span>)</div><div class='output co'>#&gt; <span class='error'>Error in eval(lhs, parent, parent): object 'palmsplus' not found</span></div><div class='input'>
-</div></pre>
+<span class='co'># Adding new fields before building</span>
+<span class='fu'><a href='palms_add_trajectory_field.html'>palms_add_trajectory_field</a></span>(<span class='st'>"mot"</span>, <span class='st'>"first(tripmot)"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in palms_add_trajectory_field("mot", "first(tripmot)"): mot already exists in trajectory_fields</span></div><div class='input'><span class='fu'><a href='palms_add_trajectory_field.html'>palms_add_trajectory_field</a></span>(<span class='st'>"mvpa"</span>, <span class='st'>"sum(mvpa)"</span>)</div><div class='output co'>#&gt; <span class='error'>Error in palms_add_trajectory_field("mvpa", "sum(mvpa)"): mvpa already exists in trajectory_fields</span></div><div class='input'>
+<span class='no'>trajectories</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_trajectories</span>(<span class='no'>palmsplus</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

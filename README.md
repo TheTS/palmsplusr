@@ -6,7 +6,7 @@ PALMSplus for R
 <!--[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/TheTS/palmsplusr?branch=master&svg=true)](https://ci.appveyor.com/project/TheTS/palmsplusr)-->
 <!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
 <!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
-[![Project Status](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--07-yellowgreen.svg)](/commits/master)
+[![Project Status](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--08-yellowgreen.svg)](/commits/master)
 
 Overview
 --------

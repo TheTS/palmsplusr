@@ -4,7 +4,8 @@
 \alias{palms_add_trajectory_field}
 \title{Add a trajectory field to the trajectory_fields table.}
 \usage{
-palms_add_trajectory_field(name, formula, after_conversion = FALSE)
+palms_add_trajectory_field(name, formula, after_conversion = FALSE,
+  multimodal_field = TRUE, multimodal_function = "sum")
 }
 \arguments{
 \item{name}{The name of the field as a string.}
@@ -15,6 +16,12 @@ palmsplus points that are part of the same trip (\code{tripnumber}).}
 \item{after_conversion}{Logical. If \code{TRUE}, this field will be calculated after
 the trajectory \code{LINESTRING} has been created. For example, a formula that
 contains \code{st_length()} can only be evaluated with geometry.}
+
+\item{multimodal_field}{Logical. If \code{TRUE}, this field will summarised
+if \code{\link{palms_build_multimodal}} is run. Default \code{TRUE}.}
+
+\item{multimodal_function}{The summary function to use when combining
+\code{multimodal_field} across segments. The default is \code{"sum"}.}
 }
 \value{
 If the trajectory_fields table is not present in the global environment,

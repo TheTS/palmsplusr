@@ -143,11 +143,10 @@ variables will be summarised for each <em>domain</em> seperatly.</p>
 <span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"mvpa"</span>, <span class='st'>"activityintensity &gt; 1"</span>, <span class='fl'>TRUE</span>)
 
 <span class='fu'><a href='palms_add_domain.html'>palms_add_domain</a></span>(<span class='st'>"walking"</span>, <span class='st'>"tripmot == 3"</span>)
-<span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; <span class='error'>Error in mutate_impl(.data, dots): Evaluation error: object 'home.buffer' not found.</span></div><div class='input'>
+<span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; [1/1] Computed palmsplus for: BC0627</div><div class='input'>
 <span class='co'># This will have 'walking' and 'total' domains</span>
 <span class='co'># Each domain will have 'duration' and 'mvpa' fields</span>
-<span class='no'>days</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_days</span>(<span class='no'>palmsplus</span>)</div><div class='output co'>#&gt; <span class='error'>Error in data$total &lt;- 1: object 'palmsplus' not found</span></div><div class='input'>
-</div></pre>
+<span class='no'>days</span> <span class='kw'>&lt;-</span> <span class='fu'>palms_build_days</span>(<span class='no'>palmsplus</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

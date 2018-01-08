@@ -15,6 +15,18 @@
 palms_build_multimodal <- function(data, spatial_threshold,
                                   temporal_threshold, verbose = TRUE) {
 
+  if (!all(c("identifier", "tripnumber", "start", "end", "geometry") %in% colnames(data)))
+    stop("Your trajectories data does not contain the required column names...")
+
+  if (exists("trajectory_fields")) {
+    multimodal <- trajectory_fields[, c(1, 4:5)] %>% filter(multimodal_field == TRUE)
+  }
+
+  if (exists("trajectory_locations")) {
+
+
+  }
+
   if(verbose) cat('Calculating multimodal eligibility...')
 
   # Determine if a trajectory meets satial and temporal criteria
@@ -56,10 +68,7 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
   if(verbose) cat('done\nCalculating fields...')
 
-  # TODO, make these summary columns dynamic - e.g. from trajectory fields
-  cols <- c("mvpa", "speed", "length", "duration", "nonwear", "wear",
-            "sedentary", "light", "moderate", "vigorous",
-            "mot", "mmt_number", "identifier", "geometry")
+  cols <- c("mot", "mmt_number", "identifier", "geometry",  multimodal$name)
 
   # Split varables into each mot
   mot_split <- data %>%
@@ -72,24 +81,24 @@ palms_build_multimodal <- function(data, spatial_threshold,
     cbind(data) %>%
     select(-ends_with(".1"))
 
-  # Sums
-  df_sum <- mot_split %>%
-    as.data.frame() %>%
-    group_by(identifier, mmt_number) %>%
-    summarise_at(vars(duration, sedentary, light, moderate, vigorous, mvpa,
-                      starts_with("mot_")), sum, na.rm = TRUE) %>%
-    select(-ends_with("_speed"))
+  # Calculate mumtimodal_fields
+  df_fields <- list()
+  for (i in unique(multimodal$multimodal_function)) {
+    df_fields[[i]] <- mot_split %>%
+      as.data.frame() %>%
+      group_by(identifier, mmt_number) %>%
+      summarise_at(vars(matches(
+        paste(multimodal$name[multimodal$multimodal_function == i], collapse = "|"))),
+                        i, na.rm = TRUE)
+  }
 
-  # Means
-  df_mean <- mot_split %>%
-    as.data.frame() %>%
-    group_by(identifier, mmt_number) %>%
-    summarise_at(vars(ends_with("_speed")), mean, na.rm = TRUE)
+  df_fields <- reduce(df_fields, left_join,
+    by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
 
-  df_mean[is.na(df_mean)] <- NA
+  df_fields[is.na(df_fields)] <- NA
 
   # Others
-  df_summary <- mot_split %>%
+  df_other <- mot_split %>%
     group_by(identifier, mmt_number) %>%
     summarise(trip_numbers = paste0(tripnumber, collapse = "-"),
               n_segments = n(),
@@ -98,22 +107,10 @@ palms_build_multimodal <- function(data, spatial_threshold,
               end = last(end),
               do_union = FALSE)
 
-  df <- reduce(list(df_summary, df_sum, df_mean), left_join,
+  df <- reduce(list(df_other, df_fields), left_join,
                by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
 
-  if(verbose) cat('done\nRebuilding geometry...')
-
-  # Rebuild each geometry into one LINESTRING
-  geometry <- list()
-  for(i in 1:nrow(df)) {
-    geometry[[i]] <- st_as_text(st_linestring(do.call(rbind, unlist(df$geometry[i], recursive = FALSE))))
-  }
-
-  x <- bind_rows(tibble(geometry))
-  st_geometry(df) <- st_as_sfc(geometry, crs = 4326)
-
   if(verbose) cat('done\n')
-
   return(df)
 }
 
