@@ -285,6 +285,8 @@ palms_remove_tables <- function() {
 #' using \code{\link{palms_epoch}}.
 #'
 #' @examples
+#' palms_remove_tables()
+#'
 #' epoch <- palms_epoch(palms)
 #' epoch
 #'
@@ -310,7 +312,7 @@ palms_load_defaults <- function(epoch_length) {
   palms_add_field("light",      "activityintensity == 1", TRUE)
   palms_add_field("moderate",   "activityintensity == 2", TRUE)
   palms_add_field("vigorous",   "activityintensity == 3", TRUE)
-  palms_add_field("mvpa",       "activityintensity > 1",  TRUE)
+  palms_add_field("mvpa",       "moderate + vigorous",    TRUE)
 
   # trajectory_fields
   palms_add_trajectory_field("mot",       "first(tripmot)",           FALSE, FALSE)
