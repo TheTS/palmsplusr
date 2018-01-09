@@ -1,10 +1,23 @@
 
 #' Build multimodal trips from trajectories
 #'
+#' @description Build multimodal trips from trajectories.
+#'
 #' @param data The trajectories object built with \code{palms_calc_trajectories}.
 #' @param spatial_threshold Spatial threshold in meters
 #' @param temporal_threshold Temporal threshold in minutes
 #' @param verbose Print progress after each step. Default is \code{TRUE}.
+#'
+#' @details Several columns are required in the \code{trajectories} dataset. These
+#' need to be added as trajectory fields:
+#' \itemize{
+#' \item identifier
+#' \item tripnumber
+#' \item mot
+#' \item start
+#' \item end
+#' \item geometry
+#' }
 #'
 #' @return The input trajectories LINESTRING geometry, collapsed into multimodal trips
 #'
@@ -15,16 +28,13 @@
 palms_build_multimodal <- function(data, spatial_threshold,
                                   temporal_threshold, verbose = TRUE) {
 
-  if (!all(c("identifier", "tripnumber", "start", "end", "geometry") %in% colnames(data)))
+  if (!all(c("identifier", "tripnumber", "start", "end", "geometry", "mot") %in% colnames(data)))
     stop("Your trajectories data does not contain the required column names...")
 
   if (exists("trajectory_fields")) {
-    multimodal <- trajectory_fields[, c(1, 4:5)] %>% filter(multimodal_field == TRUE)
-  }
-
-  if (exists("trajectory_locations")) {
-
-
+    multimodal <- trajectory_fields %>%
+      select(c(name, multimodal_field, multimodal_function)) %>%
+      filter(multimodal_field == TRUE)
   }
 
   if(verbose) cat('Calculating multimodal eligibility...')
@@ -81,7 +91,7 @@ palms_build_multimodal <- function(data, spatial_threshold,
     cbind(data) %>%
     select(-ends_with(".1"))
 
-  # Calculate mumtimodal_fields
+  # Calculate multimodal_fields with multimodal_functions
   df_fields <- list()
   for (i in unique(multimodal$multimodal_function)) {
     df_fields[[i]] <- mot_split %>%
@@ -97,21 +107,49 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
   df_fields[is.na(df_fields)] <- NA
 
-  # Others
+  # Build trajectory_location formulas if they exist
+  if (exists("trajectory_locations")) {
+
+    names <- unique(c(trajectory_locations$start_criteria,
+      trajectory_locations$start_criteria))
+
+    # Rather than recalculating geometry, just lookup in palmsplus
+    stopifnot(exists("palmsplus"))
+
+    lookup <- palmsplus %>%
+      filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
+      as.data.frame() %>%
+      select(c("identifier", "tripnumber", "triptype", names)) %>%
+      as.data.table()
+
+    args_locations <- setNames(
+      paste0("lookup[tripnumber==start_trip & triptype==1 & identifier==first(identifier),",
+        trajectory_locations[[2]],
+        "] & lookup[tripnumber==end_trip & triptype==4  & identifier==first(identifier),",
+        trajectory_locations[[3]], "]"),
+        trajectory_locations[[1]]) %>%
+      lapply(parse_expr)
+  }
+
+  # Calculate other fields (+ trajectory_locations)
   df_other <- mot_split %>%
     group_by(identifier, mmt_number) %>%
-    summarise(trip_numbers = paste0(tripnumber, collapse = "-"),
+    summarise(start_trip = first(tripnumber),
+              end_trip = last(tripnumber),
+              trip_numbers = paste0(tripnumber, collapse = "-"),
               n_segments = n(),
               mot_order = paste0(mot, collapse = "-"),
               start = first(start),
               end = last(end),
-              do_union = FALSE)
+              !!!args_locations,
+              do_union = FALSE) %>%
+    ungroup() %>%
+    select(-c(start_trip, end_trip)) %>%
+    mutate_if(is.logical, as.integer)
 
   df <- reduce(list(df_other, df_fields), left_join,
-               by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
+    by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
 
   if(verbose) cat('done\n')
   return(df)
 }
-
-

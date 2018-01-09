@@ -11,7 +11,7 @@
 #' @importFrom rlang parse_expr quo_text
 #' @importFrom stats setNames aggregate start end
 #' @importFrom purrr reduce
-#' @importFrom data.table rbindlist rleid
+#' @importFrom data.table rbindlist rleid as.data.table
 #' @importFrom geosphere distGeo
 #' @importFrom readr read_csv
 #' @importFrom tidyr gather unite spread
