@@ -96,15 +96,25 @@
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
-<p><strong>palmsplusr</strong> is an extension to the <em>Personal Activity Location Measurement System</em>, commonly known as <a href="https://ucsd-palms-project.wikispaces.com/">PALMS</a>. The <strong>palmsplusr</strong> package provides a platform to combine PALMS data with other sources of information, such as shape files or personal timetables.</p>
-<p>The <strong>palmsplusr</strong> workflow is presented in the figure below. The PALMS data along with various other input files are used to build the palmsplus data frame. Once palmsplus is built, it can be summarised two ways:</p>
+<p><strong>palmsplusr</strong> is an extension to the <em>Personal Activity Location Measurement System</em> (<a href="https://ucsd-palms-project.wikispaces.com/">PALMS</a>). This package provides a customisable platform to combine PALMS data with other sources of information (e.g., shapefiles or csv files). This enables physical activity researchers to answer higher-level questions, such as:</p>
+<ul>
+<li>How much time is spent in parks?</li>
+<li>How much MVPA is accumulated in parks?</li>
+<li>What proportion of sedentary time is accumulated during vehicular travel?</li>
+<li>What is the average distance of home-to-school trips?</li>
+<li>How much MVPA is accumulated inside the schoolyard during school time?</li>
+<li>What proportion of commuters trip chain different travel modes (e.g., walk-bus-walk)</li>
+<li>What is the average speed of bicycle trips during peak travel times?</li>
+<li>etc.</li>
+</ul>
+<p>PALMS data are combined with other input files to build the palmsplus <a href="https://github.com/r-spatial/sf">simple features</a> data frame. Once palmsplus is built, it can be summarised two ways:</p>
 <ul>
 <li>
-<code>days</code> provides a breakdown of information per day, per person.</li>
+<code>days</code> provides a breakdown of information per day, per person (e.g., time spent in greenspace)</li>
 <li>
-<code>trajectories</code> builds individual trips from PALMS points, and provides trip-level summaries. This can then be processed into multimodal trips if desired.</li>
+<code>trajectories</code> builds individual trips, and provides trip-level summaries (e.g., MVPA during the work commute). This can then be processed into multimodal trips if desired.</li>
 </ul>
-<p>The user is able to specify how each data source is combined to build palmsplus. This is done by creating <code>field</code> and <code>domain</code> formulas which are highly customisable.</p>
+<p>The user is able to specify how each data source is combined. This is done by creating <code>field</code> tables using highly customisable formulas.</p>
 <div class="figure">
 <img src="http://i.imgur.com/aSzlC3E.png" alt="Palms Workflow"><p class="caption">Palms Workflow</p>
 </div>
@@ -115,15 +125,10 @@
 <p>The easiest way to install <strong>palmsplusr</strong> is using devtools:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"devtools"</span>)
 <span class="kw">install_github</span>(<span class="st">"TheTS/palmsplusr"</span>)</code></pre></div>
-</div>
-<div id="documentation-and-examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#documentation-and-examples" class="anchor"></a>Documentation and Examples</h2>
-<p>For further information and examples, please see the <a href="http://thets.github.io/palmsplusr/">GitHub documentation</a></p>
 <div id="notes" class="section level3">
 <h3 class="hasAnchor">
 <a href="#notes" class="anchor"></a>Notes</h3>
-<p>This project is based on the <a href="https://github.com/bsnizek/palmsplus">palmsplus</a> project originally written in PostgreSQL and PostGIS.</p>
+<p>This project is based on the <a href="https://github.com/bsnizek/palmsplus">palmsplus</a> project originally written in PostgreSQL and PostGIS by <a href="http://www.snizek.com">Bernhard Snizek</a>.</p>
 </div>
 </div>
 </div>

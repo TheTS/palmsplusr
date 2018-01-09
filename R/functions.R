@@ -272,3 +272,59 @@ palms_remove_tables <- function() {
   if (exists("trajectory_fields")) {rm(trajectory_fields, envir =  globalenv())}
   if (exists("trajectory_locations")) {rm(trajectory_locations, envir =  globalenv())}
 }
+
+#' Populates field and domain tables with default values
+#'
+#' @description This will populate the \code{palmsplus_fields} and
+#' \code{trajectory_fields} with simple fields that should be compatable with
+#' all PALMS data sets. The formulas only use variables that are present in the
+#' PALMS input dataset.
+#'
+#' @param epoch_length The epoch length of the PALMS data in seconds. This is
+#' necessary so the default formulas are created correctly. This can be passed in
+#' using \code{\link{palms_epoch}}.
+#'
+#' @examples
+#' epoch <- palms_epoch(palms)
+#' epoch
+#'
+#' palms_load_defaults(epoch)
+#'
+#' @export
+palms_load_defaults <- function(epoch_length) {
+  epoch_length <- as.character(epoch_length)
+
+  # palmsplus_fields
+  palms_add_field("weekday",    "dow < 6")
+  palms_add_field("weekend",    "dow > 5")
+  palms_add_field("indoors",    "iov == 3")
+  palms_add_field("outdoors",   "iov == 1")
+  palms_add_field("in_vehicle", "iov == 2")
+  palms_add_field("inserted",   "fixtypecode == 6")
+  palms_add_field("pedestrian", "tripmot == 1")
+  palms_add_field("bicycle",    "tripmot == 2")
+  palms_add_field("vehicle",    "tripmot == 3")
+  palms_add_field("nonwear",    "activityintensity < 0",  TRUE)
+  palms_add_field("wear",       "activityintensity >= 0", TRUE)
+  palms_add_field("sedentary",  "activityintensity == 0", TRUE)
+  palms_add_field("light",      "activityintensity == 1", TRUE)
+  palms_add_field("moderate",   "activityintensity == 2", TRUE)
+  palms_add_field("vigorous",   "activityintensity == 3", TRUE)
+  palms_add_field("mvpa",       "activityintensity > 1",  TRUE)
+
+  # trajectory_fields
+  palms_add_trajectory_field("mot",       "first(tripmot)",           FALSE, FALSE)
+  palms_add_trajectory_field("date",      "first(as.Date(datetime))", FALSE, FALSE)
+  palms_add_trajectory_field("start",     "datetime[triptype==1]",    FALSE, FALSE)
+  palms_add_trajectory_field("end",       "datetime[triptype==4]",    FALSE, FALSE)
+  palms_add_trajectory_field("duration",  paste0("as.numeric(difftime(end, start, units = \"secs\") + ", epoch_length, ")"))
+  palms_add_trajectory_field("nonwear",   paste0("sum(activityintensity < 0) * ", epoch_length))
+  palms_add_trajectory_field("wear",      paste0("sum(activityintensity >= 0) * ", epoch_length))
+  palms_add_trajectory_field("sedentary", paste0("sum(activityintensity == 0) * ", epoch_length))
+  palms_add_trajectory_field("light",     paste0("sum(activityintensity == 1) * ", epoch_length))
+  palms_add_trajectory_field("moderate",  paste0("sum(activityintensity == 2) * ", epoch_length))
+  palms_add_trajectory_field("vigorous",  paste0("sum(activityintensity == 3) * ", epoch_length))
+  palms_add_trajectory_field("mvpa",      "moderate + vigorous")
+  palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
+  palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE, TRUE, "mean")
+}

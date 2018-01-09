@@ -129,7 +129,8 @@ palms_build_multimodal <- function(data, spatial_threshold,
         trajectory_locations[[3]], "]"),
         trajectory_locations[[1]]) %>%
       lapply(parse_expr)
-  }
+  } else
+    args_locations <- NULL
 
   # Calculate other fields (+ trajectory_locations)
   df_other <- mot_split %>%

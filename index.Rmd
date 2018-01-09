@@ -35,7 +35,7 @@ knitr::opts_chunk$set(
 * What is the average speed of bicycle trips during peak travel times?
 * etc.
 
-The PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. Once palmsplus is built, it can be summarised two ways: 
+PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. Once palmsplus is built, it can be summarised two ways: 
 
 * `days` provides a breakdown of information per day, per person (e.g., time spent in greenspace)
 * `trajectories` builds individual trips, and provides trip-level summaries (e.g., MVPA during the work commute). This can then be processed into multimodal trips if desired. 
@@ -43,43 +43,6 @@ The PALMS data are combined with other input files to build the palmsplus [simpl
 The user is able to specify how each data source is combined. This is done by creating `field` tables using highly customisable formulas.
 
 ![Palms Workflow](http://i.imgur.com/aSzlC3E.png)
-
-
-
-## Brief Example
-
-This example demonstrates the most basic implementation with one participant
-```{r message=FALSE, warning=FALSE}
-library(palmsplusr)
-
-palms <- read_palms("F:/data/csv/one_participant.csv")
-
-palms_load_defaults(palms_epoch(palms))
-```
-
-The `palms_load_defaults()` function automatically populates the field tables with basic formulas. The default `palmsplus_fields` table looks like:
-```{r}
-palmsplus_fields
-```
-and the dafault `trajectory_fields` table looks like:
-```{r}
-trajectory_fields
-```
-
-Building datasets is as simple as:
-```{r message=FALSE, warning=FALSE}
-# Building palmsplus
-palmsplus <- palms_build_palmsplus(palms)
-
-# Building days
-days <- palms_build_days(palmsplus)
-
-# Building trajectories
-trajectories <- palms_build_trajectories(palmsplus)
-
-# Building multimodal trajectories
-multimodal <- palms_build_multimodal(trajectories, 200, 10)
-```
 
 ## Installation
 
@@ -89,10 +52,6 @@ The easiest way to install **palmsplusr** is using devtools:
 library("devtools")
 install_github("TheTS/palmsplusr")
 ```
-
-## Documentation and Examples
-
-For further information and examples, please see the [GitHub documentation](http://thets.github.io/palmsplusr/)
 
 ### Notes
 

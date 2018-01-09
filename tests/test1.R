@@ -5,7 +5,7 @@ setwd("F:/data")
 
 # Load PALMS dataset
 palms <- read_palms("F:/data/csv/palms_output.csv")
-#palms <- read_palms("F:/data/csv/one_participant.csv")
+palms <- read_palms("F:/data/csv/one_participant.csv")
 
 #palms2 = palms
 palms <- palms[palms$identifier %in% c("BC0627", "BC0629", "BC0670"),]

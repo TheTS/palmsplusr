@@ -31,6 +31,7 @@ reference:
     - read_palms
   - title: Creating field tables
     contents:
+    - palms_load_defaults
     - starts_with("palms_add")
   - title: Building datasets
     contents:
