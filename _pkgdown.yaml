@@ -37,9 +37,8 @@ reference:
     - starts_with("palms_build")
   - title: Helpers
     contents:
+    - palms_remove_tables
+    - palms_epoch
     - palms_buffer
     - palms_in_polygon
     - palms_in_time
-    - palms_epoch
-    - palms_trajectory_point
-    - palms_trip

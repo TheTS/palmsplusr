@@ -26,6 +26,7 @@ variables will be summarised for each \emph{domain} seperatly.
 }
 \examples{
 data("palms")
+palms_remove_tables()
 
 # Add a field, and make it a domain_field
 palms_add_field("mvpa", "activityintensity > 1", TRUE)

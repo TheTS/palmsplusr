@@ -66,7 +66,7 @@ palms_add_field <- function(name, formula, domain_field = FALSE) {
 #' it will be created. If it already exists, the new field will be appended.
 #'
 #' @examples
-#' #palms_add_trajectory_field("mot", "first(tripmot)")
+#' palms_add_trajectory_field("mot", "first(tripmot)")
 #'
 #' @export
 palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE,
@@ -106,10 +106,8 @@ palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE,
 #' @examples
 #' # A full example workflow
 #' data(list = c("palms", "home", "school", "participant_basis"))
-#'
-#' home.buffer <- palms_buffer(home, distance = 100)
-#'
-#' palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == i), identifier)")
+
+#' palms_add_field("at_home", "palms_in_polygon(., filter(palms_buffer(home, distance = 100), identifier == i), identifier)")
 #' palms_add_field("at_school", "palms_in_polygon(., filter(school, school_id == participant_basis %>%
 #'                                                   filter(identifier == i) %>% pull(school_id)))")
 #' palmsplus <- palms_build_palmsplus(palms)
@@ -240,6 +238,8 @@ palms_in_time <- function(data, pid, timetable, basis, start_col, end_col) {
 #'
 #' epoch <- palms_epoch(palms)
 #'
+#' epoch
+#'
 #' @export
 palms_epoch <- function(data) {
   times <- data[1:2,] %>%
@@ -248,58 +248,6 @@ palms_epoch <- function(data) {
     as.data.frame()
 
   return(as.numeric(difftime(times[2,1], times[1,1], units = "secs")))
-}
-
-#' Get the start or end point of a LINESTRING
-#'
-#' @description This is equivalent to ST_StartPoint and ST_EndPoint in PostGIS.
-#' This is mainly used as a helper function for calculating trajectory locations.
-#'
-#' @param line The \code{LINESTRING} geometry.
-#' @param first_point Logical. If \code{TRUE}, the first point will be returned,
-#' else the end point will be returned.
-#'
-#' @return A POINT geometry feature representing the first or last point in the
-#' LINESTRING.
-#'
-#' @examples
-#' #start <- palms_trajectory_point(line, TRUE)
-#' #end <- palms_trajectory_point(line, FALSE)
-#'
-#' @export
-palms_trajectory_point <- function(line, first_point) {
-  x <- st_cast(line, "POINT")
-  if (first_point)
-    return(st_sfc(x[[1]], crs = st_crs(line)))
-  else
-    return(st_sfc(x[[length(x)]], crs = st_crs(line)))
-}
-
-#' Check if a trajectory LINESTRING starts and ends inside specified polygons
-#'
-#' @param line The \code{LINESTRING} geometry.
-#' @param start_loc A polygon representing the start location.
-#' @param end_loc A polygon representing the end location.
-#' @param collapse_start An optional parameter for aggragating polygons.
-#' See \code{\link{palms_in_polygon}} for details.
-#' @param collapse_end An optional parameter for aggragating polygons.
-#' See \code{\link{palms_in_polygon}} for details.
-#'
-#' @return A logical. \code{TRUE} if the \code{LINESTRING} starts inside
-#' \code{start_loc} and ends inside \code{end_loc}.
-#'
-#' @examples
-#' #school_trip <- palms_trip(line, home, school)
-#'
-#' @export
-palms_trip <- function(line, start_loc, end_loc, collapse_start=NULL, collapse_end=NULL) {
-  start_point <- palms_trajectory_point(line, TRUE)
-  end_point <- palms_trajectory_point(line, FALSE)
-
-  start <- palms_in_polygon(start_point, start_loc, collapse_start)
-  end <- palms_in_polygon(end_point, end_loc, collapse_end)
-
-  return(start & end)
 }
 
 #' Remove all palmsplusr field and domain tables

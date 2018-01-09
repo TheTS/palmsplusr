@@ -1,9 +1,11 @@
 library(palmsplusr)
 library(readr)
 
+setwd("F:/data")
+
 # Load PALMS dataset
 palms <- read_palms("F:/data/csv/palms_output.csv")
-palms <- read_palms("F:/data/csv/one_participant.csv")
+#palms <- read_palms("F:/data/csv/one_participant.csv")
 
 #palms2 = palms
 palms <- palms[palms$identifier %in% c("BC0627", "BC0629", "BC0670"),]
@@ -24,7 +26,7 @@ epoch <- palms_epoch(palms)
 
 palms_remove_tables()
 
-# palmsplus fields
+# palmsplus_fields
 palms_add_field("weekday",    "dow < 6")
 palms_add_field("weekend",    "dow > 5")
 palms_add_field("indoors",    "iov == 3")
@@ -48,13 +50,13 @@ palms_add_field("in_recess2",     "palms_in_time(., i, class_timetable, particip
 palms_add_field("at_home",        "palms_in_polygon(., filter(home.buffer, identifier == i), identifier)")
 palms_add_field("at_school",      "palms_in_polygon(., filter(school, school_id == participant_basis %>% filter(identifier == i) %>% pull(school_id)))")
 
-# days domains
-palms_add_domain("d_home",      "at_home")
-palms_add_domain("d_school",    "(!at_home & at_school & in_school_time)")
-palms_add_domain("d_transport", "!at_home & !(at_school & in_school_time) & (pedestrian | bicycle | vehicle)")
-palms_add_domain("d_leisure",   "!at_home & !(at_school & in_school_time) & !pedestrian & !bicycle & !vehicle")
+# palmsplus_domains
+palms_add_domain("home",      "at_home")
+palms_add_domain("school",    "(!at_home & at_school & in_school_time)")
+palms_add_domain("transport", "!at_home & !(at_school & in_school_time) & (pedestrian | bicycle | vehicle)")
+palms_add_domain("leisure",   "!at_home & !(at_school & in_school_time) & !pedestrian & !bicycle & !vehicle")
 
-# Trajectories
+# trajectory_fields
 palms_add_trajectory_field("mot",       "first(tripmot)",           FALSE, FALSE)
 palms_add_trajectory_field("date",      "first(as.Date(datetime))", FALSE, FALSE)
 palms_add_trajectory_field("start",     "datetime[triptype==1]",    FALSE, FALSE)
@@ -70,31 +72,45 @@ palms_add_trajectory_field("mvpa",      "moderate + vigorous")
 palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
 palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE, TRUE, "mean")
 
-# Trajectory locations
+# trajectory_locations
 palms_add_trajectory_location("home_school",   "at_home",   "at_school")
 palms_add_trajectory_location("school_home",   "at_school", "at_home")
 palms_add_trajectory_location("home_home",     "at_home",   "at_home")
 palms_add_trajectory_location("school_school", "at_school", "at_school")
 
-# Work
-
+# Building
 t <- proc.time()
 palmsplus <- palms_build_palmsplus(palms)
 cat("Palmsplus:", (proc.time() - t)[[1]]/60, "minutes")
 
+t <- proc.time()
 days <- palms_build_days(palmsplus)
 cat("Days:", (proc.time() - t)[[1]]/60, "minutes")
 
+t <- proc.time()
 trajectories <- palms_build_trajectories(palmsplus)
 cat("Trajectories:", (proc.time() - t)[[1]]/60, "minutes")
 
+t <- proc.time()
 multimodal <- palms_build_multimodal(trajectories, 200, 10)
-cat("Completed in:", (proc.time() - t)[[1]]/60, "minutes")
+cat("Multimodal:", (proc.time() - t)[[1]]/60, "minutes")
 
+#Saving
+write_csv(palmsplus, "palmsplus.csv")
+write_csv(days, "days.csv")
+write_csv(trajectories, "trajectories.csv")
+write_csv(multimodal, "multimodal.csv")
 
+st_write(palmsplus, "palmsplus.shp")
+st_write(trajectories, "trajecories.shp")
+st_write(multimodal, "multimodal.shp")
 
-
-
+# Core i7 3770k 8GB RAM
+# 191 participants:
+# - Palmsplus: 5.879667 minutes>
+# - Days: 0.09216667 minutes>
+# - Trajectories: 2.163833 minutes>
+# - Multimodal: 12.71067 minutes>
 
 
 

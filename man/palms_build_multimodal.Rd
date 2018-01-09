@@ -20,7 +20,19 @@ palms_build_multimodal(data, spatial_threshold, temporal_threshold,
 The input trajectories LINESTRING geometry, collapsed into multimodal trips
 }
 \description{
-Build multimodal trips from trajectories
+Build multimodal trips from trajectories.
+}
+\details{
+Several columns are required in the \code{trajectories} dataset. These
+need to be added as trajectory fields:
+\itemize{
+\item identifier
+\item tripnumber
+\item mot
+\item start
+\item end
+\item geometry
+}
 }
 \examples{
 #multimodal <- palms_calc_multimodal(trajectories, 200, 10)

@@ -109,7 +109,7 @@
     </div>
 
     
-    <p>Build multimodal trips from trajectories</p>
+    <p>Build multimodal trips from trajectories.</p>
     
 
     <pre class="usage"><span class='fu'>palms_build_multimodal</span>(<span class='no'>data</span>, <span class='no'>spatial_threshold</span>, <span class='no'>temporal_threshold</span>,
@@ -140,6 +140,18 @@
 
     <p>The input trajectories LINESTRING geometry, collapsed into multimodal trips</p>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Several columns are required in the <code>trajectories</code> dataset. These
+need to be added as trajectory fields:</p><ul>
+<li><p>identifier</p></li>
+<li><p>tripnumber</p></li>
+<li><p>mot</p></li>
+<li><p>start</p></li>
+<li><p>end</p></li>
+<li><p>geometry</p></li>
+</ul>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>#multimodal <- palms_calc_multimodal(trajectories, 200, 10)
@@ -152,6 +164,8 @@
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

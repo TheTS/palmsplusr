@@ -145,10 +145,7 @@ it will be created. If it already exists, the new location will be appended.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># A full example workflow</span>
 <span class='fu'>data</span>(<span class='kw'>list</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"palms"</span>, <span class='st'>"home"</span>, <span class='st'>"school"</span>, <span class='st'>"participant_basis"</span>))
-
-<span class='no'>home.buffer</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_buffer.html'>palms_buffer</a></span>(<span class='no'>home</span>, <span class='kw'>distance</span> <span class='kw'>=</span> <span class='fl'>100</span>)
-
-<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"at_home"</span>, <span class='st'>"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)
+<span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"at_home"</span>, <span class='st'>"palms_in_polygon(., filter(palms_buffer(home, distance = 100), identifier == i), identifier)"</span>)
 <span class='fu'><a href='palms_add_field.html'>palms_add_field</a></span>(<span class='st'>"at_school"</span>, <span class='st'>"palms_in_polygon(., filter(school, school_id == participant_basis %&gt;%
                                                   filter(identifier == i) %&gt;% pull(school_id)))"</span>)
 <span class='no'>palmsplus</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='palms_build_palmsplus.html'>palms_build_palmsplus</a></span>(<span class='no'>palms</span>)</div><div class='output co'>#&gt; [1/1] Computed palmsplus for: BC0627</div><div class='input'>

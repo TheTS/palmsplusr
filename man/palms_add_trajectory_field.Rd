@@ -31,6 +31,6 @@ it will be created. If it already exists, the new field will be appended.
 Add a trajectory field to the trajectory_fields table.
 }
 \examples{
-#palms_add_trajectory_field("mot", "first(tripmot)")
+palms_add_trajectory_field("mot", "first(tripmot)")
 
 }

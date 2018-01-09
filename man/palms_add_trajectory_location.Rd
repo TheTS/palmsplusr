@@ -28,10 +28,7 @@ school to a park. This is done by setting a start and end criteria.
 \examples{
 # A full example workflow
 data(list = c("palms", "home", "school", "participant_basis"))
-
-home.buffer <- palms_buffer(home, distance = 100)
-
-palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == i), identifier)")
+palms_add_field("at_home", "palms_in_polygon(., filter(palms_buffer(home, distance = 100), identifier == i), identifier)")
 palms_add_field("at_school", "palms_in_polygon(., filter(school, school_id == participant_basis \%>\%
                                                   filter(identifier == i) \%>\% pull(school_id)))")
 palmsplus <- palms_build_palmsplus(palms)

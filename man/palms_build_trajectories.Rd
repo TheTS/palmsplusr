@@ -21,6 +21,7 @@ and \code{\link{palms_add_trajectory_location}}.
 }
 \examples{
 data("palms")
+palms_remove_tables()
 
 palms_add_field("mvpa", "activityintensity > 1", TRUE)
 palmsplus <- palms_build_palmsplus(palms)

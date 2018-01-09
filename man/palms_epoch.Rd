@@ -22,4 +22,6 @@ data("palms")
 
 epoch <- palms_epoch(palms)
 
+epoch
+
 }
