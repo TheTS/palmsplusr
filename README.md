@@ -6,7 +6,7 @@ PALMSplus for R
 <!--[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/TheTS/palmsplusr?branch=master&svg=true)](https://ci.appveyor.com/project/TheTS/palmsplusr)-->
 <!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
 <!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
-[![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--09-yellowgreen.svg)](/commits/master)
+[![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--11-yellowgreen.svg)](/commits/master)
 
 Overview
 --------
@@ -39,7 +39,7 @@ This example demonstrates the most basic implementation with one participant:
 ``` r
 library(palmsplusr)
 
-palms <- read_palms("F:/data/csv/one_participant.csv")
+palms <- read_palms("D:/data/csv/one_participant.csv")
 
 palms_load_defaults(palms_epoch(palms))
 ```
@@ -66,31 +66,10 @@ palmsplus_fields
 #> 13 light      activityintensity == 1 TRUE        
 #> 14 moderate   activityintensity == 2 TRUE        
 #> 15 vigorous   activityintensity == 3 TRUE        
-#> 16 mvpa       activityintensity > 1  TRUE
+#> 16 mvpa       moderate + vigorous    TRUE
 ```
 
-and the default `trajectory_fields` table looks like:
-
-``` r
-trajectory_fields
-#> # A tibble: 14 x 5
-#>    name      formula                      after_con~ multimod~ multimodal~
-#>    <chr>     <chr>                        <chr>      <chr>     <chr>      
-#>  1 mot       first(tripmot)               FALSE      FALSE     <NA>       
-#>  2 date      first(as.Date(datetime))     FALSE      FALSE     <NA>       
-#>  3 start     datetime[triptype==1]        FALSE      FALSE     <NA>       
-#>  4 end       datetime[triptype==4]        FALSE      FALSE     <NA>       
-#>  5 duration  "as.numeric(difftime(end, s~ FALSE      TRUE      sum        
-#>  6 nonwear   sum(activityintensity < 0) ~ FALSE      TRUE      sum        
-#>  7 wear      sum(activityintensity >= 0)~ FALSE      TRUE      sum        
-#>  8 sedentary sum(activityintensity == 0)~ FALSE      TRUE      sum        
-#>  9 light     sum(activityintensity == 1)~ FALSE      TRUE      sum        
-#> 10 moderate  sum(activityintensity == 2)~ FALSE      TRUE      sum        
-#> 11 vigorous  sum(activityintensity == 3)~ FALSE      TRUE      sum        
-#> 12 mvpa      moderate + vigorous          FALSE      TRUE      sum        
-#> 13 length    as.numeric(st_length(.))     TRUE       TRUE      sum        
-#> 14 speed     (length / duration) * 3.6    TRUE       TRUE      mean
-```
+In addition to `palmsplus_fields`, there are three other field tables \* `palmsplus_domains` is used to specify aggregation domains for `days` \* `trajectory_fields` is used to specify fields for `trajectories` \* `trajectory_locations` is used to specify trip start and end locations (e.g., home-school) \* `multimodal_fields` is used to specify the fields sumarized in `multimodal`
 
 Any user-created fields can be appended to these tables. Building datasets using these field tables is as simple as:
 

@@ -52,7 +52,7 @@ This example demonstrates the most basic implementation with one participant:
 ```{r message=FALSE, warning=FALSE}
 library(palmsplusr)
 
-palms <- read_palms("F:/data/csv/one_participant.csv")
+palms <- read_palms("D:/data/csv/one_participant.csv")
 
 palms_load_defaults(palms_epoch(palms))
 ```
@@ -61,10 +61,12 @@ The `palms_load_defaults()` function automatically populates the field tables wi
 ```{r}
 palmsplus_fields
 ```
-and the default `trajectory_fields` table looks like:
-```{r}
-trajectory_fields
-```
+
+In addition to `palmsplus_fields`, there are three other field tables 
+* `palmsplus_domains` is used to specify aggregation domains for `days`
+* `trajectory_fields` is used to specify fields for `trajectories`
+* `trajectory_locations` is used to specify trip start and end locations (e.g., home-school)
+* `multimodal_fields` is used to specify the fields sumarized in `multimodal`
 
 Any user-created fields can be appended to these tables. Building datasets using these field tables is as simple as:
 ```{r message=FALSE, warning=FALSE}

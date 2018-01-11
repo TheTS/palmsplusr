@@ -31,12 +31,6 @@ palms_build_multimodal <- function(data, spatial_threshold,
   if (!all(c("identifier", "tripnumber", "start", "end", "geometry", "mot") %in% colnames(data)))
     stop("Your trajectories data does not contain the required column names...")
 
-  if (exists("trajectory_fields")) {
-    multimodal <- trajectory_fields %>%
-      select(c(name, multimodal_field, multimodal_function)) %>%
-      filter(multimodal_field == TRUE)
-  }
-
   if(verbose) cat('Calculating multimodal eligibility...')
 
   # Determine if a trajectory meets satial and temporal criteria
@@ -78,40 +72,44 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
   if(verbose) cat('done\nCalculating fields...')
 
-  cols <- c("mot", "mmt_number", "identifier", "geometry",  multimodal$name)
+  if (exists("multimodal_fields")) {
 
-  # Split varables into each mot
-  mot_split <- data %>%
-    select(cols) %>%
-    mutate(mot = paste0("mot_", mot)) %>%
-    gather(variable, value, -mmt_number, -mot, -identifier, -geometry) %>%
-    unite(col, mot, variable) %>%
-    spread(col, value) %>%
-    arrange(identifier, mmt_number) %>%
-    cbind(data) %>%
-    select(-ends_with(".1"))
+    # Split varables into each mot
+    mot_split <- data %>%
+      select(c("mot", "mmt_number", "identifier", "geometry", multimodal_fields$name)) %>%
+      mutate(mot = paste0("mot_", mot)) %>%
+      gather(variable, value, -mmt_number, -mot, -identifier, -geometry) %>%
+      unite(col, mot, variable) %>%
+      spread(col, value) %>%
+      arrange(identifier, mmt_number) %>%
+      cbind(data) %>%
+      select(-ends_with(".1"))
 
-  # Calculate multimodal_fields with multimodal_functions
-  df_fields <- list()
-  for (i in unique(multimodal$multimodal_function)) {
-    df_fields[[i]] <- mot_split %>%
-      as.data.frame() %>%
-      group_by(identifier, mmt_number) %>%
-      summarise_at(vars(matches(
-        paste(multimodal$name[multimodal$multimodal_function == i], collapse = "|"))),
-                        i, na.rm = TRUE)
-  }
+    # Calculate multimodal_fields
+    df_fields <- list()
 
-  df_fields <- reduce(df_fields, left_join,
-    by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
+    for (i in unique(multimodal_fields$func)) {
+      df_fields[[i]] <- mot_split %>%
+        as.data.frame() %>%
+        group_by(identifier, mmt_number) %>%
+        summarise_at(vars(matches(
+          paste(multimodal_fields$name[multimodal_fields$func == i], collapse = "|"))),
+                          i, na.rm = TRUE)
+    }
 
-  df_fields[is.na(df_fields)] <- NA
+    df_fields <- reduce(df_fields, left_join,
+      by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
+
+    df_fields[is.na(df_fields)] <- NA
+
+  } else
+    mot_split <- data
 
   # Build trajectory_location formulas if they exist
   if (exists("trajectory_locations")) {
 
     names <- unique(c(trajectory_locations$start_criteria,
-      trajectory_locations$start_criteria))
+      trajectory_locations$end_criteria))
 
     # Rather than recalculating geometry, just lookup in palmsplus
     stopifnot(exists("palmsplus"))
@@ -148,8 +146,11 @@ palms_build_multimodal <- function(data, spatial_threshold,
     select(-c(start_trip, end_trip)) %>%
     mutate_if(is.logical, as.integer)
 
-  df <- reduce(list(df_other, df_fields), left_join,
-    by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
+  if (exists("df_fields"))
+    df <- reduce(list(df_other, df_fields), left_join,
+      by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
+  else
+    df <- df_other
 
   if(verbose) cat('done\n')
   return(df)

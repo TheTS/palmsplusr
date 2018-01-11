@@ -57,10 +57,6 @@ palms_add_field <- function(name, formula, domain_field = FALSE) {
 #' @param after_conversion Logical. If \code{TRUE}, this field will be calculated after
 #' the trajectory \code{LINESTRING} has been created. For example, a formula that
 #' contains \code{st_length()} can only be evaluated with geometry.
-#' @param multimodal_field Logical. If \code{TRUE}, this field will summarised
-#' if \code{\link{palms_build_multimodal}} is run. Default \code{TRUE}.
-#' @param multimodal_function The summary function to use when combining
-#' \code{multimodal_field} across segments. The default is \code{"sum"}.
 #'
 #' @return If the trajectory_fields table is not present in the global environment,
 #' it will be created. If it already exists, the new field will be appended.
@@ -69,22 +65,14 @@ palms_add_field <- function(name, formula, domain_field = FALSE) {
 #' palms_add_trajectory_field("mot", "first(tripmot)")
 #'
 #' @export
-palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE,
-                                       multimodal_field = TRUE, multimodal_function = "sum") {
-  if (!multimodal_field) multimodal_function <- NA
+palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE) {
 
   if (!exists("trajectory_fields"))
-    trajectory_fields <<- tibble(name = name, formula = formula,
-                                 after_conversion = after_conversion,
-                                 multimodal_field = multimodal_field,
-                                 multimodal_function = multimodal_function)
+    trajectory_fields <<- tibble(name = name, formula = formula, after_conversion = after_conversion)
   else if (name %in% trajectory_fields$name)
     stop(name, " already exists in trajectory_fields")
   else
-    trajectory_fields <<- rbind(trajectory_fields, c(name, formula,
-                                                     after_conversion,
-                                                     multimodal_field,
-                                                     multimodal_function))
+    trajectory_fields <<- rbind(trajectory_fields, c(name, formula, after_conversion))
 }
 
 #' Add a trajectory location to the trajectory_locations table.
@@ -124,6 +112,35 @@ palms_add_trajectory_location <- function(name, start_criteria, end_criteria) {
     stop(name, " already exists in trajectory_locations")
   else
     trajectory_locations <<- rbind(trajectory_locations, c(name, start_criteria, end_criteria))
+}
+
+#' A a multimodal field to the multimodal_fields table
+#'
+#' @param name The name of the field as a string. This field mulst be present in
+#' the \code{trajectories} dataset. This also accepts a vector of names.
+#' @param func The summary function to use as a string. This is normally either
+#' "sum" or "mean".
+#'
+#' @return If the multimodal_fields table is not present in the global environment,
+#' it will be created. If it already exists, the new field will be appended.
+#'
+#' @examples
+#' palms_add_multimodal_field("mvpa", "sum")
+#' palms_add_multimodal_field("speed", "mean")
+#'
+#' # A vector of names using the same summary function
+#' palms_add_multimodal_field(c("sedentary", "light", "moderate", "duration"), "sum")
+#'
+#' @export
+palms_add_multimodal_field <- function(name, func) {
+  for (i in name) {
+    if (!exists("multimodal_fields"))
+      multimodal_fields <<- tibble(name = i, func = func)
+    else if (i %in% multimodal_fields$name)
+      stop(i, " already exists in multimodal_fields")
+    else
+      multimodal_fields <<- rbind(multimodal_fields, c(i, func))
+  }
 }
 
 #' Return a buffer (polygon) of the input geometry.
@@ -260,6 +277,7 @@ palms_epoch <- function(data) {
 #' \item \code{palmsplus_fields}
 #' \item \code{trajectory_fields}
 #' \item \code{trajectory_locations}
+#' \item \code{multimodal_fields}
 #' }
 #'
 #' @examples
@@ -271,14 +289,15 @@ palms_remove_tables <- function() {
   if (exists("palmsplus_fields")) {rm(palmsplus_fields, envir =  globalenv())}
   if (exists("trajectory_fields")) {rm(trajectory_fields, envir =  globalenv())}
   if (exists("trajectory_locations")) {rm(trajectory_locations, envir =  globalenv())}
+  if (exists("multimodal_fields")) {rm(multimodal_fields, envir =  globalenv())}
 }
 
 #' Populates field and domain tables with default values
 #'
-#' @description This will populate the \code{palmsplus_fields} and
-#' \code{trajectory_fields} with simple fields that should be compatable with
-#' all PALMS data sets. The formulas only use variables that are present in the
-#' PALMS input dataset.
+#' @description This will populate the \code{palmsplus_fields},
+#' \code{trajectory_fields} and \code{multimodal_fields} tables with simple fields
+#' that should be compatable with all PALMS data sets. The formulas only use
+#' variables that are present in the PALMS input dataset.
 #'
 #' @param epoch_length The epoch length of the PALMS data in seconds. This is
 #' necessary so the default formulas are created correctly. This can be passed in
@@ -315,10 +334,10 @@ palms_load_defaults <- function(epoch_length) {
   palms_add_field("mvpa",       "moderate + vigorous",    TRUE)
 
   # trajectory_fields
-  palms_add_trajectory_field("mot",       "first(tripmot)",           FALSE, FALSE)
-  palms_add_trajectory_field("date",      "first(as.Date(datetime))", FALSE, FALSE)
-  palms_add_trajectory_field("start",     "datetime[triptype==1]",    FALSE, FALSE)
-  palms_add_trajectory_field("end",       "datetime[triptype==4]",    FALSE, FALSE)
+  palms_add_trajectory_field("mot",       "first(tripmot)")
+  palms_add_trajectory_field("date",      "first(as.Date(datetime))")
+  palms_add_trajectory_field("start",     "datetime[triptype==1]")
+  palms_add_trajectory_field("end",       "datetime[triptype==4]")
   palms_add_trajectory_field("duration",  paste0("as.numeric(difftime(end, start, units = \"secs\") + ", epoch_length, ")"))
   palms_add_trajectory_field("nonwear",   paste0("sum(activityintensity < 0) * ", epoch_length))
   palms_add_trajectory_field("wear",      paste0("sum(activityintensity >= 0) * ", epoch_length))
@@ -328,5 +347,10 @@ palms_load_defaults <- function(epoch_length) {
   palms_add_trajectory_field("vigorous",  paste0("sum(activityintensity == 3) * ", epoch_length))
   palms_add_trajectory_field("mvpa",      "moderate + vigorous")
   palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
-  palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE, TRUE, "mean")
+  palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE)
+
+  # multimodal_fields
+  palms_add_multimodal_field(c("duration", "nonwear", "wear", "sedentary", "light",
+                               "moderate", "vigorous", "mvpa", "length"), "sum")
+  palms_add_multimodal_field("speed", "mean")
 }

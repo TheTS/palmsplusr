@@ -2,6 +2,7 @@
 
 export(palms_add_domain)
 export(palms_add_field)
+export(palms_add_multimodal_field)
 export(palms_add_trajectory_field)
 export(palms_add_trajectory_location)
 export(palms_buffer)
