@@ -1,25 +1,25 @@
 library(palmsplusr)
 library(readr)
 
-setwd("F:/data")
+setwd("D:/data")
 
 # Load PALMS dataset
 palms <- read_palms("F:/data/csv/palms_output.csv")
-palms <- read_palms("F:/data/csv/one_participant.csv")
+palms <- read_palms("D:/data/csv/one_participant.csv")
 
 #palms2 = palms
 palms <- palms[palms$identifier %in% c("BC0627", "BC0629", "BC0670"),]
 
 # Load other csvs
-participant_basis <- read_csv("F:/data/csv/participant_basis.csv")
-class_timetable <- read_csv("F:/data/csv/class_timetable.csv")
+participant_basis <- read_csv("D:/data/csv/participant_basis.csv")
+class_timetable <- read_csv("D:/data/csv/class_timetable.csv")
 
 # Load shapefiles
-home <- read_sf("F:/data/shapefiles/home.shp")
+home <- read_sf("D:/data/shapefiles/home.shp")
 home <- home %>% rename(identifier = Identifier)
 home.buffer <- palms_buffer(point = home, distance = 100, crs = 2193)
 
-school <- read_sf("F:/data/shapefiles/school.shp")
+school <- read_sf("D:/data/shapefiles/school.shp")
 school <- school %>% rename(school_id = schoolID)
 
 epoch <- palms_epoch(palms)
@@ -57,10 +57,10 @@ palms_add_domain("transport", "!at_home & !(at_school & in_school_time) & (pedes
 palms_add_domain("leisure",   "!at_home & !(at_school & in_school_time) & !pedestrian & !bicycle & !vehicle")
 
 # trajectory_fields
-palms_add_trajectory_field("mot",       "first(tripmot)",           FALSE, FALSE)
-palms_add_trajectory_field("date",      "first(as.Date(datetime))", FALSE, FALSE)
-palms_add_trajectory_field("start",     "datetime[triptype==1]",    FALSE, FALSE)
-palms_add_trajectory_field("end",       "datetime[triptype==4]",    FALSE, FALSE)
+palms_add_trajectory_field("mot",       "first(tripmot)")
+palms_add_trajectory_field("date",      "first(as.Date(datetime))")
+palms_add_trajectory_field("start",     "datetime[triptype==1]")
+palms_add_trajectory_field("end",       "datetime[triptype==4]")
 palms_add_trajectory_field("duration",  "as.numeric(difftime(end, start, units = \"secs\") + epoch)")
 palms_add_trajectory_field("nonwear",   "sum(activityintensity < 0) * epoch")
 palms_add_trajectory_field("wear",      "sum(activityintensity >= 0) * epoch")
@@ -70,13 +70,18 @@ palms_add_trajectory_field("moderate",  "sum(activityintensity == 2) * epoch")
 palms_add_trajectory_field("vigorous",  "sum(activityintensity == 3) * epoch")
 palms_add_trajectory_field("mvpa",      "moderate + vigorous")
 palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
-palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE, TRUE, "mean")
+palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE)
 
 # trajectory_locations
 palms_add_trajectory_location("home_school",   "at_home",   "at_school")
 palms_add_trajectory_location("school_home",   "at_school", "at_home")
 palms_add_trajectory_location("home_home",     "at_home",   "at_home")
 palms_add_trajectory_location("school_school", "at_school", "at_school")
+
+# multimodal_fields
+palms_add_multimodal_field(c("duration", "nonwear", "wear", "sedentary", "light",
+                             "moderate", "vigorous", "mvpa", "length"), "sum")
+palms_add_multimodal_field("speed", "mean")
 
 # Building
 t <- proc.time()

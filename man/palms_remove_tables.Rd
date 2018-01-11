@@ -15,6 +15,7 @@ the following tables:
 \item \code{palmsplus_fields}
 \item \code{trajectory_fields}
 \item \code{trajectory_locations}
+\item \code{multimodal_fields}
 }
 }
 \examples{

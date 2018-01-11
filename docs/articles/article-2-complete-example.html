@@ -83,98 +83,301 @@
     <div class="page-header toc-ignore">
       <h1>A complete example</h1>
             
-            <h4 class="date">2018-01-09</h4>
+            <h4 class="date">2018-01-11</h4>
           </div>
 
     
     
 <div class="contents">
+<p>This article will demonstrate a real world example with a 197-participant dataset.</p>
 <div id="reading-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#reading-data" class="anchor"></a>Reading data</h2>
 <p>It is wise to read in all data that you will need at the beginning. This includes the PALMS dataset, and any other shapefiles and csv files. Any geoprocessing, such as buffering can also be done here.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(palmsplusr)
+<span class="kw">library</span>(readr)
 
 <span class="co"># Load PALMS dataset</span>
-palms &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_palms.html">read_palms</a></span>(<span class="st">"D:/data/csv/palms_output_test.csv"</span>)
+palms &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_palms.html">read_palms</a></span>(<span class="st">"D:/data/csv/palms_output.csv"</span>)
 
 <span class="co"># Load other csvs</span>
 participant_basis &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"D:/data/csv/participant_basis.csv"</span>)
 class_timetable &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"D:/data/csv/class_timetable.csv"</span>)
 
 <span class="co"># Load shapefiles</span>
-home &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"D:/shapefiles/home.shp"</span>)
-school &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"D:/shapefiles/school.shp"</span>)
+home &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"D:/data/shapefiles/home.shp"</span>)
+home &lt;-<span class="st"> </span>home <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">identifier =</span> Identifier)
+school &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"D:/data/shapefiles/school.shp"</span>)
+school &lt;-<span class="st"> </span>school <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">school_id =</span> schoolID)
 
 <span class="co"># Buffer home points</span>
-home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_buffer.html">palms_buffer</a></span>(<span class="dt">point =</span> home, <span class="dt">distance =</span> <span class="dv">100</span>, <span class="dt">crs =</span> <span class="dv">2193</span>)
-
-<span class="co"># Epoch used in some formulas below</span>
-epoch &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms)</code></pre></div>
+home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_buffer.html">palms_buffer</a></span>(<span class="dt">point =</span> home, <span class="dt">distance =</span> <span class="dv">100</span>, <span class="dt">crs =</span> <span class="dv">2193</span>)</code></pre></div>
+<p>The participant_basis file is used to link participant identifier number with the correct school and classroom:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(participant_basis, <span class="dt">n =</span> <span class="dv">5</span>)
+<span class="co">#&gt; # A tibble: 5 x 3</span>
+<span class="co">#&gt;   identifier school_id class_id</span>
+<span class="co">#&gt;   &lt;chr&gt;          &lt;int&gt;    &lt;int&gt;</span>
+<span class="co">#&gt; 1 RC0400             2        2</span>
+<span class="co">#&gt; 2 RC0402             2        2</span>
+<span class="co">#&gt; 3 RC0404             2        2</span>
+<span class="co">#&gt; 4 RC0406             2        2</span>
+<span class="co">#&gt; 5 RC0414             2        2</span></code></pre></div>
+<p>The class_timetable file details start and end times for school and recess preiods, for each school/classroom:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(class_timetable, <span class="dt">n =</span> <span class="dv">5</span>)
+<span class="co">#&gt; # A tibble: 5 x 9</span>
+<span class="co">#&gt;   school_id class_id date       school_start        school_end         </span>
+<span class="co">#&gt;       &lt;int&gt;    &lt;int&gt; &lt;date&gt;     &lt;dttm&gt;              &lt;dttm&gt;             </span>
+<span class="co">#&gt; 1         2        2 2013-06-10 2013-06-10 08:45:00 2013-06-10 15:15:00</span>
+<span class="co">#&gt; 2         2        2 2013-06-11 2013-06-11 08:45:00 2013-06-11 15:15:00</span>
+<span class="co">#&gt; 3         2        2 2013-06-12 2013-06-12 08:45:00 2013-06-12 15:15:00</span>
+<span class="co">#&gt; 4         2        2 2013-06-13 2013-06-13 08:45:00 2013-06-13 15:15:00</span>
+<span class="co">#&gt; 5         2        2 2013-06-14 2013-06-14 08:45:00 2013-06-14 15:15:00</span>
+<span class="co">#&gt; # ... with 4 more variables: recess1_start &lt;dttm&gt;, recess1_end &lt;dttm&gt;,</span>
+<span class="co">#&gt; #   recess2_start &lt;dttm&gt;, recess2_end &lt;dttm&gt;</span></code></pre></div>
 </div>
 <div id="creating-field-domain-and-trajectory-location-tables" class="section level2">
 <h2 class="hasAnchor">
 <a href="#creating-field-domain-and-trajectory-location-tables" class="anchor"></a>Creating field, domain, and trajectory location tables</h2>
-<p>This section is the bulk of the setup. All formulas for building <code>palmsplus</code>, <code>days</code>, and <code>trajectories</code> are created. Notice that some fields are domain_fields so they will be aggregated for each domain when <code>days</code> is built.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># palmsplus fields (from palms dataset)</span>
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"weekday"</span>,    <span class="st">"dow &lt; 6"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"weekend"</span>,    <span class="st">"dow &gt; 5"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"indoors"</span>,    <span class="st">"iov == 3"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"outdoors"</span>,   <span class="st">"iov == 1"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_vehicle"</span>, <span class="st">"iov == 2"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"inserted"</span>,   <span class="st">"fixtypecode == 6"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"pedestrian"</span>, <span class="st">"tripmot == 1"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"bicycle"</span>,    <span class="st">"tripmot == 2"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"vehicle"</span>,    <span class="st">"tripmot == 3"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"nonwear"</span>,    <span class="st">"activityintensity &lt; 0"</span>,  <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"wear"</span>,       <span class="st">"activityintensity &gt;= 0"</span>, <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"sedentary"</span>,  <span class="st">"activityintensity == 0"</span>, <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"light"</span>,      <span class="st">"activityintensity == 1"</span>, <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"moderate"</span>,   <span class="st">"activityintensity == 2"</span>, <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"vigorous"</span>,   <span class="st">"activityintensity == 3"</span>, <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"mvpa"</span>,       <span class="st">"activityintensity &gt; 1"</span>,  <span class="ot">TRUE</span>)
+<p>This section is the bulk of the setup. All formulas for building <code>palmsplus</code>, <code>days</code>, <code>trajectories</code>, and <code>multimodal</code> are created.</p>
+<p>Notice that <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code> is used as the base, and then extra fields are then appended:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Remove all field tables that exist</span>
+<span class="kw"><a href="../reference/palms_remove_tables.html">palms_remove_tables</a></span>()
+
+<span class="co"># load defaults for:</span>
+<span class="co"># * palmsplus_fields</span>
+<span class="co"># * trajectory_fields</span>
+<span class="co"># * multimodal_fields</span>
+epoch &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms)
+<span class="kw"><a href="../reference/palms_load_defaults.html">palms_load_defaults</a></span>(epoch)
 
 <span class="co"># palmsplus fields (from other files)</span>
 <span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_school_time"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, school_start, school_end)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess1"</span>,     <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess1_start, recess1_end)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess2"</span>,     <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess2_start, recess2_end)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>,        <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_school"</span>,      <span class="st">"palms_in_polygon(., filter(school, school_id == participant_basis %&gt;% filter(identifier == i) %&gt;% pull(school_id)))"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess1"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess1_start, recess1_end)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess2"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess2_start, recess2_end)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_school"</span>, <span class="st">"palms_in_polygon(., filter(school, school_id == participant_basis %&gt;% filter(identifier == i) %&gt;% pull(school_id)))"</span>)
 
 <span class="co"># days domains</span>
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"d_home"</span>,      <span class="st">"at_home"</span>)
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"d_school"</span>,    <span class="st">"(!at_home &amp; at_school &amp; in_school_time)"</span>)
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"d_transport"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; (pedestrian | bicycle | vehicle)"</span>)
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"d_leisure"</span>,   <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; !pedestrian &amp; !bicycle &amp; !vehicle"</span>)
-
-<span class="co"># trajectory fields</span>
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"mot"</span>,       <span class="st">"first(tripmot)"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"date"</span>,      <span class="st">"first(as.Date(datetime))"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"start"</span>,     <span class="st">"datetime[triptype==1]"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"end"</span>,       <span class="st">"datetime[triptype==4]"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"duration"</span>,  <span class="st">"as.numeric(difftime(end, start, units = </span><span class="ch">\"</span><span class="st">secs</span><span class="ch">\"</span><span class="st">) + epoch)"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"nonwear"</span>,   <span class="st">"sum(activityintensity &lt; 0) * epoch"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"wear"</span>,      <span class="st">"sum(activityintensity &gt;= 0) * epoch"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"sedentary"</span>, <span class="st">"sum(activityintensity == 0) * epoch"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"light"</span>,     <span class="st">"sum(activityintensity == 1) * epoch"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"moderate"</span>,  <span class="st">"sum(activityintensity == 2) * epoch"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"vigorous"</span>,  <span class="st">"sum(activityintensity == 3) * epoch"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"mvpa"</span>,      <span class="st">"moderate + vigorous"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"length"</span>,    <span class="st">"as.numeric(st_length(.))"</span>,  <span class="ot">TRUE</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"speed"</span>,     <span class="st">"(length / duration) * 3.6"</span>, <span class="ot">TRUE</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"home"</span>, <span class="st">"at_home"</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"school"</span>, <span class="st">"(!at_home &amp; at_school &amp; in_school_time)"</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"transport"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; (pedestrian | bicycle | vehicle)"</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"leisure"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; !pedestrian &amp; !bicycle &amp; !vehicle"</span>)
 
 <span class="co"># trajectory locations</span>
-<span class="kw">palms_add_trip_location</span>(<span class="st">"home_school"</span>,   <span class="st">"at_home"</span>,   <span class="st">"at_school"</span>)
-<span class="kw">palms_add_trip_location</span>(<span class="st">"school_home"</span>,   <span class="st">"at_school"</span>, <span class="st">"at_home"</span>)
-<span class="kw">palms_add_trip_location</span>(<span class="st">"home_home"</span>,     <span class="st">"at_home"</span>,   <span class="st">"at_home"</span>)
-<span class="kw">palms_add_trip_location</span>(<span class="st">"school_school"</span>, <span class="st">"at_school"</span>, <span class="st">"at_school"</span>)</code></pre></div>
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_school"</span>, <span class="st">"at_home"</span>, <span class="st">"at_school"</span>)
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"school_home"</span>, <span class="st">"at_school"</span>, <span class="st">"at_home"</span>)
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_home"</span>, <span class="st">"at_home"</span>, <span class="st">"at_home"</span>)
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"school_school"</span>, <span class="st">"at_school"</span>, <span class="st">"at_school"</span>)</code></pre></div>
+<p>Note that in <strong>palmsplusr</strong> there are five field tables:</p>
+<ul>
+<li><code>palmsplus_fields</code></li>
+<li><code>palmsplus_domains</code></li>
+<li><code>trajectory_fields</code></li>
+<li><code>trajectory_locations</code></li>
+<li><code>multimodal_fields</code></li>
+</ul>
+<p>We didn’t specify any additional <code>trajectory_fields</code> or <code>multimodal_fields</code> as the default fields suffice.</p>
 </div>
 <div id="build-palmsplus-days-and-trajectories" class="section level2">
 <h2 class="hasAnchor">
 <a href="#build-palmsplus-days-and-trajectories" class="anchor"></a>Build palmsplus, days, and trajectories</h2>
 <p>Once all of the formula tables are created, it is very simple to build palmsplus, and then create days and trajectories (and multimodal trips).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Build palmsplus</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Start the timer</span>
+t &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
+
+<span class="co"># Build palmsplus</span>
 palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus</a></span>(palms)
+<span class="co">#&gt; [1/191] Computed palmsplus for: RC0430</span>
+<span class="co">#&gt; [2/191] Computed palmsplus for: RC0495</span>
+<span class="co">#&gt; [3/191] Computed palmsplus for: RC0404</span>
+<span class="co">#&gt; [4/191] Computed palmsplus for: RC0475</span>
+<span class="co">#&gt; [5/191] Computed palmsplus for: RC0488</span>
+<span class="co">#&gt; [6/191] Computed palmsplus for: RC0507</span>
+<span class="co">#&gt; [7/191] Computed palmsplus for: RC0456</span>
+<span class="co">#&gt; [8/191] Computed palmsplus for: RC0515</span>
+<span class="co">#&gt; [9/191] Computed palmsplus for: RC0509</span>
+<span class="co">#&gt; [10/191] Computed palmsplus for: RC0494</span>
+<span class="co">#&gt; [11/191] Computed palmsplus for: RC0400</span>
+<span class="co">#&gt; [12/191] Computed palmsplus for: RC0422</span>
+<span class="co">#&gt; [13/191] Computed palmsplus for: RC0423</span>
+<span class="co">#&gt; [14/191] Computed palmsplus for: RC0506</span>
+<span class="co">#&gt; [15/191] Computed palmsplus for: RC0439</span>
+<span class="co">#&gt; [16/191] Computed palmsplus for: RC0445</span>
+<span class="co">#&gt; [17/191] Computed palmsplus for: RC0465</span>
+<span class="co">#&gt; [18/191] Computed palmsplus for: RC0476</span>
+<span class="co">#&gt; [19/191] Computed palmsplus for: RC0470</span>
+<span class="co">#&gt; [20/191] Computed palmsplus for: RC0478</span>
+<span class="co">#&gt; [21/191] Computed palmsplus for: RC0420</span>
+<span class="co">#&gt; [22/191] Computed palmsplus for: RC0437</span>
+<span class="co">#&gt; [23/191] Computed palmsplus for: RC0415</span>
+<span class="co">#&gt; [24/191] Computed palmsplus for: RC0510</span>
+<span class="co">#&gt; [25/191] Computed palmsplus for: RC0520</span>
+<span class="co">#&gt; [26/191] Computed palmsplus for: RC0466</span>
+<span class="co">#&gt; [27/191] Computed palmsplus for: RC0414</span>
+<span class="co">#&gt; [28/191] Computed palmsplus for: RC0406</span>
+<span class="co">#&gt; [29/191] Computed palmsplus for: BC0608</span>
+<span class="co">#&gt; [30/191] Computed palmsplus for: BC0626</span>
+<span class="co">#&gt; [31/191] Computed palmsplus for: BC0627</span>
+<span class="co">#&gt; [32/191] Computed palmsplus for: BC0629</span>
+<span class="co">#&gt; [33/191] Computed palmsplus for: BC0632</span>
+<span class="co">#&gt; [34/191] Computed palmsplus for: BC0668</span>
+<span class="co">#&gt; [35/191] Computed palmsplus for: BC0670</span>
+<span class="co">#&gt; [36/191] Computed palmsplus for: BC0676</span>
+<span class="co">#&gt; [37/191] Computed palmsplus for: BC0684</span>
+<span class="co">#&gt; [38/191] Computed palmsplus for: BC0710</span>
+<span class="co">#&gt; [39/191] Computed palmsplus for: BC0733</span>
+<span class="co">#&gt; [40/191] Computed palmsplus for: BC0750</span>
+<span class="co">#&gt; [41/191] Computed palmsplus for: BC0771</span>
+<span class="co">#&gt; [42/191] Computed palmsplus for: BC0828</span>
+<span class="co">#&gt; [43/191] Computed palmsplus for: BC0838</span>
+<span class="co">#&gt; [44/191] Computed palmsplus for: BC0912</span>
+<span class="co">#&gt; [45/191] Computed palmsplus for: BC0938</span>
+<span class="co">#&gt; [46/191] Computed palmsplus for: BC0948</span>
+<span class="co">#&gt; [47/191] Computed palmsplus for: BC1005</span>
+<span class="co">#&gt; [48/191] Computed palmsplus for: BC1012</span>
+<span class="co">#&gt; [49/191] Computed palmsplus for: BC1177</span>
+<span class="co">#&gt; [50/191] Computed palmsplus for: BC1212</span>
+<span class="co">#&gt; [51/191] Computed palmsplus for: BC1215</span>
+<span class="co">#&gt; [52/191] Computed palmsplus for: BC1227</span>
+<span class="co">#&gt; [53/191] Computed palmsplus for: BC1252</span>
+<span class="co">#&gt; [54/191] Computed palmsplus for: BC1255</span>
+<span class="co">#&gt; [55/191] Computed palmsplus for: BC1268</span>
+<span class="co">#&gt; [56/191] Computed palmsplus for: BC1305</span>
+<span class="co">#&gt; [57/191] Computed palmsplus for: HC1904</span>
+<span class="co">#&gt; [58/191] Computed palmsplus for: HC1906</span>
+<span class="co">#&gt; [59/191] Computed palmsplus for: HC1907</span>
+<span class="co">#&gt; [60/191] Computed palmsplus for: HC1909</span>
+<span class="co">#&gt; [61/191] Computed palmsplus for: HC1911</span>
+<span class="co">#&gt; [62/191] Computed palmsplus for: HC1916</span>
+<span class="co">#&gt; [63/191] Computed palmsplus for: HC1917</span>
+<span class="co">#&gt; [64/191] Computed palmsplus for: HC1918</span>
+<span class="co">#&gt; [65/191] Computed palmsplus for: HC1924</span>
+<span class="co">#&gt; [66/191] Computed palmsplus for: HC1925</span>
+<span class="co">#&gt; [67/191] Computed palmsplus for: HC1927</span>
+<span class="co">#&gt; [68/191] Computed palmsplus for: HC1936</span>
+<span class="co">#&gt; [69/191] Computed palmsplus for: HC1939</span>
+<span class="co">#&gt; [70/191] Computed palmsplus for: HC1944</span>
+<span class="co">#&gt; [71/191] Computed palmsplus for: HC1948</span>
+<span class="co">#&gt; [72/191] Computed palmsplus for: HC1952</span>
+<span class="co">#&gt; [73/191] Computed palmsplus for: HC1954</span>
+<span class="co">#&gt; [74/191] Computed palmsplus for: HC1961</span>
+<span class="co">#&gt; [75/191] Computed palmsplus for: HC1962</span>
+<span class="co">#&gt; [76/191] Computed palmsplus for: HC1963</span>
+<span class="co">#&gt; [77/191] Computed palmsplus for: HC1968</span>
+<span class="co">#&gt; [78/191] Computed palmsplus for: HC1970</span>
+<span class="co">#&gt; [79/191] Computed palmsplus for: HC1971</span>
+<span class="co">#&gt; [80/191] Computed palmsplus for: HC1976</span>
+<span class="co">#&gt; [81/191] Computed palmsplus for: HC1979</span>
+<span class="co">#&gt; [82/191] Computed palmsplus for: HC1980</span>
+<span class="co">#&gt; [83/191] Computed palmsplus for: OC1402</span>
+<span class="co">#&gt; [84/191] Computed palmsplus for: OC1403</span>
+<span class="co">#&gt; [85/191] Computed palmsplus for: OC1404</span>
+<span class="co">#&gt; [86/191] Computed palmsplus for: OC1413</span>
+<span class="co">#&gt; [87/191] Computed palmsplus for: OC1414</span>
+<span class="co">#&gt; [88/191] Computed palmsplus for: OC1421</span>
+<span class="co">#&gt; [89/191] Computed palmsplus for: OC1429</span>
+<span class="co">#&gt; [90/191] Computed palmsplus for: OC1439</span>
+<span class="co">#&gt; [91/191] Computed palmsplus for: OC1442</span>
+<span class="co">#&gt; [92/191] Computed palmsplus for: OC1443</span>
+<span class="co">#&gt; [93/191] Computed palmsplus for: OC1444</span>
+<span class="co">#&gt; [94/191] Computed palmsplus for: OC1450</span>
+<span class="co">#&gt; [95/191] Computed palmsplus for: OC1451</span>
+<span class="co">#&gt; [96/191] Computed palmsplus for: OC1454</span>
+<span class="co">#&gt; [97/191] Computed palmsplus for: OC1461</span>
+<span class="co">#&gt; [98/191] Computed palmsplus for: OC1466</span>
+<span class="co">#&gt; [99/191] Computed palmsplus for: OC1467</span>
+<span class="co">#&gt; [100/191] Computed palmsplus for: OC1468</span>
+<span class="co">#&gt; [101/191] Computed palmsplus for: OC1473</span>
+<span class="co">#&gt; [102/191] Computed palmsplus for: OC1476</span>
+<span class="co">#&gt; [103/191] Computed palmsplus for: OC1479</span>
+<span class="co">#&gt; [104/191] Computed palmsplus for: OC1480</span>
+<span class="co">#&gt; [105/191] Computed palmsplus for: OC1484</span>
+<span class="co">#&gt; [106/191] Computed palmsplus for: OC1485</span>
+<span class="co">#&gt; [107/191] Computed palmsplus for: OC1489</span>
+<span class="co">#&gt; [108/191] Computed palmsplus for: OC1501</span>
+<span class="co">#&gt; [109/191] Computed palmsplus for: OC1503</span>
+<span class="co">#&gt; [110/191] Computed palmsplus for: OC1507</span>
+<span class="co">#&gt; [111/191] Computed palmsplus for: PH1800</span>
+<span class="co">#&gt; [112/191] Computed palmsplus for: PH1801</span>
+<span class="co">#&gt; [113/191] Computed palmsplus for: PH1803</span>
+<span class="co">#&gt; [114/191] Computed palmsplus for: PH1805</span>
+<span class="co">#&gt; [115/191] Computed palmsplus for: PH1806</span>
+<span class="co">#&gt; [116/191] Computed palmsplus for: PH1807</span>
+<span class="co">#&gt; [117/191] Computed palmsplus for: PH1808</span>
+<span class="co">#&gt; [118/191] Computed palmsplus for: PH1809</span>
+<span class="co">#&gt; [119/191] Computed palmsplus for: PH1810</span>
+<span class="co">#&gt; [120/191] Computed palmsplus for: PH1813</span>
+<span class="co">#&gt; [121/191] Computed palmsplus for: PH1814</span>
+<span class="co">#&gt; [122/191] Computed palmsplus for: PH1817</span>
+<span class="co">#&gt; [123/191] Computed palmsplus for: PH1818</span>
+<span class="co">#&gt; [124/191] Computed palmsplus for: PH1820</span>
+<span class="co">#&gt; [125/191] Computed palmsplus for: PH1823</span>
+<span class="co">#&gt; [126/191] Computed palmsplus for: PH1824</span>
+<span class="co">#&gt; [127/191] Computed palmsplus for: PH1825</span>
+<span class="co">#&gt; [128/191] Computed palmsplus for: PH1826</span>
+<span class="co">#&gt; [129/191] Computed palmsplus for: PH1827</span>
+<span class="co">#&gt; [130/191] Computed palmsplus for: PH1828</span>
+<span class="co">#&gt; [131/191] Computed palmsplus for: PH1829</span>
+<span class="co">#&gt; [132/191] Computed palmsplus for: PH1830</span>
+<span class="co">#&gt; [133/191] Computed palmsplus for: RT1607</span>
+<span class="co">#&gt; [134/191] Computed palmsplus for: PH1832</span>
+<span class="co">#&gt; [135/191] Computed palmsplus for: PH1835</span>
+<span class="co">#&gt; [136/191] Computed palmsplus for: RT1608</span>
+<span class="co">#&gt; [137/191] Computed palmsplus for: RT1611</span>
+<span class="co">#&gt; [138/191] Computed palmsplus for: RT1617</span>
+<span class="co">#&gt; [139/191] Computed palmsplus for: RT1620</span>
+<span class="co">#&gt; [140/191] Computed palmsplus for: RT1622</span>
+<span class="co">#&gt; [141/191] Computed palmsplus for: RT1625</span>
+<span class="co">#&gt; [142/191] Computed palmsplus for: RT1632</span>
+<span class="co">#&gt; [143/191] Computed palmsplus for: RT1634</span>
+<span class="co">#&gt; [144/191] Computed palmsplus for: RT1636</span>
+<span class="co">#&gt; [145/191] Computed palmsplus for: RT1637</span>
+<span class="co">#&gt; [146/191] Computed palmsplus for: RT1645</span>
+<span class="co">#&gt; [147/191] Computed palmsplus for: RT1647</span>
+<span class="co">#&gt; [148/191] Computed palmsplus for: RT1649</span>
+<span class="co">#&gt; [149/191] Computed palmsplus for: RT1657</span>
+<span class="co">#&gt; [150/191] Computed palmsplus for: RT1658</span>
+<span class="co">#&gt; [151/191] Computed palmsplus for: RT1663</span>
+<span class="co">#&gt; [152/191] Computed palmsplus for: RT1665</span>
+<span class="co">#&gt; [153/191] Computed palmsplus for: RT1666</span>
+<span class="co">#&gt; [154/191] Computed palmsplus for: RT1668</span>
+<span class="co">#&gt; [155/191] Computed palmsplus for: RT1669</span>
+<span class="co">#&gt; [156/191] Computed palmsplus for: RT1671</span>
+<span class="co">#&gt; [157/191] Computed palmsplus for: RT1672</span>
+<span class="co">#&gt; [158/191] Computed palmsplus for: RT1673</span>
+<span class="co">#&gt; [159/191] Computed palmsplus for: RT1674</span>
+<span class="co">#&gt; [160/191] Computed palmsplus for: RT1677</span>
+<span class="co">#&gt; [161/191] Computed palmsplus for: RT1678</span>
+<span class="co">#&gt; [162/191] Computed palmsplus for: RT1680</span>
+<span class="co">#&gt; [163/191] Computed palmsplus for: WH1700</span>
+<span class="co">#&gt; [164/191] Computed palmsplus for: WH1701</span>
+<span class="co">#&gt; [165/191] Computed palmsplus for: WH1702</span>
+<span class="co">#&gt; [166/191] Computed palmsplus for: WH1703</span>
+<span class="co">#&gt; [167/191] Computed palmsplus for: WH1713</span>
+<span class="co">#&gt; [168/191] Computed palmsplus for: WH1714</span>
+<span class="co">#&gt; [169/191] Computed palmsplus for: WH1715</span>
+<span class="co">#&gt; [170/191] Computed palmsplus for: WH1718</span>
+<span class="co">#&gt; [171/191] Computed palmsplus for: WH1720</span>
+<span class="co">#&gt; [172/191] Computed palmsplus for: WH1719</span>
+<span class="co">#&gt; [173/191] Computed palmsplus for: WH1721</span>
+<span class="co">#&gt; [174/191] Computed palmsplus for: WH1722</span>
+<span class="co">#&gt; [175/191] Computed palmsplus for: WH1731</span>
+<span class="co">#&gt; [176/191] Computed palmsplus for: WH1732</span>
+<span class="co">#&gt; [177/191] Computed palmsplus for: WH1734</span>
+<span class="co">#&gt; [178/191] Computed palmsplus for: WH1733</span>
+<span class="co">#&gt; [179/191] Computed palmsplus for: WH1744</span>
+<span class="co">#&gt; [180/191] Computed palmsplus for: WH1745</span>
+<span class="co">#&gt; [181/191] Computed palmsplus for: WH1746</span>
+<span class="co">#&gt; [182/191] Computed palmsplus for: WH1747</span>
+<span class="co">#&gt; [183/191] Computed palmsplus for: WH1757</span>
+<span class="co">#&gt; [184/191] Computed palmsplus for: WH1758</span>
+<span class="co">#&gt; [185/191] Computed palmsplus for: WH1759</span>
+<span class="co">#&gt; [186/191] Computed palmsplus for: WH1762</span>
+<span class="co">#&gt; [187/191] Computed palmsplus for: WH1768</span>
+<span class="co">#&gt; [188/191] Computed palmsplus for: WH1769</span>
+<span class="co">#&gt; [189/191] Computed palmsplus for: WH1770</span>
+<span class="co">#&gt; [190/191] Computed palmsplus for: WH1771</span>
+<span class="co">#&gt; [191/191] Computed palmsplus for: WH1784</span>
 
 <span class="co"># Build days</span>
 days &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_days.html">palms_build_days</a></span>(palmsplus)
@@ -183,19 +386,25 @@ days &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_
 trajectories &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_trajectories.html">palms_build_trajectories</a></span>(palmsplus)
 
 <span class="co"># Build multimodal trips</span>
-multimodal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_multimodal.html">palms_build_multimodal</a></span>(trajectories, <span class="dv">200</span>, <span class="dv">10</span>)</code></pre></div>
+multimodal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_multimodal.html">palms_build_multimodal</a></span>(trajectories, <span class="dv">200</span>, <span class="dv">10</span>)
+<span class="co">#&gt; Calculating multimodal eligibility...done</span>
+<span class="co">#&gt; Assigning trip numbers...done</span>
+<span class="co">#&gt; Calculating fields...done</span>
+
+<span class="kw">cat</span>(<span class="st">"Run time:"</span>, (<span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>t)[[<span class="dv">1</span>]]<span class="op">/</span><span class="dv">60</span>, <span class="st">"minutes"</span>)
+<span class="co">#&gt; Run time: 15.553 minutes</span></code></pre></div>
 </div>
 <div id="saving-results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#saving-results" class="anchor"></a>Saving results</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write.csv</span>(palmsplus, <span class="st">"palmsplus.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
-<span class="kw">write.csv</span>(days, <span class="st">"days.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
-<span class="kw">write.csv</span>(trajectories, <span class="st">"trajectories.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
-<span class="kw">write.csv</span>(multimodal, <span class="st">"multimodal.csv"</span>, <span class="dt">row.names =</span> <span class="ot">FALSE</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write_csv</span>(palmsplus, <span class="st">"palmsplus.csv"</span>)
+<span class="kw">write_csv</span>(days, <span class="st">"days.csv"</span>)
+<span class="kw">write_csv</span>(trajectories, <span class="st">"trajectories.csv"</span>)
+<span class="kw">write_csv</span>(trajectories, <span class="st">"multimodal.csv"</span>)
 
 <span class="kw">st_write</span>(palmsplus, <span class="st">"palmsplus.shp"</span>)
 <span class="kw">st_write</span>(trajectories, <span class="st">"trajecories.shp"</span>)
-<span class="kw">st_write</span>(multimodal, <span class="st">"multimodal.shp"</span>)</code></pre></div>
+<span class="kw">st_write</span>(trajectories, <span class="st">"multimodal.shp"</span>)</code></pre></div>
 </div>
 </div>
   </div>

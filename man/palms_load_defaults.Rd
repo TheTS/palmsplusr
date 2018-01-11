@@ -12,12 +12,14 @@ necessary so the default formulas are created correctly. This can be passed in
 using \code{\link{palms_epoch}}.}
 }
 \description{
-This will populate the \code{palmsplus_fields} and
-\code{trajectory_fields} with simple fields that should be compatable with
-all PALMS data sets. The formulas only use variables that are present in the
-PALMS input dataset.
+This will populate the \code{palmsplus_fields},
+\code{trajectory_fields} and \code{multimodal_fields} tables with simple fields
+that should be compatable with all PALMS data sets. The formulas only use
+variables that are present in the PALMS input dataset.
 }
 \examples{
+palms_remove_tables()
+
 epoch <- palms_epoch(palms)
 epoch
 

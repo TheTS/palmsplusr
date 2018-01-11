@@ -27,11 +27,40 @@ devtools::install_github("tidyverse/ggplot2")
 
 ## Plotting 
 
-The `geom_sf` is a new ggplot2 geom specifically for plotting simple features. You can plot points, lines, and polygons. Here is an example of looping through all participants, plotting their trajcetories, school and home on a map before saving it to file.
+The `geom_sf` is a new ggplot2 geom specifically for plotting simple features. You can plot points, lines, and polygons. Here is an example plotting one participant's trajcetories, school and home on a map.
 
-```{r, eval=FALSE}
+```{r message=FALSE, warning=FALSE}
+library(palmsplusr)
 library(ggplot2)
 
+data(list = c("palms", "home", "school"))
+home.buffer <- palms_buffer(home, 100)
+
+# Load default fields
+palms_remove_tables()
+palms_load_defaults(palms_epoch(palms))
+
+# Build palmsplus and trajectories
+palmsplus <- palms_build_palmsplus(palms)
+trajectories <- palms_build_trajectories(palmsplus)
+
+# Plot
+ggplot() +
+  geom_sf(data=trajectories, aes(colour = factor(mot)), lwd = 0.9) +
+  geom_sf(data=home.buffer, aes(fill="h"), alpha = 0.8) +
+  geom_sf(data=school, aes(fill="s"), alpha = 0.8) +
+  scale_fill_manual(labels = c("Home (100m)", "Schoolyard"),
+                    values = c("red", "blue")) +
+  scale_color_manual(breaks = c("1", "2", "3"),
+                     labels = c("Walk", "Bicycle", "Vehicle"),
+                     values = c("1"="forestgreen","2"="lightblue","3"="orange")) +
+  theme_minimal() +
+  labs(colour = "Trajectories", fill = "Polygons")
+```
+
+This is an excellent way to visualise and debug your datasets after they have been built. It is easy it loop through all participants and save their plots to file.
+
+```{r, eval=FALSE}
 # Loop through all unique identifiers
 for (i in unique(trajectories$identifier)) {
   
@@ -45,11 +74,11 @@ for (i in unique(trajectories$identifier)) {
     geom_sf(data = t, aes(colour = factor(mot))) +
     geom_sf(data = h, aes(fill = "h"), alpha = 0.8) +
     geom_sf(data = s, aes(fill = "s"), alpha = 0.8) +
-    scale_fill_manual(labels = c("Home (100m)", "Schoolyard"), 
-                      values = c("#E01616", "#000080")) +
-    scale_color_manual(breaks = c("1", "2", "3"), 
+    scale_fill_manual(labels = c("Home (100m)", "Schoolyard"),
+                      values = c("red", "blue")) +
+    scale_color_manual(breaks = c("1", "2", "3"),
                        labels = c("Walk", "Bicycle", "Vehicle"),
-                       values = c("1" = "forestgreen","2" = "#1874CD","3" = "#EE7600")) +
+                       values = c("1"="forestgreen","2"="lightblue","3"="orange")) +
     theme_minimal() +
     labs(title = i, colour = "Trajectories", fill = "Polygons")
 

@@ -83,7 +83,7 @@
     <div class="page-header toc-ignore">
       <h1>ggplot2 and palmsplusr</h1>
             
-            <h4 class="date">2018-01-09</h4>
+            <h4 class="date">2018-01-11</h4>
           </div>
 
     
@@ -98,10 +98,37 @@
 <div id="plotting" class="section level2">
 <h2 class="hasAnchor">
 <a href="#plotting" class="anchor"></a>Plotting</h2>
-<p>The <code>geom_sf</code> is a new ggplot2 geom specifically for plotting simple features. You can plot points, lines, and polygons. Here is an example of looping through all participants, plotting their trajcetories, school and home on a map before saving it to file.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(ggplot2)
+<p>The <code>geom_sf</code> is a new ggplot2 geom specifically for plotting simple features. You can plot points, lines, and polygons. Here is an example plotting one participant’s trajcetories, school and home on a map.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(palmsplusr)
+<span class="kw">library</span>(ggplot2)
 
-<span class="co"># Loop through all unique identifiers</span>
+<span class="kw">data</span>(<span class="dt">list =</span> <span class="kw">c</span>(<span class="st">"palms"</span>, <span class="st">"home"</span>, <span class="st">"school"</span>))
+home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_buffer.html">palms_buffer</a></span>(home, <span class="dv">100</span>)
+
+<span class="co"># Load default fields</span>
+<span class="kw"><a href="../reference/palms_remove_tables.html">palms_remove_tables</a></span>()
+<span class="kw"><a href="../reference/palms_load_defaults.html">palms_load_defaults</a></span>(<span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms))
+
+<span class="co"># Build palmsplus and trajectories</span>
+palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus</a></span>(palms)
+<span class="co">#&gt; [1/1] Computed palmsplus for: BC0627</span>
+trajectories &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_trajectories.html">palms_build_trajectories</a></span>(palmsplus)
+
+<span class="co"># Plot</span>
+<span class="kw">ggplot</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data=</span>trajectories, <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw">factor</span>(mot)), <span class="dt">lwd =</span> <span class="fl">0.9</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data=</span>home.buffer, <span class="kw">aes</span>(<span class="dt">fill=</span><span class="st">"h"</span>), <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data=</span>school, <span class="kw">aes</span>(<span class="dt">fill=</span><span class="st">"s"</span>), <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Home (100m)"</span>, <span class="st">"Schoolyard"</span>),
+                    <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"red"</span>, <span class="st">"blue"</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>),
+                     <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Walk"</span>, <span class="st">"Bicycle"</span>, <span class="st">"Vehicle"</span>),
+                     <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"1"</span>=<span class="st">"forestgreen"</span>,<span class="st">"2"</span>=<span class="st">"lightblue"</span>,<span class="st">"3"</span>=<span class="st">"orange"</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">labs</span>(<span class="dt">colour =</span> <span class="st">"Trajectories"</span>, <span class="dt">fill =</span> <span class="st">"Polygons"</span>)</code></pre></div>
+<p><img src="article-4-ggplot2-palmsplusr_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
+<p>This is an excellent way to visualise and debug your datasets after they have been built. It is easy it loop through all participants and save their plots to file.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Loop through all unique identifiers</span>
 <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">unique</span>(trajectories<span class="op">$</span>identifier)) {
   
   <span class="co"># Get geometry for this person only</span>
@@ -114,11 +141,11 @@
 <span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> t, <span class="kw">aes</span>(<span class="dt">colour =</span> <span class="kw">factor</span>(mot))) <span class="op">+</span>
 <span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> h, <span class="kw">aes</span>(<span class="dt">fill =</span> <span class="st">"h"</span>), <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">geom_sf</span>(<span class="dt">data =</span> s, <span class="kw">aes</span>(<span class="dt">fill =</span> <span class="st">"s"</span>), <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
-<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Home (100m)"</span>, <span class="st">"Schoolyard"</span>), 
-                      <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"#E01616"</span>, <span class="st">"#000080"</span>)) <span class="op">+</span>
-<span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>), 
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Home (100m)"</span>, <span class="st">"Schoolyard"</span>),
+                      <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"red"</span>, <span class="st">"blue"</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="st">"1"</span>, <span class="st">"2"</span>, <span class="st">"3"</span>),
                        <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">"Walk"</span>, <span class="st">"Bicycle"</span>, <span class="st">"Vehicle"</span>),
-                       <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"1"</span> =<span class="st"> "forestgreen"</span>,<span class="st">"2"</span> =<span class="st"> "#1874CD"</span>,<span class="st">"3"</span> =<span class="st"> "#EE7600"</span>)) <span class="op">+</span>
+                       <span class="dt">values =</span> <span class="kw">c</span>(<span class="st">"1"</span>=<span class="st">"forestgreen"</span>,<span class="st">"2"</span>=<span class="st">"lightblue"</span>,<span class="st">"3"</span>=<span class="st">"orange"</span>)) <span class="op">+</span>
 <span class="st">    </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
 <span class="st">    </span><span class="kw">labs</span>(<span class="dt">title =</span> i, <span class="dt">colour =</span> <span class="st">"Trajectories"</span>, <span class="dt">fill =</span> <span class="st">"Polygons"</span>)
 
