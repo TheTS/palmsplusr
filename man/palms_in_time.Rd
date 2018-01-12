@@ -4,12 +4,12 @@
 \alias{palms_in_time}
 \title{Check if points fall between a start and end time}
 \usage{
-palms_in_time(data, pid, timetable, basis, start_col, end_col)
+palms_in_time(data, identifier, timetable, basis, start_col, end_col)
 }
 \arguments{
 \item{data}{The data points.}
 
-\item{pid}{The participant identifier.}
+\item{identifier}{The participant identifier.}
 
 \item{timetable}{The timetable table.}
 

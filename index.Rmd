@@ -19,12 +19,12 @@ knitr::opts_chunk$set(
 <!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
 <!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master)
+[![Version](https://img.shields.io/badge/Package%20version-0.1.0-green.svg)](commits/master)
 [![Last Change](https://img.shields.io/badge/Last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 
 ## Overview
 
-**palmsplusr** is an extension to the *Personal Activity Location Measurement System* ([PALMS](https://ucsd-palms-project.wikispaces.com/)). This package provides a customisable platform to combine PALMS data with other sources of information (e.g., shapefiles or csv files). This enables physical activity researchers to answer higher-level questions, such as:
+**palmsplusr** is an extension to the *Personal Activity Location Measurement System* ([PALMS](https://ucsd-palms-project.wikispaces.com/)). This R package provides a customisable platform to combine PALMS data with other sources of information (e.g., shapefiles or csv files). This enables physical activity researchers to answer higher-level questions, such as:
 
 * How much time is spent in parks?
 * How much MVPA is accumulated in parks?
@@ -33,7 +33,6 @@ knitr::opts_chunk$set(
 * How much MVPA is accumulated inside the schoolyard during school time?
 * What proportion of commuters trip chain different travel modes (e.g., walk-bus-walk)
 * What is the average speed of bicycle trips during peak travel times?
-* etc.
 
 PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. Once palmsplus is built, it can be summarised two ways: 
 

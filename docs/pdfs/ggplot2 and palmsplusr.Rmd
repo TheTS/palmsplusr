@@ -1,35 +1,23 @@
 ---
 title: "ggplot2 and palmsplusr"
-author:
+author: Tom Stewart
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{4-ggplot2-palmsplusr}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: pdf_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
 
 ## Install ggplot2
 
-The development version of ggplot2 contains spatial plotting functions so it needs to be installed from GitHub. You will need to install devtools if you haven't already.
+The development version of ggplot2 contains spatial plotting functions so it needs to be installed from GitHub.
 
 ```{r, eval=FALSE}
 devtools::install_github("tidyverse/ggplot2")
 ```
 
-
 ## Plotting 
 
 The `geom_sf` is a new ggplot2 geom specifically for plotting simple features. You can plot points, lines, and polygons. Here is an example plotting one participant's trajcetories, school and home on a map.
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, fig.width=6, fig.height=4, fig.align='center'}
 library(palmsplusr)
 library(ggplot2)
 
@@ -67,7 +55,8 @@ for (i in unique(trajectories$identifier)) {
   # Get geometry for this person only
   t <- trajectories %>% filter(identifier == i)
   h <- home.buffer %>% filter(identifier == i)
-  s <- school %>% filter(school_id == as.numeric(participant_basis[participant_basis$identifier == i, "school_id"]))
+  s <- school %>% filter(school_id == as.numeric(
+                   participant_basis[participant_basis$identifier == i, "school_id"]))
 
   # Plot the 3 geometry layers + add colours and title
   p <- ggplot() +
@@ -83,7 +72,7 @@ for (i in unique(trajectories$identifier)) {
     labs(title = i, colour = "Trajectories", fill = "Polygons")
 
   # Save the plot to file
-  ggsave(file = file.path("plots", paste0(i, ".png")), plot = p, width = 18, 
-         height = 18, units = "cm")
+  ggsave(file = file.path("plots", paste0(i, ".png")), plot = p, 
+    width = 18, height = 18, units = "cm")
 }
 ```

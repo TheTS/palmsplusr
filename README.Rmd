@@ -1,6 +1,9 @@
 ---
 output:
   github_document
+nocite: |
+  @Klinker:2014, @Klinker:2015, @Pizarro:2016, @Stewart:2017
+bibliography: references.bib
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -18,13 +21,13 @@ knitr::opts_chunk$set(
 <!--[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/TheTS/palmsplusr?branch=master&svg=true)](https://ci.appveyor.com/project/TheTS/palmsplusr)-->
 <!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
 <!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
-[![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Version](https://img.shields.io/badge/Package%20version-0.1.0-orange.svg)](commits/master)
+[![![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Version](https://img.shields.io/badge/Package%20version-0.1.0-green.svg)](commits/master)
 [![Last Change](https://img.shields.io/badge/Last%20change-`r gsub('-', '--', Sys.Date())`-yellowgreen.svg)](/commits/master)
 
 ## Overview
 
-**palmsplusr** is an extension to the *Personal Activity Location Measurement System* ([PALMS](https://ucsd-palms-project.wikispaces.com/)). This package provides a customisable platform to combine PALMS data with other sources of information (e.g., shapefiles or csv files). This enables physical activity researchers to answer higher-level questions, such as:
+**palmsplusr** is an extension to the *Personal Activity Location Measurement System* ([PALMS](https://ucsd-palms-project.wikispaces.com/)). This R package provides a customisable platform to combine PALMS data with other sources of information (e.g., shapefiles or csv files). This enables physical activity researchers to answer higher-level questions, such as:
 
 * How much time is spent in parks?
 * How much MVPA is accumulated in parks?
@@ -33,7 +36,6 @@ knitr::opts_chunk$set(
 * How much MVPA is accumulated inside the schoolyard during school time?
 * What proportion of commuters trip chain different travel modes (e.g., walk-bus-walk)
 * What is the average speed of bicycle trips during peak travel times?
-* etc.
 
 The PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. Once palmsplus is built, it can be summarised two ways: 
 
@@ -49,26 +51,30 @@ The user is able to specify how each data source is combined. This is done by cr
 ## Brief Example
 
 This example demonstrates the most basic implementation with one participant:
+
 ```{r message=FALSE, warning=FALSE}
 library(palmsplusr)
 
-palms <- read_palms("D:/data/csv/one_participant.csv")
+palms <- read_palms("F:/data/csv/one_participant.csv")
 
 palms_load_defaults(palms_epoch(palms))
 ```
 
 The `palms_load_defaults()` function automatically populates the field tables with basic formulas. Each of these fields will be calculated and added to the `palmsplus` dataset. The default `palmsplus_fields` table looks like:
+
 ```{r}
 palmsplus_fields
 ```
 
-In addition to `palmsplus_fields`, there are three other field tables 
+There are four other field tables that can be customised by the user: 
+
 * `palmsplus_domains` is used to specify aggregation domains for `days`
 * `trajectory_fields` is used to specify fields for `trajectories`
-* `trajectory_locations` is used to specify trip start and end locations (e.g., home-school)
-* `multimodal_fields` is used to specify the fields sumarized in `multimodal`
+* `trajectory_locations` is used to specify trip start and end locations (e.g., home-school trip)
+* `multimodal_fields` is used to specify the fields summarized in `multimodal`
 
-Any user-created fields can be appended to these tables. Building datasets using these field tables is as simple as:
+Building datasets using these field tables is as simple as:
+
 ```{r message=FALSE, warning=FALSE}
 # Building palmsplus
 palmsplus <- palms_build_palmsplus(palms)
@@ -90,10 +96,6 @@ write_csv(days, "days.csv")
 st_write(trajectories, "trajecories.shp")
 ```
 
-## Plotting
-
-![](inst/extdata/figure.png)
-
 ## Installation
 
 The easiest way to install **palmsplusr** is using devtools:
@@ -107,6 +109,8 @@ install_github("TheTS/palmsplusr")
 
 For further information and examples, please see the [GitHub documentation](http://thets.github.io/palmsplusr/)
 
-### Notes
+## Notes
 
 This project is based on the [palmsplus](https://github.com/bsnizek/palmsplus) project originally written in PostgreSQL and PostGIS by [Bernhard Snizek](http://www.snizek.com).
+
+## References

@@ -83,7 +83,7 @@
     <div class="page-header toc-ignore">
       <h1>ggplot2 and palmsplusr</h1>
             
-            <h4 class="date">2018-01-11</h4>
+            <h4 class="date">2018-01-12</h4>
           </div>
 
     
@@ -92,7 +92,7 @@
 <div id="install-ggplot2" class="section level2">
 <h2 class="hasAnchor">
 <a href="#install-ggplot2" class="anchor"></a>Install ggplot2</h2>
-<p>The development version of ggplot2 contains spatial plotting functions so it needs to be installed from Github. You will need to install devtools if you haven’t already.</p>
+<p>The development version of ggplot2 contains spatial plotting functions so it needs to be installed from GitHub. You will need to install devtools if you haven’t already.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"tidyverse/ggplot2"</span>)</code></pre></div>
 </div>
 <div id="plotting" class="section level2">
@@ -127,7 +127,7 @@ trajectories &lt;-<span class="st"> </span><span class="kw"><a href="../referenc
 <span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span>
 <span class="st">  </span><span class="kw">labs</span>(<span class="dt">colour =</span> <span class="st">"Trajectories"</span>, <span class="dt">fill =</span> <span class="st">"Polygons"</span>)</code></pre></div>
 <p><img src="article-4-ggplot2-palmsplusr_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
-<p>This is an excellent way to visualise and debug your datasets after they have been built. It is easy it loop through all participants and save their plots to file.</p>
+<p>This is an excellent way to visualise and debug your datasets after they have been built. It is easy to loop through all participants in your dataset and save their plots to file.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Loop through all unique identifiers</span>
 <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">unique</span>(trajectories<span class="op">$</span>identifier)) {
   

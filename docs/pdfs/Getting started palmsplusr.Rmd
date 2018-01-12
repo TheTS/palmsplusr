@@ -1,21 +1,9 @@
 ---
 title: "Getting started with palmsplusr"
-author:
+author: "Tom Stewart"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{1-getting-started}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
+output: pdf_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
-<br> 
 
 ## Loading the PALMS dataset {#loading-palms}
 
@@ -30,13 +18,11 @@ names(palms)
 This `palms` object contains 13 columns. Notice how the `lon` and `lat` columns that were present in the csv have been replaced by a `geometry` column. This is POINT geometry, as each row in `palms` represents a point.
 
 In this example, the `palms` dataset contains data from one participant. You can plot this data to look at the distribution of points in space. Here I have chosen to plot two columns:
-```{r, fig.show='asis', fig.width=6, fig.align='center'}
+```{r, fig.show='asis', fig.width=6, fig.height=3, fig.align='center'}
 plot(palms[, c("activity", "tripnumber")])
 ```
 
-***
-<br>
-<br> 
+\pagebreak
 
 ## Building palmsplus {#building-palmsplus}
 
@@ -77,7 +63,7 @@ knitr::kable(palmsplus_fields, caption = "palmsplus_fields")
 Any variable from the `palms` dataset can be used to build formulas, although the true power of **palmsplusr** comes from integrating external data into these calculations.
 
 In the next code snippet, a shapefile that represents home points is read in and buffered by 100 m to create polygons. These polygons are going to be used in a field formula. When this data is plotted, you will notice this person has two homes.
-```{r, fig.show='asis', fig.width=6, fig.align='center'}
+```{r, fig.show='asis', fig.width=4, fig.height=4, fig.align='center'}
 home.points <- read_sf(system.file("extdata/shapefiles/", "home.shp", package = "palmsplusr"))
 home.buffer <- palms_buffer(point = home.points, distance = 100)
 
@@ -107,9 +93,7 @@ names(palmsplus)
 
 Now that the `palmsplus` dataset is built, it can be summarized in two ways. Building [days](#building-days), or building [trajectories](#building-trajectories).
 
-***
-<br>
-<br> 
+\pagebreak
 
 ## Building days {#building-days}
 
@@ -154,6 +138,8 @@ palmsplus <- palms_build_palmsplus(palms)
 
 Now when printing the `palmsplus` dataset there are 32 columns; two additional ones that represent the *home* and *transport* domains.
 
+\pagebreak
+
 ```{r}
 names(palmsplus)
 ```
@@ -169,9 +155,8 @@ When looking at the structure of the `days` dataset, you will notice the `domain
 ```{r}
 str(days)
 ```
-***
-<br>
-<br>
+
+\pagebreak
 
 ## Building trajectories {#building-trajectories}
 
@@ -219,7 +204,7 @@ str(trajectories)
 ```
 
 As the `trajectories` dataset contains `LINESTRING` geometry, we can plot it:
-```{r fig.align='center', fig.show='asis', fig.width=6, fig.height=5, message=FALSE, warning=FALSE}
+```{r fig.align='center', fig.show='asis', fig.width=5, fig.height=2.8, message=FALSE, warning=FALSE}
 plot(trajectories[, "mot"], pal = c("orange", "blue"), key.pos = NULL)
 
 # Add the home buffer polygons to the plot
@@ -270,9 +255,11 @@ Notice how the `trajectories` dataset now contains an extra column `home_school`
 table(trajectories$home_school)
 ```
 
+\pagebreak
+
 We can double check the results by plotting these trajectories. The ggplot2 package can also be used instead of R's base plot. Please see the article [ggplot2 and palmsplusr](https://thets.github.io/palmsplusr/articles/article-4-ggplot2-palmsplusr.html).
 
-```{r, fig.align='center', fig.show='asis', fig.width=6, fig.height=5}
+```{r, fig.align='center', fig.show='asis', fig.width=4.5, fig.height=4.5}
 library(ggplot2)
 
 ggplot() +
@@ -284,9 +271,7 @@ ggplot() +
 
 It looks like they all start at home and end at school!
 
-***
-<br>
-<br>
+\pagebreak
 
 ## Building multimodal trajectories  {#building-multimodal}
 
@@ -346,10 +331,6 @@ multimodal$mot_order
 
 If any `trajectory_locations` were created, they will also be added to `multimodal` (notice the *home_school* field in the column name vector above).
 
-***
-<br>
-<br>
-
 ## Saving geometry and results
 
 You can save all datasets as a csv file. As `palmsplus`, `trajectories` and `multimodal` contain geometry, you can also save these as ESRI shapefiles:
@@ -362,6 +343,3 @@ write_csv(multimodal, "multimodal.csv")
 st_write(palmsplus, "palmsplus.shp")
 st_write(trajectories, "trajecories.shp")
 st_write(multimodal, "multimodal.shp")
-```
-
-

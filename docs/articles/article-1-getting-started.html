@@ -83,7 +83,7 @@
     <div class="page-header toc-ignore">
       <h1>Getting started with palmsplusr</h1>
             
-            <h4 class="date">2018-01-11</h4>
+            <h4 class="date">2018-01-12</h4>
           </div>
 
     
@@ -131,7 +131,7 @@ palms &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_
   <span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"moderate"</span>,   <span class="st">"activityintensity == 2"</span>, <span class="ot">TRUE</span>)
   <span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"vigorous"</span>,   <span class="st">"activityintensity == 3"</span>, <span class="ot">TRUE</span>)
   <span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"mvpa"</span>,       <span class="st">"moderate + vigorous"</span>,    <span class="ot">TRUE</span>)</code></pre></div>
-<p>Note the code above is can also be replicated using <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code>; however, this example demonstrates building field tables from scratch, as it likely users will do this at some point.</p>
+<p>The code above can be replicated using <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code>; however, this example demonstrates building field tables from scratch, as it is likely users will do this at some point.</p>
 <p>The third parameter <code>domain_field</code> specifies whether the field should be summarized when creating <code>days</code> (see <a href="#building-days">Building days</a> below for more info).</p>
 <p>Each time you add a new field, a new row is appended to the global <code>palmsplus_fields</code> table. If this table is printed, you will see it contains the fields that were just added:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">palmsplus_fields</code></pre></div>
@@ -225,7 +225,7 @@ palms &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_
 </tr>
 </tbody>
 </table>
-<p>Any variable from the <code>palms</code> dataset can be used to build formulas. However, the true power of <strong>palmsplusr</strong> comes from integrating external data into these calculations.</p>
+<p>Any variable from the <code>palms</code> dataset can be used to build formulas, although the true power of <strong>palmsplusr</strong> comes from integrating external data into these calculations.</p>
 <p>In the next code snippet, a shapefile that represents home points is read in and buffered by 100 m to create polygons. These polygons are going to be used in a field formula. When this data is plotted, you will notice this person has two homes.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">home.points &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="kw">system.file</span>(<span class="st">"extdata/shapefiles/"</span>, <span class="st">"home.shp"</span>, <span class="dt">package =</span> <span class="st">"palmsplusr"</span>))
 home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_buffer.html">palms_buffer</a></span>(<span class="dt">point =</span> home.points, <span class="dt">distance =</span> <span class="dv">100</span>)
@@ -234,9 +234,9 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <span class="kw">plot</span>(home.buffer[, <span class="st">"home_id"</span>], <span class="dt">key.pos =</span> <span class="dv">1</span>)
 <span class="kw">plot</span>(home.points[, <span class="st">"home_id"</span>], <span class="dt">col =</span> <span class="st">"red"</span>, <span class="dt">add =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p><img src="article-1-getting-started_files/figure-html/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;"></p>
-<p>Below, a new field called <em>at_home</em> is added. The formula for this field checks whether each point in the <code>palms</code> dataset falls inside these polygons.</p>
-<p>In the formula, notice how the home.buffer object is filtered by participant identifier. This is so each person is linked with their own home. For a more detailed explanation about helper functions and creating formulas, please see <a href="https://thets.github.io/palmsplusr/articles/article-3-building-formulas.html">this article</a>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)</code></pre></div>
+<p>Below, a new field called <em>at_home</em> is added. The formula for this field checks whether each point in the <code>palms</code> dataset falls inside the home.buffer polygons.</p>
+<p>For a more detailed explanation about helper functions, such as <code><a href="../reference/palms_in_polygon.html">palms_in_polygon()</a></code>, and creating formulas, please see <a href="https://thets.github.io/palmsplusr/articles/article-3-building-formulas.html">this article</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., home.buffer, identifier)"</span>)</code></pre></div>
 <p>Once all of the fields have been added, you can build the <code>palmsplus</code> dataset using the <code><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus()</a></code> function. This takes the <code>palms</code> dataset as input:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus</a></span>(palms)
 <span class="co">#&gt; [1/1] Computed palmsplus for: BC0627</span></code></pre></div>
@@ -348,7 +348,7 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <h2 class="hasAnchor">
 <a href="#building-trajectories" class="anchor"></a>Building trajectories</h2>
 <p>The <code>trajectories</code> dataset contains individual trips, and trip-level summaries. Fields that you wish to calculate for each trajectory can be specified with <code>palms_add_trajectoy_field(name, formula, after_conversion = FALSE)</code>.</p>
-<p>Notice the <code>palms_epoch</code> helper function is used here. This is so the output is in seconds, rather than the number of rows.</p>
+<p>Notice the <code><a href="../reference/palms_epoch.html">palms_epoch()</a></code> helper function is used here. This is so the output is in seconds, rather than the number of rows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">epoch &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms)
 
 <span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"mot"</span>,       <span class="st">"first(tripmot)"</span>)
@@ -365,7 +365,7 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"mvpa"</span>,      <span class="st">"moderate + vigorous"</span>)
 <span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"length"</span>,    <span class="st">"as.numeric(st_length(.))"</span>,  <span class="ot">TRUE</span>)
 <span class="kw"><a href="../reference/palms_add_trajectory_field.html">palms_add_trajectory_field</a></span>(<span class="st">"speed"</span>,     <span class="st">"(length / duration) * 3.6"</span>, <span class="ot">TRUE</span>)</code></pre></div>
-<p>Again, adding all of these fields can be achieved with the <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code> function. Because <code>trajectories</code> are built from the <code>palmsplus</code> dataset, any variables used in the trajectory field formulas should be present in the <code>palmsplus</code> dataset.</p>
+<p>Again, adding all of these fields can be achieved with the <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code> function; this is just used for illustration. Because <code>trajectories</code> are built from the <code>palmsplus</code> dataset, any variables used in the trajectory field formulas should be present in the <code>palmsplus</code> dataset.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectory_fields</code></pre></div>
 <table class="table">
 <caption>trajectory_fields</caption>
@@ -447,10 +447,10 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 </tr>
 </tbody>
 </table>
-<p>The <code>after_conversion</code> parameter dictates whether the fields are calculated before or after the trip points are converted to LINESTRING geometry. Some fields can only be calculated on LINESTRING objects, such as the length of the line.</p>
+<p>The <code>after_conversion</code> parameter dictates whether the fields are calculated before or after the trip points are converted to <code>LINESTRING</code> geometry. Some fields can only be calculated on <code>LINESTRING</code> objects, such as the length of the line.</p>
 <p>The <code><a href="../reference/palms_build_trajectories.html">palms_build_trajectories()</a></code> function is used to build trajectories from the <code>palmsplus</code> dataset:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectories &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_trajectories.html">palms_build_trajectories</a></span>(palmsplus)</code></pre></div>
-<p>This creates the <code>trajectories</code> dataset, which has 1 row per trip, each containing the fields created above:</p>
+<p>This creates the <code>trajectories</code> dataset, which has one row per trajectory, each containing the fields created above:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(trajectories)
 <span class="co">#&gt; Classes 'sf' and 'data.frame':   38 obs. of  17 variables:</span>
 <span class="co">#&gt;  $ identifier: chr  "BC0627" "BC0627" "BC0627" "BC0627" ...</span>
@@ -476,7 +476,7 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <span class="co">#&gt;  - attr(*, "sf_column")= chr "geometry"</span>
 <span class="co">#&gt;  - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA NA NA NA ...</span>
 <span class="co">#&gt;   ..- attr(*, "names")= chr  "identifier" "tripnumber" "mot" "date" ...</span></code></pre></div>
-<p>As the <code>trajectories</code> dataset contains LINESTRING geometry, we can plot it:</p>
+<p>As the <code>trajectories</code> dataset contains <code>LINESTRING</code> geometry, we can plot it:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(trajectories[, <span class="st">"mot"</span>], <span class="dt">pal =</span> <span class="kw">c</span>(<span class="st">"orange"</span>, <span class="st">"blue"</span>), <span class="dt">key.pos =</span> <span class="ot">NULL</span>)
 
 <span class="co"># Add the home buffer polygons to the plot</span>
@@ -486,7 +486,7 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <div id="adding-trajectory-locations" class="section level3">
 <h3 class="hasAnchor">
 <a href="#adding-trajectory-locations" class="anchor"></a>Adding trajectory locations</h3>
-<p>Optionally, trip start and end locations can be calculated. This is useful when you want to identify specific trips, such as trips to work or school. This is done with the function <code><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location(name, start_criteria, end_criteria)</a></code>. Unlike other field tables, there are no default locations as these require external data.</p>
+<p>Trajectory start and end locations can also be calculated. This is used to identify specific trips, such as trips to work or school. This is done with the function <code><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location(name, start_criteria, end_criteria)</a></code>.</p>
 <p>The <code>start_criteria</code> and <code>end_criteria</code> parameters should be fields already calculated in <code>palmsplus</code>.</p>
 <p>To demonstrate, I’m going identify all trajectories that start at home and end at school. I will need to read in an additional shapefile that contains the schoolyard polygon, and add a new <em>at_school</em> field to <code>palmsplus</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">school &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="kw">system.file</span>(<span class="st">"extdata/shapefiles/"</span>, <span class="st">"school.shp"</span>, <span class="dt">package =</span> <span class="st">"palmsplusr"</span>))
@@ -495,7 +495,7 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 
 palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus</a></span>(palms)
 <span class="co">#&gt; [1/1] Computed palmsplus for: BC0627</span></code></pre></div>
-<p>Now that <code>palmsplus</code> contains the <em>at_school</em> field, I’m going to add a <code>trajectory_location</code> that starts <em>at_home</em> (i.e., inside the home.buffer), and ends <em>at_school</em> (i.e., inside the schoolyard). Recall the <em>at_home</em> field was created earlier.</p>
+<p>Now that <code>palmsplus</code> contains the <em>at_school</em> field, I’m going to add a <code>trajectory_location</code> that starts <em>at_home</em> and ends <em>at_school</em>. Recall the <em>at_home</em> field was created earlier.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_school"</span>, <span class="st">"at_home"</span>, <span class="st">"at_school"</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectory_locations</code></pre></div>
 <table class="table">
@@ -511,7 +511,7 @@ palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/p
 <td align="left">at_school</td>
 </tr></tbody>
 </table>
-<p>Now the <code>trajectories</code> dataset can be rebuilt. Additional columns will be added for each trip location indicating whether the trajectory meets both the start and end criteria.</p>
+<p>Now the <code>trajectories</code> dataset can be rebuilt. Additional columns will be added for each entry in the <code>trajectory_locations</code> table indicating whether the trajectory meets both the start and end criteria.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectories &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_trajectories.html">palms_build_trajectories</a></span>(palmsplus)
 <span class="kw">names</span>(trajectories)
 <span class="co">#&gt;  [1] "identifier"  "tripnumber"  "mot"         "date"        "start"      </span>
@@ -531,7 +531,7 @@ palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/p
 <span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data=</span>school, <span class="dt">fill =</span> <span class="st">"blue"</span>, <span class="dt">alpha =</span> <span class="fl">0.8</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">geom_sf</span>(<span class="dt">data=</span>trajectories <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(home_school <span class="op">==</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">colour =</span> <span class="st">"green"</span>) <span class="op">+</span>
 <span class="st">  </span><span class="kw">theme_light</span>()</code></pre></div>
-<p><img src="article-1-getting-started_files/figure-html/unnamed-chunk-29-1.png" width="672"></p>
+<p><img src="article-1-getting-started_files/figure-html/unnamed-chunk-29-1.png" width="576" style="display: block; margin: auto;"></p>
 <p>It looks like they all start at home and end at school!</p>
 <hr>
 <p><br><br></p>
@@ -541,9 +541,10 @@ palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/p
 <h2 class="hasAnchor">
 <a href="#building-multimodal" class="anchor"></a>Building multimodal trajectories</h2>
 <p>The <code>trajectories</code> dataset can be further processed into multimodal trips using the <code><a href="../reference/palms_build_multimodal.html">palms_build_multimodal()</a></code> function. This will join two or more trajectories together if they are within a spatial and temporal threshold.</p>
-<p>This is necessary for recognising specific trajectory locations (e.g., home to school trips) where multiple travel modes are used (e.g., walk + vehicle). PALMS assigns a new trip number each time the travel mode changes. If the travel mode transition occurs part way along the trip, none of the trip ‘segments’ will meet the <code>start_criteria</code> and <code>end_criteria</code>.</p>
+<p>Multimodal trajectories are important, because PALMS assigns a new trip number each time the travel mode changes. A change in travel mode part way along the trip could cause none of the trip ‘segments’ to meet the <code>start_criteria</code> and <code>end_criteria</code>.</p>
+<p>This is also useful for identifying trip chains and transit use (e.g., walk-vehicle-walk).</p>
 <p>The fields that are summarized for each multimodal trajectory are specified using <code><a href="../reference/palms_add_multimodal_field.html">palms_add_multimodal_field(name, func)</a></code>.</p>
-<p>The <code>name</code> refers to a field name in <code>trajectories</code>, while <code>func</code> specifies a summary function used to aggregate trajectory fields (usually sum or mean). You probably want to sum the duration of trip segments, but take the average (mean) of the speeds.</p>
+<p>The <code>name</code> refers to a field name in the <code>trajectories</code> dataset, while <code>func</code> specifies a summary function used to aggregate trajectory fields (usually <code>sum()</code> or <code>mean()</code>). For example, you probably want to sum the duration of trip segments, but take the average (mean) of the segment speeds.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_multimodal_field.html">palms_add_multimodal_field</a></span>(<span class="st">"duration"</span>, <span class="st">"sum"</span>)
 <span class="kw"><a href="../reference/palms_add_multimodal_field.html">palms_add_multimodal_field</a></span>(<span class="st">"speed"</span>, <span class="st">"mean"</span>)</code></pre></div>
 <p>Alternatively, you can pass in a vector of field names that use the same summary function:</p>
@@ -599,8 +600,9 @@ palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/p
 </tr>
 </tbody>
 </table>
+<p>It should be noted that these <code>multimodal_fields</code> are also created by <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code>.</p>
 <p>The <code>trajectories</code> dataset is then passed to <code><a href="../reference/palms_build_multimodal.html">palms_build_multimodal(spatial_threshold, temporal_threshold)</a></code> to build the <code>multimodal</code> dataset.</p>
-<p>The <code>spatial_threshold</code> is the distance (meters) between the end of one trajectory and and the start of the next, while <code>temporal_threshold</code> is the time between these in minutes.</p>
+<p>The <code>spatial_threshold</code> is the distance (in meters) between the end of one trajectory and the start of the next, while the <code>temporal_threshold</code> is the time between these (in minutes). I’ve chosen a criteria of 200 m and 10 minutes:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multimodal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_build_multimodal.html">palms_build_multimodal</a></span>(trajectories, <span class="dv">200</span>, <span class="dv">10</span>)
 <span class="co">#&gt; Calculating multimodal eligibility...done</span>
 <span class="co">#&gt; Assigning trip numbers...done</span>
@@ -628,21 +630,28 @@ palmsplus &lt;-<span class="st"> </span><span class="kw"><a href="../reference/p
 <span class="co">#&gt; [19] "23"       "24"       "25"       "26"       "27"       "28"      </span>
 <span class="co">#&gt; [25] "29"       "30"       "31"       "32"       "33-34"    "35"      </span>
 <span class="co">#&gt; [31] "36-37-38"</span></code></pre></div>
+<p>The <code>mot_order</code> variable retains the mode of travel order of each trajectory in the multimodal trips:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multimodal<span class="op">$</span>mot_order
+<span class="co">#&gt;  [1] "1"     "1"     "1-1"   "1-1"   "1"     "3-1"   "1"     "1"    </span>
+<span class="co">#&gt;  [9] "1"     "1"     "3-1"   "1"     "1"     "1"     "1"     "1"    </span>
+<span class="co">#&gt; [17] "1"     "3"     "3"     "3"     "3"     "1"     "1"     "1"    </span>
+<span class="co">#&gt; [25] "1"     "1"     "1"     "1"     "3-1"   "1"     "1-3-1"</span></code></pre></div>
+<p>If any <code>trajectory_locations</code> were created, they will also be added to <code>multimodal</code> (notice the <em>home_school</em> field in the column name vector above).</p>
 <hr>
 <p><br><br></p>
 </div>
 <div id="saving-geometry-and-results" class="section level2">
 <h2 class="hasAnchor">
 <a href="#saving-geometry-and-results" class="anchor"></a>Saving geometry and results</h2>
-<p>You can save all datasets as a csv file. As <code>palmsplus</code>, <code>trajecories</code> and <code>multimodal</code> contain geometry, you can also save these as ESRI shapefiles:</p>
+<p>You can save all datasets as a csv file. As <code>palmsplus</code>, <code>trajectories</code> and <code>multimodal</code> contain geometry, you can also save these as ESRI shapefiles:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">write_csv</span>(palmsplus, <span class="st">"palmsplus.csv"</span>)
 <span class="kw">write_csv</span>(days, <span class="st">"days.csv"</span>)
 <span class="kw">write_csv</span>(trajectories, <span class="st">"trajectories.csv"</span>)
-<span class="kw">write_csv</span>(trajectories, <span class="st">"multimodal.csv"</span>)
+<span class="kw">write_csv</span>(multimodal, <span class="st">"multimodal.csv"</span>)
 
 <span class="kw">st_write</span>(palmsplus, <span class="st">"palmsplus.shp"</span>)
 <span class="kw">st_write</span>(trajectories, <span class="st">"trajecories.shp"</span>)
-<span class="kw">st_write</span>(trajectories, <span class="st">"multimodal.shp"</span>)</code></pre></div>
+<span class="kw">st_write</span>(multimodal, <span class="st">"multimodal.shp"</span>)</code></pre></div>
 </div>
 </div>
   </div>

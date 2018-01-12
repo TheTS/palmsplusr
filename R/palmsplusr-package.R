@@ -13,6 +13,6 @@
 #' @importFrom purrr reduce
 #' @importFrom data.table rbindlist rleid as.data.table
 #' @importFrom geosphere distGeo
-#' @importFrom readr read_csv
+#' @importFrom readr read_csv write_csv
 #' @importFrom tidyr gather unite spread
 NULL

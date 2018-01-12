@@ -1,20 +1,9 @@
 ---
 title: "Building formulas"
-author:
+author: Tom Stewart
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{3-building-formulas}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+output: pdf_document
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
 
 ```{r include=FALSE}
 library(palmsplusr)
@@ -65,6 +54,9 @@ palms_load_defaults(palms_epoch(palms))
 ```
 
 The default fields are shown in the tables below:
+
+\pagebreak
+
 ```{r, eval=FALSE}
 palmsplus_fields
 ```
@@ -77,6 +69,9 @@ trajectory_fields
 ```{r echo=FALSE}
 knitr::kable(trajectory_fields, caption = "trajectory_fields")
 ```
+
+\pagebreak
+
 ```{r, eval=FALSE}
 multimodal_fields
 ```
@@ -111,6 +106,8 @@ palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier =
 ```
 
 Again, you will notice the . and i in this formula. See below for an explaination.
+
+\pagebreak
 
 ## Linking participant identifiers in palmsplus_fields 
 

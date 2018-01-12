@@ -83,32 +83,313 @@
     <div class="page-header toc-ignore">
       <h1>Building formulas</h1>
             
-            <h4 class="date">2018-01-11</h4>
+            <h4 class="date">2018-01-12</h4>
           </div>
 
     
     
 <div class="contents">
-<div id="palmsplus-formulas" class="section level2">
+<div id="helper-functions" class="section level2">
 <h2 class="hasAnchor">
-<a href="#palmsplus-formulas" class="anchor"></a>palmsplus formulas</h2>
-<ul>
-<li>palms_in_time</li>
-<li>palms_in_polygon</li>
-<li>palms_epoch</li>
-</ul>
-<p>TODO</p>
+<a href="#helper-functions" class="anchor"></a>Helper functions</h2>
+<p>There are several helper functions included in <strong>palmsplusr</strong> that make creating formulas for fields easier.</p>
+<p>Important ones are discussed below, but please also see the <a href="https://thets.github.io/palmsplusr/reference/index.html">Function Reference</a> or use the R help system <code>help(package=palmsplusr)</code> for more information.</p>
+<div id="palms_remove_tables" class="section level4">
+<h4 class="hasAnchor">
+<a href="#palms_remove_tables" class="anchor"></a>palms_remove_tables()</h4>
+<p><code><a href="../reference/palms_remove_tables.html">palms_remove_tables()</a></code></p>
+<p>This function removes all of the field tables from the global environment. It is useful to call this function before building any field tables so you don’t run into duplicate errors. If you try to add a field that already exists, R will throw an error.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"weekday"</span>,    <span class="st">"dow &lt; 6"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"weekday"</span>,    <span class="st">"dow &lt; 6"</span>)
+<span class="co">#&gt; Error in palms_add_field("weekday", "dow &lt; 6") : weekday already exists in palmsplus_fields</span>
+
+<span class="kw"><a href="../reference/palms_remove_tables.html">palms_remove_tables</a></span>()
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"weekday"</span>,    <span class="st">"dow &lt; 6"</span>) <span class="co">#No error</span></code></pre></div>
+<p>The five <strong>palmsplusr</strong> field tables are:</p>
+<ol style="list-style-type: decimal">
+<li><code>palmsplus_fields</code></li>
+<li><code>palmsplus_domains</code></li>
+<li><code>trajectory_fields</code></li>
+<li><code>trajectory_locations</code></li>
+<li><code>multimodal_fields</code></li>
+</ol>
 </div>
-<div id="trajectory-formulas" class="section level2">
+<div id="palms_load_defaults" class="section level4">
+<h4 class="hasAnchor">
+<a href="#palms_load_defaults" class="anchor"></a>palms_load_defaults()</h4>
+<p><code><a href="../reference/palms_load_defaults.html">palms_load_defaults(epoch_length)</a></code></p>
+<p>This function adds basic fields to three of the five field tables (<code>palmsplus_fields</code>, <code>trajectory_fields</code>, and <code>multimodal_fields</code>). This does not add any fields to <code>palmsplus_domains</code> or <code>trajectory_locations</code> as these generally require external datasets.</p>
+<p>The palms epoch length (in seconds) must be passed to this function so the <code>trajectory_fields</code> are setup correctly. This is achieved with the <code><a href="../reference/palms_epoch.html">palms_epoch()</a></code> function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">"palms"</span>)
+
+<span class="kw"><a href="../reference/palms_remove_tables.html">palms_remove_tables</a></span>()
+<span class="kw"><a href="../reference/palms_load_defaults.html">palms_load_defaults</a></span>(<span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms))</code></pre></div>
+<p>The default fields are shown in the tables below:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">palmsplus_fields</code></pre></div>
+<table class="table">
+<caption>palmsplus_fields</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">formula</th>
+<th align="left">domain_field</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">weekday</td>
+<td align="left">dow &lt; 6</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">weekend</td>
+<td align="left">dow &gt; 5</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">indoors</td>
+<td align="left">iov == 3</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">outdoors</td>
+<td align="left">iov == 1</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">in_vehicle</td>
+<td align="left">iov == 2</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">inserted</td>
+<td align="left">fixtypecode == 6</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">pedestrian</td>
+<td align="left">tripmot == 1</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">bicycle</td>
+<td align="left">tripmot == 2</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">vehicle</td>
+<td align="left">tripmot == 3</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">nonwear</td>
+<td align="left">activityintensity &lt; 0</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">wear</td>
+<td align="left">activityintensity &gt;= 0</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">sedentary</td>
+<td align="left">activityintensity == 0</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">light</td>
+<td align="left">activityintensity == 1</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">moderate</td>
+<td align="left">activityintensity == 2</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">vigorous</td>
+<td align="left">activityintensity == 3</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">mvpa</td>
+<td align="left">moderate + vigorous</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectory_fields</code></pre></div>
+<table class="table">
+<caption>trajectory_fields</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">formula</th>
+<th align="left">after_conversion</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">mot</td>
+<td align="left">first(tripmot)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">date</td>
+<td align="left">first(as.Date(datetime))</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">start</td>
+<td align="left">datetime[triptype==1]</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">end</td>
+<td align="left">datetime[triptype==4]</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">as.numeric(difftime(end, start, units = “secs”) + 15)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">nonwear</td>
+<td align="left">sum(activityintensity &lt; 0) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">wear</td>
+<td align="left">sum(activityintensity &gt;= 0) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">sedentary</td>
+<td align="left">sum(activityintensity == 0) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">light</td>
+<td align="left">sum(activityintensity == 1) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">moderate</td>
+<td align="left">sum(activityintensity == 2) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">vigorous</td>
+<td align="left">sum(activityintensity == 3) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">mvpa</td>
+<td align="left">moderate + vigorous</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">length</td>
+<td align="left">as.numeric(st_length(.))</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">speed</td>
+<td align="left">(length / duration) * 3.6</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multimodal_fields</code></pre></div>
+<table class="table">
+<caption>multimodal_fields</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">func</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">nonwear</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">wear</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">sedentary</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">light</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">moderate</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">vigorous</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">mvpa</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">length</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">speed</td>
+<td align="left">mean</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="palms_in_time" class="section level4">
+<h4 class="hasAnchor">
+<a href="#palms_in_time" class="anchor"></a>palms_in_time()</h4>
+<p><code><a href="../reference/palms_in_time.html">palms_in_time(data, identifier, timetable, basis, start_col, end_col)</a></code></p>
+<p>This function checks whether a <code>palms</code> point is between a two timestamps. Currently, this is hard-coded to require a class_timetable and participant_basis file as seen in the <a href="https://thets.github.io/palmsplusr/articles/article-2-complete-example.html">complete example article</a>. This may become more generic in the future.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_in_time.html">palms_in_time</a></span>(., i, class_timetable, participant_basis, sch_start, sch_end)</code></pre></div>
+<p>You will notice the . and i in this formula, which represent the <code>data</code> and <code>identifier</code> parameters. See the last section of this article for an explaination.</p>
+</div>
+<div id="palms_in_polygon" class="section level4">
+<h4 class="hasAnchor">
+<a href="#palms_in_polygon" class="anchor"></a>palms_in_polygon()</h4>
+<p><code><a href="../reference/palms_in_polygon.html">palms_in_polygon(data, polygons, collapse_var = NULL)</a></code></p>
+<p>This function checks whether a <code>palms</code> point falls inside a polygon. The polygon should have the same coordinate reference system as the palms dataset (ESPG: 4326). <code>MULTIPOLYGON</code> geometry is also supported, where each row in the shapefile represents more than one polygon. An example would be a city greenspace layer where all polygons are a single feature.</p>
+<p>Alternatively, the optional <code>collapse_var</code> parameter can be used to dissolve polygons “on the fly”. An example of this can be seen in the <a href="https://thets.github.io/palmsplusr/articles/article-2-complete-example.html">complete example article</a> where participants may have more than one home.</p>
+<p>By using the <code>identifier</code> as the <code>collapse_var</code>, the home.buffer is dissolved by identifier “on the fly”:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)</code></pre></div>
+<p>Again, you will notice the . and i in this formula. See below for an explaination.</p>
+</div>
+</div>
+<div id="linking-participant-identifiers-in-palmsplus_fields" class="section level2">
 <h2 class="hasAnchor">
-<a href="#trajectory-formulas" class="anchor"></a>trajectory formulas</h2>
-<p>TODO</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">unique</span>(data<span class="op">$</span>identifier)) {
-    x[[i]] &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">filter</span>(identifier <span class="op">==</span><span class="st"> </span>i) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">mutate</span>(<span class="op">!!!</span><span class="st"> </span>field_args) <span class="op">%&gt;%</span>
-<span class="st">      </span><span class="kw">mutate_if</span>(is.logical, as.integer)
-  }</code></pre></div>
+<a href="#linking-participant-identifiers-in-palmsplus_fields" class="anchor"></a>Linking participant identifiers in palmsplus_fields</h2>
+<p>If you have read the complete example article, you may have noticed that some formulas contain a period (.) and ‘i’.</p>
+<p><strong>palmsplusr</strong> field tables are evaluated using <em>dplyr</em>, the pipe opeator (<em>%&gt;%</em>), and <em>tidy evaluation</em>. The period (.) represents the data argument in the helper functions. It works like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">filter</span>(palms, <span class="dt">identifier =</span> <span class="st">"BC0627"</span>)
+<span class="co"># Is equivalent to:</span>
+palms <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(., <span class="dt">identifier =</span> <span class="st">"BC0627"</span>) <span class="co">#palms is 'piped' in and becomes the .</span></code></pre></div>
+<p>The i is used to link the participant identifier (in the PALMS data) with a corresponding identifier in an external dataset (such as a shapefile).</p>
+<p>An example of this is:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/palms_in_polygon.html">palms_in_polygon</a></span>(., <span class="kw">filter</span>(home_poly, id_in_shapefile <span class="op">==</span><span class="st"> </span>i), id_in_shapefile)</code></pre></div>
+<p>The <code><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus()</a></code> function loops through each identifier one after the other. The i in this formula represents the participant identifier of the current iterration. The main workhorse loop of <code><a href="../reference/palms_build_palmsplus.html">palms_build_palmsplus()</a></code> is:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">unique</span>(data<span class="op">$</span>identifier)) {
+  x[[i]] &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">filter</span>(identifier <span class="op">==</span><span class="st"> </span>i) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate</span>(<span class="op">!!!</span><span class="st"> </span>field_args) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">mutate_if</span>(is.logical, as.integer)
+}</code></pre></div>
+<p>Notice:</p>
+<ul>
+<li>It is a for loop where i is the iterrator index</li>
+<li>The participants data is ‘piped’ into the mutate function, where all the fields are calculated. The . represents the data being piped into the mutate function.</li>
+</ul>
 </div>
 </div>
   </div>
@@ -118,8 +399,8 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#palmsplus-formulas">palmsplus formulas</a></li>
-      <li><a href="#trajectory-formulas">trajectory formulas</a></li>
+<li><a href="#helper-functions">Helper functions</a></li>
+      <li><a href="#linking-participant-identifiers-in-palmsplus_fields">Linking participant identifiers in palmsplus_fields</a></li>
       </ul>
 </div>
       </div>

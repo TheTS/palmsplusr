@@ -83,36 +83,34 @@
     <div class="page-header toc-ignore">
       <h1>A complete example</h1>
             
-            <h4 class="date">2018-01-11</h4>
+            <h4 class="date">2018-01-12</h4>
           </div>
 
     
     
 <div class="contents">
-<p>This article will demonstrate a real world example with a 197-participant dataset.</p>
+<p>This article will demonstrate a real world example with a 191-participant dataset.</p>
 <div id="reading-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#reading-data" class="anchor"></a>Reading data</h2>
-<p>It is wise to read in all data that you will need at the beginning. This includes the PALMS dataset, and any other shapefiles and csv files. Any geoprocessing, such as buffering can also be done here.</p>
+<p>All data should be loaded at the beginning of the script. This includes the PALMS dataset, and any other shapefiles and csv files. Any preprocessing, such as buffering can also be done here.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(palmsplusr)
 <span class="kw">library</span>(readr)
 
 <span class="co"># Load PALMS dataset</span>
-palms &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_palms.html">read_palms</a></span>(<span class="st">"D:/data/csv/palms_output.csv"</span>)
+palms &lt;-<span class="st"> </span><span class="kw"><a href="../reference/read_palms.html">read_palms</a></span>(<span class="st">"F:/data/csv/palms_output.csv"</span>)
 
 <span class="co"># Load other csvs</span>
-participant_basis &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"D:/data/csv/participant_basis.csv"</span>)
-class_timetable &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"D:/data/csv/class_timetable.csv"</span>)
+participant_basis &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"F:/data/csv/participant_basis.csv"</span>)
+class_timetable &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"F:/data/csv/class_timetable.csv"</span>)
 
-<span class="co"># Load shapefiles</span>
-home &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"D:/data/shapefiles/home.shp"</span>)
-home &lt;-<span class="st"> </span>home <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">identifier =</span> Identifier)
-school &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"D:/data/shapefiles/school.shp"</span>)
-school &lt;-<span class="st"> </span>school <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">rename</span>(<span class="dt">school_id =</span> schoolID)
+<span class="co"># Load shapefiles (home points &amp; schoolyard polygons)</span>
+home &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"F:/data/shapefiles/home.shp"</span>)
+school &lt;-<span class="st"> </span><span class="kw">read_sf</span>(<span class="st">"F:/data/shapefiles/school.shp"</span>)
 
 <span class="co"># Buffer home points</span>
 home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_buffer.html">palms_buffer</a></span>(<span class="dt">point =</span> home, <span class="dt">distance =</span> <span class="dv">100</span>, <span class="dt">crs =</span> <span class="dv">2193</span>)</code></pre></div>
-<p>The participant_basis file is used to link participant identifier number with the correct school and classroom:</p>
+<p>The participant_basis file is used to link participant identifier with the correct school and classroom:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(participant_basis, <span class="dt">n =</span> <span class="dv">5</span>)
 <span class="co">#&gt; # A tibble: 5 x 3</span>
 <span class="co">#&gt;   identifier school_id class_id</span>
@@ -135,40 +133,10 @@ home.buffer &lt;-<span class="st"> </span><span class="kw"><a href="../reference
 <span class="co">#&gt; # ... with 4 more variables: recess1_start &lt;dttm&gt;, recess1_end &lt;dttm&gt;,</span>
 <span class="co">#&gt; #   recess2_start &lt;dttm&gt;, recess2_end &lt;dttm&gt;</span></code></pre></div>
 </div>
-<div id="creating-field-domain-and-trajectory-location-tables" class="section level2">
+<div id="creating-the-five-field-tables" class="section level2">
 <h2 class="hasAnchor">
-<a href="#creating-field-domain-and-trajectory-location-tables" class="anchor"></a>Creating field, domain, and trajectory location tables</h2>
-<p>This section is the bulk of the setup. All formulas for building <code>palmsplus</code>, <code>days</code>, <code>trajectories</code>, and <code>multimodal</code> are created.</p>
-<p>Notice that <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code> is used as the base, and then extra fields are then appended:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Remove all field tables that exist</span>
-<span class="kw"><a href="../reference/palms_remove_tables.html">palms_remove_tables</a></span>()
-
-<span class="co"># load defaults for:</span>
-<span class="co"># * palmsplus_fields</span>
-<span class="co"># * trajectory_fields</span>
-<span class="co"># * multimodal_fields</span>
-epoch &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms)
-<span class="kw"><a href="../reference/palms_load_defaults.html">palms_load_defaults</a></span>(epoch)
-
-<span class="co"># palmsplus fields (from other files)</span>
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_school_time"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, school_start, school_end)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess1"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess1_start, recess1_end)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess2"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess2_start, recess2_end)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)
-<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_school"</span>, <span class="st">"palms_in_polygon(., filter(school, school_id == participant_basis %&gt;% filter(identifier == i) %&gt;% pull(school_id)))"</span>)
-
-<span class="co"># days domains</span>
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"home"</span>, <span class="st">"at_home"</span>)
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"school"</span>, <span class="st">"(!at_home &amp; at_school &amp; in_school_time)"</span>)
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"transport"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; (pedestrian | bicycle | vehicle)"</span>)
-<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"leisure"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; !pedestrian &amp; !bicycle &amp; !vehicle"</span>)
-
-<span class="co"># trajectory locations</span>
-<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_school"</span>, <span class="st">"at_home"</span>, <span class="st">"at_school"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"school_home"</span>, <span class="st">"at_school"</span>, <span class="st">"at_home"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_home"</span>, <span class="st">"at_home"</span>, <span class="st">"at_home"</span>)
-<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"school_school"</span>, <span class="st">"at_school"</span>, <span class="st">"at_school"</span>)</code></pre></div>
-<p>Note that in <strong>palmsplusr</strong> there are five field tables:</p>
+<a href="#creating-the-five-field-tables" class="anchor"></a>Creating the five field tables</h2>
+<p>All formulas for building <code>palmsplus</code>, <code>days</code>, <code>trajectories</code>, and <code>multimodal</code> are created. This is done by creating the five field tables:</p>
 <ul>
 <li><code>palmsplus_fields</code></li>
 <li><code>palmsplus_domains</code></li>
@@ -176,12 +144,344 @@ epoch &lt;-<span class="st"> </span><span class="kw"><a href="../reference/palms
 <li><code>trajectory_locations</code></li>
 <li><code>multimodal_fields</code></li>
 </ul>
-<p>We didn’t specify any additional <code>trajectory_fields</code> or <code>multimodal_fields</code> as the default fields suffice.</p>
+<p>Most of these tables can be populated using the <code><a href="../reference/palms_load_defaults.html">palms_load_defaults()</a></code>. I use this function as a base, but then add additional fields that are specific to my dataset and research questions:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Remove all field tables that exist</span>
+<span class="kw"><a href="../reference/palms_remove_tables.html">palms_remove_tables</a></span>()
+
+<span class="co"># load defaults for:</span>
+<span class="co"># * palmsplus_fields</span>
+<span class="co"># * trajectory_fields</span>
+<span class="co"># * multimodal_fields</span>
+<span class="kw"><a href="../reference/palms_load_defaults.html">palms_load_defaults</a></span>(<span class="kw"><a href="../reference/palms_epoch.html">palms_epoch</a></span>(palms))
+
+<span class="co"># palmsplus_fields (from other files)</span>
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_school_time"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, school_start, school_end)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess1"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess1_start, recess1_end)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"in_recess2"</span>, <span class="st">"palms_in_time(., i, class_timetable, participant_basis, recess2_start, recess2_end)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_home"</span>, <span class="st">"palms_in_polygon(., filter(home.buffer, identifier == i), identifier)"</span>)
+<span class="kw"><a href="../reference/palms_add_field.html">palms_add_field</a></span>(<span class="st">"at_school"</span>, <span class="st">"palms_in_polygon(., filter(school, school_id == participant_basis %&gt;% filter(identifier == i) %&gt;% pull(school_id)))"</span>)
+
+<span class="co"># palmsplus_domains</span>
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"home"</span>, <span class="st">"at_home"</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"school"</span>, <span class="st">"(!at_home &amp; at_school &amp; in_school_time)"</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"transport"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; (pedestrian | bicycle | vehicle)"</span>)
+<span class="kw"><a href="../reference/palms_add_domain.html">palms_add_domain</a></span>(<span class="st">"leisure"</span>, <span class="st">"!at_home &amp; !(at_school &amp; in_school_time) &amp; !pedestrian &amp; !bicycle &amp; !vehicle"</span>)
+
+<span class="co"># trajectory_locations</span>
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_school"</span>, <span class="st">"at_home"</span>, <span class="st">"at_school"</span>)
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"school_home"</span>, <span class="st">"at_school"</span>, <span class="st">"at_home"</span>)
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"home_home"</span>, <span class="st">"at_home"</span>, <span class="st">"at_home"</span>)
+<span class="kw"><a href="../reference/palms_add_trajectory_location.html">palms_add_trajectory_location</a></span>(<span class="st">"school_school"</span>, <span class="st">"at_school"</span>, <span class="st">"at_school"</span>)</code></pre></div>
+<p>I didn’t specify any additional <code>trajectory_fields</code> or <code>multimodal_fields</code> as the default fields will suffice. All five of the field tables look like:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">palmsplus_fields</code></pre></div>
+<table class="table">
+<caption>palmsplus_fields</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">formula</th>
+<th align="left">domain_field</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">weekday</td>
+<td align="left">dow &lt; 6</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">weekend</td>
+<td align="left">dow &gt; 5</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">indoors</td>
+<td align="left">iov == 3</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">outdoors</td>
+<td align="left">iov == 1</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">in_vehicle</td>
+<td align="left">iov == 2</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">inserted</td>
+<td align="left">fixtypecode == 6</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">pedestrian</td>
+<td align="left">tripmot == 1</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">bicycle</td>
+<td align="left">tripmot == 2</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">vehicle</td>
+<td align="left">tripmot == 3</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">nonwear</td>
+<td align="left">activityintensity &lt; 0</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">wear</td>
+<td align="left">activityintensity &gt;= 0</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">sedentary</td>
+<td align="left">activityintensity == 0</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">light</td>
+<td align="left">activityintensity == 1</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">moderate</td>
+<td align="left">activityintensity == 2</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">vigorous</td>
+<td align="left">activityintensity == 3</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">mvpa</td>
+<td align="left">moderate + vigorous</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">in_school_time</td>
+<td align="left">palms_in_time(., i, class_timetable, participant_basis, school_start, school_end)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">in_recess1</td>
+<td align="left">palms_in_time(., i, class_timetable, participant_basis, recess1_start, recess1_end)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">in_recess2</td>
+<td align="left">palms_in_time(., i, class_timetable, participant_basis, recess2_start, recess2_end)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">at_home</td>
+<td align="left">palms_in_polygon(., filter(home.buffer, identifier == i), identifier)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">at_school</td>
+<td align="left">palms_in_polygon(., filter(school, school_id == participant_basis %&gt;% filter(identifier == i) %&gt;% pull(school_id)))</td>
+<td align="left">FALSE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">palmsplus_domains</code></pre></div>
+<table class="table">
+<caption>palmsplus_domains</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">formula</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">home</td>
+<td align="left">at_home</td>
+</tr>
+<tr class="even">
+<td align="left">school</td>
+<td align="left">(!at_home &amp; at_school &amp; in_school_time)</td>
+</tr>
+<tr class="odd">
+<td align="left">transport</td>
+<td align="left">!at_home &amp; !(at_school &amp; in_school_time) &amp; (pedestrian | bicycle | vehicle)</td>
+</tr>
+<tr class="even">
+<td align="left">leisure</td>
+<td align="left">!at_home &amp; !(at_school &amp; in_school_time) &amp; !pedestrian &amp; !bicycle &amp; !vehicle</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectory_fields</code></pre></div>
+<table class="table">
+<caption>trajectory_fields</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">formula</th>
+<th align="left">after_conversion</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">mot</td>
+<td align="left">first(tripmot)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">date</td>
+<td align="left">first(as.Date(datetime))</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">start</td>
+<td align="left">datetime[triptype==1]</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">end</td>
+<td align="left">datetime[triptype==4]</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">as.numeric(difftime(end, start, units = “secs”) + 15)</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">nonwear</td>
+<td align="left">sum(activityintensity &lt; 0) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">wear</td>
+<td align="left">sum(activityintensity &gt;= 0) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">sedentary</td>
+<td align="left">sum(activityintensity == 0) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">light</td>
+<td align="left">sum(activityintensity == 1) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">moderate</td>
+<td align="left">sum(activityintensity == 2) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">vigorous</td>
+<td align="left">sum(activityintensity == 3) * 15</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">mvpa</td>
+<td align="left">moderate + vigorous</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="odd">
+<td align="left">length</td>
+<td align="left">as.numeric(st_length(.))</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">speed</td>
+<td align="left">(length / duration) * 3.6</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">trajectory_locations</code></pre></div>
+<table class="table">
+<caption>trajectory_locations</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">start_criteria</th>
+<th align="left">end_criteria</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">home_school</td>
+<td align="left">at_home</td>
+<td align="left">at_school</td>
+</tr>
+<tr class="even">
+<td align="left">school_home</td>
+<td align="left">at_school</td>
+<td align="left">at_home</td>
+</tr>
+<tr class="odd">
+<td align="left">home_home</td>
+<td align="left">at_home</td>
+<td align="left">at_home</td>
+</tr>
+<tr class="even">
+<td align="left">school_school</td>
+<td align="left">at_school</td>
+<td align="left">at_school</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">multimodal_fields</code></pre></div>
+<table class="table">
+<caption>multimodal_fields</caption>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">func</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">duration</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">nonwear</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">wear</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">sedentary</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">light</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">moderate</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">vigorous</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">mvpa</td>
+<td align="left">sum</td>
+</tr>
+<tr class="odd">
+<td align="left">length</td>
+<td align="left">sum</td>
+</tr>
+<tr class="even">
+<td align="left">speed</td>
+<td align="left">mean</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="build-palmsplus-days-and-trajectories" class="section level2">
+<div id="build-palmsplus-days-trajectories-and-multimodal" class="section level2">
 <h2 class="hasAnchor">
-<a href="#build-palmsplus-days-and-trajectories" class="anchor"></a>Build palmsplus, days, and trajectories</h2>
-<p>Once all of the formula tables are created, it is very simple to build palmsplus, and then create days and trajectories (and multimodal trips).</p>
+<a href="#build-palmsplus-days-trajectories-and-multimodal" class="anchor"></a>Build palmsplus, days, trajectories, and multimodal</h2>
+<p>Once all of the formula tables are created, it is simple to build all of the datasets. I’ve included a timer here to see how long it takes to process:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Start the timer</span>
 t &lt;-<span class="st"> </span><span class="kw">proc.time</span>()
 
@@ -392,7 +692,8 @@ multimodal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/
 <span class="co">#&gt; Calculating fields...done</span>
 
 <span class="kw">cat</span>(<span class="st">"Run time:"</span>, (<span class="kw">proc.time</span>() <span class="op">-</span><span class="st"> </span>t)[[<span class="dv">1</span>]]<span class="op">/</span><span class="dv">60</span>, <span class="st">"minutes"</span>)
-<span class="co">#&gt; Run time: 15.553 minutes</span></code></pre></div>
+<span class="co">#&gt; Run time: 19.14683 minutes</span></code></pre></div>
+<p>Just over 15 minutes for 191 participants isn’t to bad!</p>
 </div>
 <div id="saving-results" class="section level2">
 <h2 class="hasAnchor">
@@ -415,8 +716,8 @@ multimodal &lt;-<span class="st"> </span><span class="kw"><a href="../reference/
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#reading-data">Reading data</a></li>
-      <li><a href="#creating-field-domain-and-trajectory-location-tables">Creating field, domain, and trajectory location tables</a></li>
-      <li><a href="#build-palmsplus-days-and-trajectories">Build palmsplus, days, and trajectories</a></li>
+      <li><a href="#creating-the-five-field-tables">Creating the five field tables</a></li>
+      <li><a href="#build-palmsplus-days-trajectories-and-multimodal">Build palmsplus, days, trajectories, and multimodal</a></li>
       <li><a href="#saving-results">Saving results</a></li>
       </ul>
 </div>

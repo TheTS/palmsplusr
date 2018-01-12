@@ -212,7 +212,7 @@ palms_in_polygon <- function(data, polygons, collapse_var = NULL){
 #' }
 #'
 #' @param data The data points.
-#' @param pid The participant identifier.
+#' @param identifier The participant identifier.
 #' @param timetable The timetable table.
 #' @param basis The participant basis table.
 #' @param start_col The column in \code{timetable} containing the start time.
@@ -227,12 +227,12 @@ palms_in_polygon <- function(data, polygons, collapse_var = NULL){
 #'                            participant_basis, school_start, school_end)
 #'
 #' @export
-palms_in_time <- function(data, pid, timetable, basis, start_col, end_col) {
+palms_in_time <- function(data, identifier, timetable, basis, start_col, end_col) {
   start_col <- enquo(start_col)
   end_col <- enquo(end_col)
 
-  s_id <- as.numeric(basis[basis$identifier == pid, "school_id"])
-  c_id <- as.numeric(basis[basis$identifier == pid, "class_id"])
+  s_id <- as.numeric(basis[basis$identifier == identifier, "school_id"])
+  c_id <- as.numeric(basis[basis$identifier == identifier, "class_id"])
 
   dates <- timetable %>%
     filter((school_id == s_id) & (class_id == c_id)) %>%

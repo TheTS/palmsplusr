@@ -2,7 +2,9 @@ Package: palmsplusr
 Type: Package
 Title: Process PALMS output data
 Version: 0.1.0
-Authors@R: as.person("Tom Stewart <tom.stewart@aut.ac.nz> [aut, cre]")
+Authors@R: c(as.person("Tom Stewart <tom.stewart@aut.ac.nz> [aut, cre]"),
+             as.person("Bernhard Snizek <b@snizek.com> [aut, ctb]"),
+             as.person("Jasper Schipperijn <jschipperijn@health.sdu.dk> [ctb]"))
 Maintainer: Tom Stewart <tom.stewart@aut.ac.nz>
 URL: http://thets.github.io/palmsplusr/
 BugReports: https://github.com/TheTS/palmsplusr/issues
