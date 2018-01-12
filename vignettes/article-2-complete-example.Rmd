@@ -27,7 +27,9 @@ library(palmsplusr)
 library(readr)
 
 # Load PALMS dataset
-palms <- read_palms("F:/data/csv/palms_output.csv")
+#palms <- read_palms("F:/data/csv/palms_output.csv")
+palms <- read_palms("F:/data/csv/one_participant.csv")
+
 
 # Load other csvs
 participant_basis <- read_csv("F:/data/csv/participant_basis.csv")
