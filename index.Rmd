@@ -34,10 +34,10 @@ knitr::opts_chunk$set(
 * What proportion of commuters trip chain different travel modes (e.g., walk-bus-walk)
 * What is the average speed of bicycle trips during peak travel times?
 
-PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. Once palmsplus is built, it can be summarised two ways: 
+The PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. This can then be summarised two ways: 
 
-* `days` provides a breakdown of information per day, per person (e.g., time spent in greenspace)
-* `trajectories` builds individual trips, and provides trip-level summaries (e.g., MVPA during the work commute). This can then be processed into multimodal trips if desired. 
+1. `days` provides a breakdown of information per day, per person (e.g., time spent in greenspace)
+2. `trajectories` builds individual trips, and provides trip-level summaries (e.g., MVPA during the work commute). This can then be processed into multimodal trips if desired. 
 
 The user is able to specify how each data source is combined. This is done by creating `field` tables using highly customisable formulas.
 

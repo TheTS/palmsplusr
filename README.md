@@ -6,7 +6,7 @@ PALMSplus for R
 <!--[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/TheTS/palmsplusr?branch=master&svg=true)](https://ci.appveyor.com/project/TheTS/palmsplusr)-->
 <!--[![Travis-CI Build Status](https://travis-ci.org/TheTS/palmsplusr.svg?branch=master)](https://travis-ci.org/TheTS/palmsplusr) -->
 <!--[![codecov](https://codecov.io/gh/TheTS/actigraph.sleepr/branch/master/graph/badge.svg)](https://codecov.io/gh/TheTS/actigraph.sleepr)-->
-[![![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-green.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--12-yellowgreen.svg)](/commits/master)
+[![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) [![Version](https://img.shields.io/badge/Package%20version-0.1.0-green.svg)](commits/master) [![Last Change](https://img.shields.io/badge/Last%20change-2018--01--12-yellowgreen.svg)](/commits/master)
 
 Overview
 --------
@@ -21,10 +21,10 @@ Overview
 -   What proportion of commuters trip chain different travel modes (e.g., walk-bus-walk)
 -   What is the average speed of bicycle trips during peak travel times?
 
-The PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. Once palmsplus is built, it can be summarised two ways:
+The PALMS data are combined with other input files to build the palmsplus [simple features](https://github.com/r-spatial/sf) data frame. This can then be summarised two ways:
 
--   `days` provides a breakdown of information per day, per person (e.g., time spent in greenspace)
--   `trajectories` builds individual trips, and provides trip-level summaries (e.g., MVPA during the work commute). This can then be processed into multimodal trips if desired.
+1.  `days` provides a breakdown of information per day, per person (e.g., time spent in greenspace)
+2.  `trajectories` builds individual trips, and provides trip-level summaries (e.g., MVPA during the work commute). This can then be processed into multimodal trips if desired.
 
 The user is able to specify how each data source is combined. This is done by creating `field` tables using highly customisable formulas.
 
@@ -68,7 +68,7 @@ palmsplus_fields
 #> 16 mvpa       moderate + vigorous    TRUE
 ```
 
-There are four other field tables that can be customised by the user:
+There are four other field tables that can be customized by the user:
 
 -   `palmsplus_domains` is used to specify aggregation domains for `days`
 -   `trajectory_fields` is used to specify fields for `trajectories`
@@ -115,7 +115,7 @@ install_github("TheTS/palmsplusr")
 Documentation and Examples
 --------------------------
 
-For further information and examples, please see the [GitHub documentation](http://thets.github.io/palmsplusr/)
+For further information and extensive examples, please see the [GitHub documentation](http://thets.github.io/palmsplusr/)
 
 Notes
 -----
