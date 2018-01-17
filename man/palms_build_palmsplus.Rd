@@ -13,8 +13,7 @@ palms_build_palmsplus(data, verbose = TRUE)
 }
 \description{
 Build the \code{palmsplus} dataset by adding additional columns to the PALMS dataset.
-The additional columns are specified using \code{\link{palms_add_field}}, \code{\link{palms_add_domain}},
-\code{\link{palms_add_trajectory_field}}, and \code{\link{palms_add_trajectory_location}}.
+The additional columns are specified using \code{\link{palms_add_field}}.
 }
 \examples{
 data("palms")

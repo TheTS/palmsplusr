@@ -20,7 +20,7 @@ the argument \code{domain_field = TRUE}. By default, a \code{duration} field
 is added (e.g., the total minutes per day).
 
 All data are summarised by default. However, additional aggragation \emph{domains}
-can be specified using \code{\link{palms_add_domain}} before building palmsplus.
+can be specified using \code{\link{palms_add_domain}} before building days.
 Domains are a subset of data, such as during school time. All \code{domain_field}
 variables will be summarised for each \emph{domain} seperatly.
 }
@@ -31,8 +31,9 @@ palms_remove_tables()
 # Add a field, and make it a domain_field
 palms_add_field("mvpa", "activityintensity > 1", TRUE)
 
-palms_add_domain("walking", "tripmot == 3")
 palmsplus <- palms_build_palmsplus(palms)
+
+palms_add_domain("walking", "tripmot == 3")
 
 # This will have 'walking' and 'total' domains
 # Each domain will have 'duration' and 'mvpa' fields

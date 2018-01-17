@@ -16,28 +16,30 @@ library(palmsplusr)
 library(readr)
 
 # Load PALMS dataset
-palms <- read_palms("F:/data/csv/palms_output.csv")
+palms <- read_palms("D:/data/csv/one_participant.csv")
 
 # Load other csvs
-participant_basis <- read_csv("F:/data/csv/participant_basis.csv")
-class_timetable <- read_csv("F:/data/csv/class_timetable.csv")
+participant_basis <- read_csv("D:/data/csv/participant_basis.csv")
+class_timetable <- read_csv("D:/data/csv/class_timetable.csv")
 
 # Load shapefiles (home points & schoolyard polygons)
-home <- read_sf("F:/data/shapefiles/home.shp")
-school <- read_sf("F:/data/shapefiles/school.shp")
+home <- read_sf("D:/data/shapefiles/home.shp")
+school <- read_sf("D:/data/shapefiles/school.shp")
 
 # Buffer home points
 home.buffer <- palms_buffer(point = home, distance = 100, crs = 2193)
 ```
 
+The `participant_basis` and `class_timetable` files are explained on the next page.
+
 \pagebreak
 
-The participant_basis file is used to link participant identifier with the correct school and classroom: 
+The `participant_basis` file is used to link participant identifier with the correct school and classroom: 
 ```{r}
 head(participant_basis, n = 5)
 ```
 
-The class_timetable file details start and end times for school and recess preiods, for each school/classroom:
+The `class_timetable` file details start and end times for school and recess preiods, for each school/classroom combination:
 ```{r}
 head(class_timetable, n = 5)
 ```
@@ -46,37 +48,35 @@ head(class_timetable, n = 5)
 
 ## Creating the five field tables
 
-All formulas for building `palmsplus`, `days`, `trajectories`, and `multimodal` are created. This is done by creating the five field tables:
+All formulas for building the `palmsplus`, `days`, `trajectories`, and `multimodal` datasets are created. This is done by creating the five field tables:
 
 * `palmsplus_fields`
-* `palmsplus_domains`
 * `trajectory_fields`
-* `trajectory_locations`
 * `multimodal_fields`
+* `palmsplus_domains`
+* `trajectory_locations`
 
-Most of these tables can be populated using the `palms_load_defaults()`. I use this function as a base, but then add additional fields that are specific to my dataset and research questions:
+
+The first three of these tables can be populated using the `palms_load_defaults()`. I use this function as a base, but then add additional fields that are specific to my dataset and research questions. To see a list of fields that are included by default, please see [the building formulas article](https://thets.github.io/palmsplusr/articles/article-3-building-formulas.html).
 
 ```{r}
 # Remove all field tables that exist
 palms_remove_tables()
 
-# load defaults for:
-# * palmsplus_fields
-# * trajectory_fields
-# * multimodal_fields
+# Load defaults
 palms_load_defaults(palms_epoch(palms))
 
 # palmsplus_fields (from other files)
-palms_add_field("in_school_time", "palms_in_time(., i, class_timetable, 
-                                   participant_basis, school_start, school_end)")
-palms_add_field("in_recess1", "palms_in_time(., i, class_timetable, 
-                               participant_basis, recess1_start, recess1_end)")
-palms_add_field("in_recess2", "palms_in_time(., i, class_timetable, 
-                               participant_basis, recess2_start, recess2_end)")
-palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == i), identifier)")
-palms_add_field("at_school", "palms_in_polygon(., filter(school, 
-                              school_id == participant_basis %>% filter(identifier == i) %>% 
-                              pull(school_id)))")
+palms_add_field("in_school_time", "palms_in_time(., i, class_timetable, participant_basis, 
+                                                 school_start, school_end)")
+palms_add_field("in_recess1", "palms_in_time(., i, class_timetable, participant_basis, 
+                                             recess1_start, recess1_end)")
+palms_add_field("in_recess2", "palms_in_time(., i, class_timetable, participant_basis, 
+                                             recess2_start, recess2_end)")
+palms_add_field("at_home", "palms_in_polygon(., filter(home.buffer, identifier == i), 
+                                             identifier)")
+palms_add_field("at_school", "palms_in_polygon(., filter(school, school_id == participant_basis 
+                              %>% filter(identifier == i) %>% pull(school_id)))")
 
 # palmsplus_domains
 palms_add_domain("home", "at_home")
@@ -97,57 +97,16 @@ I didn't specify any additional `trajectory_fields` or `multimodal_fields` as th
 
 \pagebreak
 
-All five of the field tables look like:
+## Build palmsplus, days, trajectories, and multimodal
 
-```{r, eval=FALSE}
-palmsplus_fields
-```
-```{r echo=FALSE}
-knitr::kable(palmsplus_fields, caption = "palmsplus_fields")
-```
-
-```{r, eval=FALSE}
-palmsplus_domains
-```
-```{r echo=FALSE}
-knitr::kable(palmsplus_domains, caption = "palmsplus_domains")
-```
-
-\pagebreak
-
-```{r, eval=FALSE}
-trajectory_fields
-```
-```{r echo=FALSE}
-knitr::kable(trajectory_fields, caption = "trajectory_fields")
-```
-
-```{r, eval=FALSE}
-trajectory_locations
-```
-```{r echo=FALSE}
-knitr::kable(trajectory_locations, caption = "trajectory_locations")
-```
-
-```{r, eval=FALSE}
-multimodal_fields
-```
-```{r echo=FALSE}
-knitr::kable(multimodal_fields, caption = "multimodal_fields")
-```
-
-\pagebreak
-
-## Building palmsplus, days, trajectories, and multimodal datasets
-
-Once all of the formula tables are created, it is simple to build all of the datasets. I've included a timer here to see how long it takes to process:
+Once all of the formula tables are created, the datasets can be built. I've included a timer here to see how long it takes to process:
 
 ```{r}
 # Start the timer
 t <- proc.time()
 
 # Build palmsplus
-palmsplus <- palms_build_palmsplus(palms, verbose = FALSE)
+palmsplus <- palms_build_palmsplus(palms)
 
 # Build days
 days <- palms_build_days(palmsplus)
@@ -161,7 +120,7 @@ multimodal <- palms_build_multimodal(trajectories, 200, 10)
 cat("Run time:", (proc.time() - t)[[1]]/60, "minutes")
 ```
 
-Just over 15 minutes for 191 participants isn't to bad!
+Around 20 minutes for 191 participants isn't bad!
 
 ## Saving results
 
@@ -169,10 +128,11 @@ Just over 15 minutes for 191 participants isn't to bad!
 write_csv(palmsplus, "palmsplus.csv")
 write_csv(days, "days.csv")
 write_csv(trajectories, "trajectories.csv")
-write_csv(multimodal, "multimodal.csv")
+write_csv(trajectories, "multimodal.csv")
 
 st_write(palmsplus, "palmsplus.shp")
 st_write(trajectories, "trajecories.shp")
-st_write(multimodal, "multimodal.shp")
+st_write(trajectories, "multimodal.shp")
 ```
+
 
