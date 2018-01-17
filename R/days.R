@@ -8,7 +8,7 @@
 #' is added (e.g., the total minutes per day).
 #'
 #' All data are summarised by default. However, additional aggragation \emph{domains}
-#' can be specified using \code{\link{palms_add_domain}} before building palmsplus.
+#' can be specified using \code{\link{palms_add_domain}} before building days.
 #' Domains are a subset of data, such as during school time. All \code{domain_field}
 #' variables will be summarised for each \emph{domain} seperatly.
 #'
@@ -23,8 +23,9 @@
 #' # Add a field, and make it a domain_field
 #' palms_add_field("mvpa", "activityintensity > 1", TRUE)
 #'
-#' palms_add_domain("walking", "tripmot == 3")
 #' palmsplus <- palms_build_palmsplus(palms)
+#'
+#' palms_add_domain("walking", "tripmot == 3")
 #'
 #' # This will have 'walking' and 'total' domains
 #' # Each domain will have 'duration' and 'mvpa' fields
@@ -33,13 +34,20 @@
 #' @export
 palms_build_days <- function(data) {
 
-  domains = "total"
-  data$total <- 1
+  domains <- "total"
+  domain_args <- setNames("1", "total") %>% lapply(parse_expr)
 
-  if (!exists("palmsplus_domains"))
+  if (!exists("palmsplus_domains")) {
     message("palms_build_days: No domains have been added - using totals only.")
-  else
+  } else {
     domains <- c(domains, palmsplus_domains[[1]])
+    domain_args <- c(domain_args, setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
+      lapply(parse_expr))
+  }
+
+  data <- data %>%
+    mutate(!!! domain_args) %>%
+    mutate_if(is.logical, as.integer)
 
   fields <- palmsplus_fields %>% filter(domain_field == TRUE) %>% pull(name)
 

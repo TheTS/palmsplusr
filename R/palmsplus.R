@@ -2,8 +2,7 @@
 #' Build the palmsplus dataset
 #'
 #' @description Build the \code{palmsplus} dataset by adding additional columns to the PALMS dataset.
-#' The additional columns are specified using \code{\link{palms_add_field}}, \code{\link{palms_add_domain}},
-#' \code{\link{palms_add_trajectory_field}}, and \code{\link{palms_add_trajectory_location}}.
+#' The additional columns are specified using \code{\link{palms_add_field}}.
 #'
 #' @param data The PALMS data obtained using \code{\link{read_palms}}.
 #' @param verbose Print progress to console after each iteration. Default is \code{TRUE}.
@@ -21,13 +20,6 @@ palms_build_palmsplus <- function(data, verbose = TRUE) {
 
   field_args <- setNames(palmsplus_fields[[2]], palmsplus_fields[[1]]) %>%
     lapply(parse_expr)
-
-  if (exists("palmsplus_domains")) {
-    domain_args <- setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
-      lapply(parse_expr)
-
-    field_args <- c(field_args, domain_args)
-  }
 
   x <- list()
   j <- 1
