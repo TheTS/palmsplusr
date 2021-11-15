@@ -24,6 +24,15 @@
 #' @examples
 #' #multimodal <- palms_calc_multimodal(trajectories, 200, 10)
 #'
+#' @import dplyr
+#' @import sf
+#' @importFrom rlang parse_expr
+#' @importFrom geosphere distGeo
+#' @importFrom data.table rleid as.data.table
+#' @importFrom purrr reduce
+#' @importFrom tidyr gather spread unite
+#' @importFrom stats setNames
+#'
 #' @export
 palms_build_multimodal <- function(data, spatial_threshold,
                                   temporal_threshold, verbose = TRUE) {

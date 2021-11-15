@@ -11,7 +11,7 @@ BugReports: https://github.com/TheTS/palmsplusr/issues
 Description: This package makes it easier to analyse physical activity
     and travel data obtained from the Personal Activity Location Measurement
     System (PALMS).
-License: LGPL-3
+License: LGPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: false
 Depends:
@@ -30,4 +30,4 @@ Suggests:
   knitr,
   rmarkdown
 VignetteBuilder: knitr
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.2

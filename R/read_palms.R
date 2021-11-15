@@ -27,6 +27,9 @@
 #' palms <- read_palms('palms_file.csv')
 #' }
 #'
+#' @import sf
+#' @importFrom readr read_csv
+#'
 #' @export
 read_palms <- function(file) {
   palms <- read_csv(file)

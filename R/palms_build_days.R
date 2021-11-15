@@ -31,6 +31,11 @@
 #' # Each domain will have 'duration' and 'mvpa' fields
 #' days <- palms_build_days(palmsplus)
 #'
+#' @import dplyr
+#' @import sf
+#' @importFrom rlang parse_expr UQ
+#' @importFrom purrr reduce
+#'
 #' @export
 palms_build_days <- function(data) {
 
@@ -55,7 +60,7 @@ palms_build_days <- function(data) {
     st_set_geometry(NULL) %>%
     select(identifier, datetime, domains, fields) %>%
     mutate(duration = 1) %>%
-    mutate_at(vars(-identifier,-datetime), funs(. * palms_epoch(data) / 60)) %>%
+    mutate_at(vars(-identifier,-datetime), ~ . * palms_epoch(data) / 60) %>%
     group_by(identifier, date = as.Date(datetime)) %>%
     select(-datetime)
 
@@ -64,9 +69,9 @@ palms_build_days <- function(data) {
     x[[i]] <- data %>%
       filter(UQ(as.name(i)) > 0) %>%
       select(-one_of(domains), duration) %>%
-      summarise_all(funs(sum(.))) %>%
+      summarise_all(~ sum(.)) %>%
       ungroup() %>%
-      rename_at(vars(-identifier, -date), funs(paste0(i, "_", .)))
+      rename_at(vars(-identifier, -date), ~ paste0(i, "_", .))
   }
 
   result <- x %>%

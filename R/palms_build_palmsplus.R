@@ -13,6 +13,12 @@
 #' palms_add_field("weekend", "dow > 5")
 #' palmsplus <- palms_build_palmsplus(palms)
 #'
+#' @import dplyr
+#' @import sf
+#' @importFrom rlang parse_expr
+#' @importFrom data.table rbindlist
+#'
+#'
 #' @export
 palms_build_palmsplus <- function(data, verbose = TRUE) {
 
@@ -37,6 +43,6 @@ palms_build_palmsplus <- function(data, verbose = TRUE) {
     }
   }
 
-  data <- data.table::rbindlist(x) %>%
+  data <- rbindlist(x) %>%
     st_set_geometry(data$geometry)
 }

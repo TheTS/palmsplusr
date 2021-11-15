@@ -27,6 +27,11 @@
 #'
 #' trajectories <- palms_build_trajectories(palmsplus)
 #'
+#' @import dplyr
+#' @import sf
+#' @importFrom rlang parse_expr
+#' @importFrom stats setNames
+#'
 #' @export
 palms_build_trajectories <- function(data) {
 

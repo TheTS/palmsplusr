@@ -95,7 +95,9 @@ palms_add_trajectory_field <- function(name, formula, after_conversion = FALSE) 
 #' # A full example workflow
 #' data(list = c("palms", "home", "school", "participant_basis"))
 
-#' palms_add_field("at_home", "palms_in_polygon(., filter(palms_buffer(home, distance = 100), identifier == i), identifier)")
+#' palms_add_field("at_home", "palms_in_polygon(., filter(palms_buffer(home, distance = 100),
+#'                                                        identifier == i), identifier)")
+#'
 #' palms_add_field("at_school", "palms_in_polygon(., filter(school, school_id == participant_basis %>%
 #'                                                   filter(identifier == i) %>% pull(school_id)))")
 #' palmsplus <- palms_build_palmsplus(palms)
@@ -186,6 +188,9 @@ palms_buffer <- function(point, distance = 100, crs = 2193) {
 #' home.buffer <- palms_buffer(home, distance = 100)
 #'
 #' at_home <- palms_in_polygon(palms, home.buffer)
+#'
+#' @importFrom rlang quo_text enquo
+#' @importFrom stats aggregate
 #'
 #' @export
 palms_in_polygon <- function(data, polygons, collapse_var = NULL){
@@ -304,6 +309,9 @@ palms_remove_tables <- function() {
 #' using \code{\link{palms_epoch}}.
 #'
 #' @examples
+#'
+#' data("palms")
+#'
 #' palms_remove_tables()
 #'
 #' epoch <- palms_epoch(palms)

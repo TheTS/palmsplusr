@@ -1,8 +1,6 @@
 library(palmsplusr)
 library(readr)
 
-context("Testing all functions")
-
 test_that("Testing normal workflow", {
   palms <- read_palms(system.file("extdata", "one_participant.csv", package = "palmsplusr"))
   participant_basis <- read_csv(system.file("extdata", "participant_basis.csv", package = "palmsplusr"))
@@ -12,7 +10,9 @@ test_that("Testing normal workflow", {
   home.buffer <- palms_buffer(point = home, distance = 100, crs = 2193)
   school <- read_sf(system.file("extdata/shapefiles/", "school.shp", package = "palmsplusr"))
 
-  # Check files imported correctly
+
+  context("Testing data import")
+
   expect_is(palms, class = c("sf", "tbl_df", "tbl", "data.frame"))
   expect_is(school, class = c("sf", "tbl_df", "tbl", "data.frame"))
   expect_is(home.buffer, class = c("sf", "tbl_df", "tbl", "data.frame"))
@@ -60,21 +60,32 @@ test_that("Testing normal workflow", {
 
   expect_error(palms_add_trajectory_field("speed", "."))
 
-  # Check field/domain tables built correctly
+  context("Testing config tables")
   expect_length(unlist(palmsplus_domains), 2)
   expect_length(unlist(palmsplus_fields), 48)
   expect_length(unlist(trajectory_fields), 42)
 
-  # Check palmsplus
-  palmsplus <- palms_build_palmsplus(palms)
+  context("Testing palmsplus")
+  palmsplus <- palms_build_palmsplus(palms, verbose = FALSE)
   expect_equal(sum(palmsplus$mvpa), 791)
 
-  # Check days
+
+  context("Testing days")
+
   days <- palms_build_days(palmsplus)
   expect_equal(round(mean(days$d_all_mvpa, na.rm = TRUE), 2), 21.97)
 
-  # Check trajectories
+  context("Testing trajectories")
+
   trajectories <- palms_build_trajectories(palmsplus)
   expect_equal(nrow(trajectories), 38)
+
+
+  context("Testing multimodal")
+
+  multimodal <- palms_build_multimodal(trajectories, 200, 10, verbose = FALSE)
+  expect_equal(nrow(multimodal), 31)
+  expect_equal(sum(multimodal$n_segments), nrow(trajectories))
+
 })
 
