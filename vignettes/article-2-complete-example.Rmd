@@ -12,11 +12,14 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
 This article will demonstrate a real world example with a 191-participant dataset.
+
+Note: this uses real local data, so the vignette is not actually built (only used for online documentation).
 
 ## Reading data
 
