@@ -4,10 +4,12 @@
 \alias{palms_build_palmsplus}
 \title{Build the palmsplus dataset}
 \usage{
-palms_build_palmsplus(data, verbose = TRUE)
+palms_build_palmsplus(data, config_file = NULL, verbose = TRUE)
 }
 \arguments{
 \item{data}{The PALMS data obtained using \code{\link{read_palms}}.}
+
+\item{config_file}{Path to the config file}
 
 \item{verbose}{Print progress to console after each iteration. Default is \code{TRUE}.}
 }

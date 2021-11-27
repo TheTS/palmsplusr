@@ -1,0 +1,41 @@
+context,name,formula,domain_field,after_conversion
+palmsplus_field,weekday,dow < 6,FALSE,
+palmsplus_field,weekend,dow > 5,FALSE,
+palmsplus_field,indoors,iov == 3,FALSE,
+palmsplus_field,outdoors,iov == 1,FALSE,
+palmsplus_field,in_vehicle,iov == 2,FALSE,
+palmsplus_field,inserted,fixtypecode == 6,FALSE,
+palmsplus_field,pedestrian,tripmot == 1,FALSE,
+palmsplus_field,bicycle,tripmot == 2,FALSE,
+palmsplus_field,vehicle,tripmot == 3,FALSE,
+palmsplus_field,nonwear,activityintensity < 0,TRUE,
+palmsplus_field,wear,activityintensity >= 0,TRUE,
+palmsplus_field,sedentary,activityintensity == 0,TRUE,
+palmsplus_field,light,activityintensity == 1,TRUE,
+palmsplus_field,moderate,activityintensity == 2,TRUE,
+palmsplus_field,vigorous,activityintensity == 3,TRUE,
+palmsplus_field,mvpa,moderate + vigorous,TRUE,
+trajectory_field,mot,first(tripmot),,FALSE
+trajectory_field,date,first(as.Date(datetime)),,FALSE
+trajectory_field,start,datetime[triptype==1],,FALSE
+trajectory_field,end,datetime[triptype==4],,FALSE
+trajectory_field,duration,"as.numeric(difftime(end, start, units = ""secs"") + 15)",,FALSE
+trajectory_field,nonwear,sum(activityintensity < 0) * 15,,FALSE
+trajectory_field,wear,sum(activityintensity >= 0) * 15,,FALSE
+trajectory_field,sedentary,sum(activityintensity == 0) * 15,,FALSE
+trajectory_field,light,sum(activityintensity == 1) * 15,,FALSE
+trajectory_field,moderate,sum(activityintensity == 2) * 15,,FALSE
+trajectory_field,vigorous,sum(activityintensity == 3) * 15,,FALSE
+trajectory_field,mvpa,moderate + vigorous,,FALSE
+trajectory_field,length,as.numeric(st_length(.)),,TRUE
+trajectory_field,speed,(length / duration) * 3.6,,TRUE
+multimodal_field,duration,sum,,
+multimodal_field,nonwear,sum,,
+multimodal_field,wear,sum,,
+multimodal_field,sedentary,sum,,
+multimodal_field,light,sum,,
+multimodal_field,moderate,sum,,
+multimodal_field,vigorous,sum,,
+multimodal_field,mvpa,sum,,
+multimodal_field,length,sum,,
+multimodal_field,speed,mean,,

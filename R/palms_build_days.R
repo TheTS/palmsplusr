@@ -13,6 +13,7 @@
 #' variables will be summarised for each \emph{domain} seperatly.
 #'
 #' @param data The palmsplus data obtained from \code{\link{palms_build_palmsplus}}.
+#' @param config_file Path to the config file
 #'
 #' @return A table summarised by day.
 #'
@@ -37,24 +38,39 @@
 #' @importFrom purrr reduce
 #'
 #' @export
-palms_build_days <- function(data) {
+palms_build_days <- function(data, config_file = NULL) {
 
   domains <- "total"
   domain_args <- setNames("1", "total") %>% lapply(parse_expr)
 
-  if (!exists("palmsplus_domains")) {
+  config <- read_config(config_file) %>%
+    filter(context == 'palmsplus_domain')
+
+
+  # if (!exists("palmsplus_domains")) {
+  #   message("palms_build_days: No domains have been added - using totals only.")
+  # } else {
+  #   domains <- c(domains, palmsplus_domains[[1]])
+  #   domain_args <- c(domain_args, setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
+  #                      lapply(parse_expr))
+  # }
+
+  if (nrow(config) < 1) {
     message("palms_build_days: No domains have been added - using totals only.")
   } else {
-    domains <- c(domains, palmsplus_domains[[1]])
-    domain_args <- c(domain_args, setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
-      lapply(parse_expr))
+    domains <- c(domains, config$name)
+    domain_args <- c(domain_args, config$formula, config$name) %>%
+      lapply(parse_expr)
   }
 
   data <- data %>%
     mutate(!!! domain_args) %>%
     mutate_if(is.logical, as.integer)
 
-  fields <- palmsplus_fields %>% filter(domain_field == TRUE) %>% pull(name)
+  config <- read_config(config_file) %>%
+    filter(context == 'palmsplus_field')
+
+  fields <- config %>% filter(domain_field == TRUE) %>% pull(name)
 
   data <- data %>%
     st_set_geometry(NULL) %>%
@@ -76,5 +92,6 @@ palms_build_days <- function(data) {
 
   result <- x %>%
     reduce(left_join, by = c("identifier" = "identifier", "date" = "date"))
+
   return(result)
 }

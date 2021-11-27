@@ -7,6 +7,7 @@
 #' @param spatial_threshold Spatial threshold in meters
 #' @param temporal_threshold Temporal threshold in minutes
 #' @param verbose Print progress after each step. Default is \code{TRUE}.
+#' @param config_file Path to the config file
 #'
 #' @details Several columns are required in the \code{trajectories} dataset. These
 #' need to be added as trajectory fields:
@@ -35,7 +36,8 @@
 #'
 #' @export
 palms_build_multimodal <- function(data, spatial_threshold,
-                                  temporal_threshold, verbose = TRUE) {
+                                  temporal_threshold, verbose = TRUE,
+                                  config_file = NULL) {
 
   if (!all(c("identifier", "tripnumber", "start", "end", "geometry", "mot") %in% colnames(data)))
     stop("Your trajectories data does not contain the required column names...")
@@ -81,11 +83,16 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
   if(verbose) cat('done\nCalculating fields...')
 
-  if (exists("multimodal_fields")) {
+
+  config <- read_config(config_file) %>%
+    filter(context == 'multimodal_field')
+
+  #if (exists("multimodal_fields")) {
+  if (nrow(config) > 0) {
 
     # Split varables into each mot
     mot_split <- data %>%
-      select(c("mot", "mmt_number", "identifier", "geometry", multimodal_fields$name)) %>%
+      select(c("mot", "mmt_number", "identifier", "geometry", config$name)) %>%
       mutate(mot = paste0("mot_", mot)) %>%
       gather(variable, value, -mmt_number, -mot, -identifier, -geometry) %>%
       unite(col, mot, variable) %>%
@@ -97,12 +104,12 @@ palms_build_multimodal <- function(data, spatial_threshold,
     # Calculate multimodal_fields
     df_fields <- list()
 
-    for (i in unique(multimodal_fields$func)) {
+    for (i in unique(config$formula)) {
       df_fields[[i]] <- mot_split %>%
         as.data.frame() %>%
         group_by(identifier, mmt_number) %>%
         summarise_at(vars(matches(
-          paste(multimodal_fields$name[multimodal_fields$func == i], collapse = "|"))),
+          paste(config$name[config$formula == i], collapse = "|"))),
                           i, na.rm = TRUE)
     }
 
@@ -114,11 +121,15 @@ palms_build_multimodal <- function(data, spatial_threshold,
   } else
     mot_split <- data
 
-  # Build trajectory_location formulas if they exist
-  if (exists("trajectory_locations")) {
+  config <- read_config(config_file) %>%
+    filter(context == 'trajectory_location')
 
-    names <- unique(c(trajectory_locations$start_criteria,
-      trajectory_locations$end_criteria))
+  # Build trajectory_location formulas if they exist
+  #if (exists("trajectory_locations")) {
+  if (nrow(config) > 0) {
+
+    names <- unique(c(config$start_criteria,
+                      config$end_criteria))
 
     # Rather than recalculating geometry, just lookup in palmsplus
     stopifnot(exists("palmsplus"))
@@ -131,10 +142,10 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
     args_locations <- setNames(
       paste0("lookup[tripnumber==start_trip & triptype==1 & identifier==first(identifier),",
-        trajectory_locations[[2]],
+             config$start_criteria,
         "] & lookup[tripnumber==end_trip & triptype==4  & identifier==first(identifier),",
-        trajectory_locations[[3]], "]"),
-        trajectory_locations[[1]]) %>%
+        config$end_criteria, "]"),
+      config$name) %>%
       lapply(parse_expr)
   } else
     args_locations <- NULL
@@ -155,11 +166,11 @@ palms_build_multimodal <- function(data, spatial_threshold,
     select(-c(start_trip, end_trip)) %>%
     mutate_if(is.logical, as.integer)
 
-  if (exists("df_fields"))
-    df <- reduce(list(df_other, df_fields), left_join,
-      by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
-  else
+  if (exists("df_fields")) {
+    df <- reduce(list(df_other, df_fields), left_join, by = c("identifier" = "identifier", "mmt_number" = "mmt_number"))
+  } else {
     df <- df_other
+  }
 
   if(verbose) cat('done\n')
   return(df)

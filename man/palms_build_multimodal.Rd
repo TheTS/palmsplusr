@@ -8,7 +8,8 @@ palms_build_multimodal(
   data,
   spatial_threshold,
   temporal_threshold,
-  verbose = TRUE
+  verbose = TRUE,
+  config_file = NULL
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ palms_build_multimodal(
 \item{temporal_threshold}{Temporal threshold in minutes}
 
 \item{verbose}{Print progress after each step. Default is \code{TRUE}.}
+
+\item{config_file}{Path to the config file}
 }
 \value{
 The input trajectories LINESTRING geometry, collapsed into multimodal trips

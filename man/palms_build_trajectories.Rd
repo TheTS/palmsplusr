@@ -4,10 +4,12 @@
 \alias{palms_build_trajectories}
 \title{Build trajectories from the palmsplus dataset}
 \usage{
-palms_build_trajectories(data)
+palms_build_trajectories(data, config_file = NULL)
 }
 \arguments{
 \item{data}{The palmsplus data obtained from \code{\link{palms_build_palmsplus}}.}
+
+\item{config_file}{Path to the config file}
 }
 \value{
 A table of individual trips represented as \code{LINESTRING} geometry.

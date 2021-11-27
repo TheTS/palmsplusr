@@ -8,6 +8,7 @@
 #' and \code{\link{palms_add_trajectory_location}}.
 #'
 #' @param data The palmsplus data obtained from \code{\link{palms_build_palmsplus}}.
+#' @param config_file Path to the config file
 #'
 #' @return A table of individual trips represented as \code{LINESTRING} geometry.
 #'
@@ -33,23 +34,47 @@
 #' @importFrom stats setNames
 #'
 #' @export
-palms_build_trajectories <- function(data) {
+palms_build_trajectories <- function(data, config_file = NULL) {
 
-  if (exists("trajectory_fields")) {
-    args <- trajectory_fields %>% filter(after_conversion == FALSE)
-    args_after <- trajectory_fields %>% filter(after_conversion == TRUE)
+  config <- read_config(config_file) %>%
+    filter(context == 'trajectory_field')
 
-    args <- setNames(args[[2]], args[[1]]) %>% lapply(parse_expr)
-    args_after <- setNames(args_after[[2]], args_after[[1]]) %>% lapply(parse_expr)
+  # if (exists("trajectory_fields")) {
+  #   args <- trajectory_fields %>% filter(after_conversion == FALSE)
+  #   args_after <- trajectory_fields %>% filter(after_conversion == TRUE)
+  #
+  #   args <- setNames(args[[2]], args[[1]]) %>% lapply(parse_expr)
+  #   args_after <- setNames(args_after[[2]], args_after[[1]]) %>% lapply(parse_expr)
+  # } else {
+  #   args <- list()
+  #   args_after <- list()
+  # }
+
+  if (nrow(config) > 0) {
+    args <- config %>% filter(after_conversion == FALSE)
+    args_after <- config %>% filter(after_conversion == TRUE)
+
+    args <- setNames(args$formula, args$name) %>% lapply(parse_expr)
+    args_after <- setNames(args_after$formula, args_after$name) %>% lapply(parse_expr)
   } else {
     args <- list()
     args_after <- list()
   }
 
-  if (exists("trajectory_locations")) {
-    args_locations <- setNames(paste0("first(", trajectory_locations[[2]],
-                                      ") & last(", trajectory_locations[[3]], ")"),
-                               trajectory_locations[[1]]) %>% lapply(parse_expr)
+  config <- read_config(config_file) %>%
+    filter(context == 'trajectory_location')
+
+  # if (exists("trajectory_locations")) {
+  #   args_locations <- setNames(paste0("first(", trajectory_locations[[2]],
+  #                                     ") & last(", trajectory_locations[[3]], ")"),
+  #                              trajectory_locations[[1]]) %>% lapply(parse_expr)
+  #   args <- c(args, args_locations)
+  # }
+
+  if (nrow(config) > 0) {
+    args_locations <- setNames(paste0("first(", config$start_criteria,
+                                      ") & last(", config$end_criteria, ")"),
+                               config$name) %>% lapply(parse_expr)
     args <- c(args, args_locations)
   }
 
