@@ -36,47 +36,60 @@
 #' @export
 palms_build_trajectories <- function(data, config_file = NULL) {
 
-  config <- read_config(config_file) %>%
-    filter(context == 'trajectory_field')
 
-  # if (exists("trajectory_fields")) {
-  #   args <- trajectory_fields %>% filter(after_conversion == FALSE)
-  #   args_after <- trajectory_fields %>% filter(after_conversion == TRUE)
-  #
-  #   args <- setNames(args[[2]], args[[1]]) %>% lapply(parse_expr)
-  #   args_after <- setNames(args_after[[2]], args_after[[1]]) %>% lapply(parse_expr)
-  # } else {
-  #   args <- list()
-  #   args_after <- list()
-  # }
+  # If using field tables
+  if (exists("trajectory_fields") & is.null(config_file)) {
+    args <- trajectory_fields %>% filter(after_conversion == FALSE)
+    args_after <- trajectory_fields %>% filter(after_conversion == TRUE)
 
-  if (nrow(config) > 0) {
-    args <- config %>% filter(after_conversion == FALSE)
-    args_after <- config %>% filter(after_conversion == TRUE)
-
-    args <- setNames(args$formula, args$name) %>% lapply(parse_expr)
-    args_after <- setNames(args_after$formula, args_after$name) %>% lapply(parse_expr)
+    args <- setNames(args[[2]], args[[1]]) %>% lapply(parse_expr)
+    args_after <- setNames(args_after[[2]], args_after[[1]]) %>% lapply(parse_expr)
   } else {
     args <- list()
     args_after <- list()
   }
 
-  config <- read_config(config_file) %>%
-    filter(context == 'trajectory_location')
+  # If using config file
+  if (!is.null(config_file) & !exists("trajectory_fields")) {
+    config <- read_config(config_file) %>%
+      filter(context == 'trajectory_field')
 
-  # if (exists("trajectory_locations")) {
-  #   args_locations <- setNames(paste0("first(", trajectory_locations[[2]],
-  #                                     ") & last(", trajectory_locations[[3]], ")"),
-  #                              trajectory_locations[[1]]) %>% lapply(parse_expr)
-  #   args <- c(args, args_locations)
-  # }
+    if (nrow(config) > 0) {
+      args <- config %>% filter(after_conversion == FALSE)
+      args_after <- config %>% filter(after_conversion == TRUE)
 
-  if (nrow(config) > 0) {
-    args_locations <- setNames(paste0("first(", config$start_criteria,
-                                      ") & last(", config$end_criteria, ")"),
-                               config$name) %>% lapply(parse_expr)
+      args <- setNames(args$formula, args$name) %>% lapply(parse_expr)
+      args_after <- setNames(args_after$formula, args_after$name) %>% lapply(parse_expr)
+    } else {
+      args <- list()
+      args_after <- list()
+    }
+  }
+
+
+  # If using field tables
+  if (exists("trajectory_locations") & is.null(config_file)) {
+    args_locations <- setNames(paste0("first(", trajectory_locations[[2]],
+                                      ") & last(", trajectory_locations[[3]], ")"),
+                               trajectory_locations[[1]]) %>% lapply(parse_expr)
     args <- c(args, args_locations)
   }
+
+
+  # If using config file
+  if (!is.null(config_file) & !exists("trajectory_fields")) {
+    config <- read_config(config_file) %>%
+      filter(context == 'trajectory_location')
+
+    if (nrow(config) > 0) {
+      args_locations <- setNames(paste0("first(", config$start_criteria,
+                                        ") & last(", config$end_criteria, ")"),
+                                 config$name) %>% lapply(parse_expr)
+      args <- c(args, args_locations)
+    }
+
+  }
+
 
   data %>%
     filter(tripnumber > 0) %>%
@@ -84,6 +97,7 @@ palms_build_trajectories <- function(data, config_file = NULL) {
     summarise(!!!args, do_union = FALSE) %>%
     st_cast("LINESTRING") %>%
     mutate(!!!args_after) %>%
+    ungroup() %>%
     mutate_if(is.logical, as.integer)
 }
 

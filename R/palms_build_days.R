@@ -13,6 +13,7 @@
 #' variables will be summarised for each \emph{domain} seperatly.
 #'
 #' @param data The palmsplus data obtained from \code{\link{palms_build_palmsplus}}.
+#' @param verbose Print progress to console. Default is \code{TRUE}.
 #' @param config_file Path to the config file
 #'
 #' @return A table summarised by day.
@@ -38,39 +39,58 @@
 #' @importFrom purrr reduce
 #'
 #' @export
-palms_build_days <- function(data, config_file = NULL) {
+palms_build_days <- function(data, verbose = TRUE, config_file = NULL) {
 
   domains <- "total"
   domain_args <- setNames("1", "total") %>% lapply(parse_expr)
 
-  config <- read_config(config_file) %>%
-    filter(context == 'palmsplus_domain')
+  # If using field tables
+  if (!exists("palmsplus_domains")) {
 
+    if (verbose)
+      message("palms_build_days: No domains have been added - using totals only.")
 
-  # if (!exists("palmsplus_domains")) {
-  #   message("palms_build_days: No domains have been added - using totals only.")
-  # } else {
-  #   domains <- c(domains, palmsplus_domains[[1]])
-  #   domain_args <- c(domain_args, setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
-  #                      lapply(parse_expr))
-  # }
-
-  if (nrow(config) < 1) {
-    message("palms_build_days: No domains have been added - using totals only.")
-  } else {
-    domains <- c(domains, config$name)
-    domain_args <- c(domain_args, config$formula, config$name) %>%
-      lapply(parse_expr)
+  } else if (is.null(config_file)) {
+    domains <- c(domains, palmsplus_domains[[1]])
+    domain_args <- c(domain_args, setNames(palmsplus_domains[[2]], palmsplus_domains[[1]]) %>%
+                       lapply(parse_expr))
   }
+
+  # If using config file
+  if (!is.null(config_file)) {
+    config <- read_config(config_file) %>%
+      filter(context == 'palmsplus_domain')
+
+    if (nrow(config) < 1) {
+
+      if (verbose)
+        message("palms_build_days: No domains have been added - using totals only.")
+
+    } else {
+      domains <- c(domains, config$name)
+      domain_args <- c(domain_args, config$formula, config$name) %>%
+        lapply(parse_expr)
+    }
+
+  }
+
 
   data <- data %>%
     mutate(!!! domain_args) %>%
     mutate_if(is.logical, as.integer)
 
-  config <- read_config(config_file) %>%
-    filter(context == 'palmsplus_field')
 
-  fields <- config %>% filter(domain_field == TRUE) %>% pull(name)
+  if (!is.null(config_file)) {
+    config <- read_config(config_file) %>%
+      filter(context == 'palmsplus_field')
+
+    fields <- config %>% filter(domain_field == TRUE) %>% pull(name)
+
+  } else {
+
+    fields <- palmsplus_fields %>% filter(domain_field == TRUE) %>% pull(name)
+
+  }
 
   data <- data %>%
     st_set_geometry(NULL) %>%

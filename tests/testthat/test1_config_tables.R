@@ -1,7 +1,7 @@
 library(palmsplusr)
 library(readr)
 
-test_that("Testing normal workflow", {
+test_that("Testing config table workflow", {
   palms <- read_palms(system.file("extdata", "one_participant.csv", package = "palmsplusr"))
   participant_basis <- read_csv(system.file("extdata", "participant_basis.csv", package = "palmsplusr"))
   class_timetable <- read_csv(system.file("extdata", "class_timetable.csv", package = "palmsplusr"))
@@ -65,23 +65,23 @@ test_that("Testing normal workflow", {
   expect_length(unlist(palmsplus_fields), 48)
   expect_length(unlist(trajectory_fields), 42)
 
-  context("Testing palmsplus")
+  context("Testing build_palmsplus")
   palmsplus <- palms_build_palmsplus(palms, verbose = FALSE)
   expect_equal(sum(palmsplus$mvpa), 791)
 
 
-  context("Testing days")
+  context("Testing build_days")
 
-  days <- palms_build_days(palmsplus)
+  days <- palms_build_days(palmsplus, verbose = FALSE)
   expect_equal(round(mean(days$d_all_mvpa, na.rm = TRUE), 2), 21.97)
 
-  context("Testing trajectories")
+  context("Testing build_trajectories")
 
   trajectories <- palms_build_trajectories(palmsplus)
   expect_equal(nrow(trajectories), 38)
 
 
-  context("Testing multimodal")
+  context("Testing build_multimodal")
 
   multimodal <- palms_build_multimodal(trajectories, 200, 10, verbose = FALSE)
   expect_equal(nrow(multimodal), 31)

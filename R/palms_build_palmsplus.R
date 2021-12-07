@@ -23,17 +23,23 @@
 #' @export
 palms_build_palmsplus <- function(data, config_file = NULL, verbose = TRUE) {
 
-  config <- read_config(config_file) %>%
-    filter(context == 'palmsplus_field')
+  if (!exists("palmsplus_fields") & is.null(config_file)) stop("No palmsplus fields have been added (and no config file specified)")
 
+  # If using field tables
+  if (exists("palmsplus_fields") & is.null(config_file)) {
+    field_args <- setNames(palmsplus_fields[[2]], palmsplus_fields[[1]]) %>%
+      lapply(parse_expr)
+  }
 
-  #if (!exists("palmsplus_fields")) stop("No palmsplus fields have been added.")
+  # If using config file
+  if (!is.null(config_file)) {
 
-  #field_args <- setNames(palmsplus_fields[[2]], palmsplus_fields[[1]]) %>%
-  #  lapply(parse_expr)
+    config <- read_config(config_file) %>%
+      filter(context == 'palmsplus_field')
 
-  field_args <- setNames(config$formula, config$name) %>%
-    lapply(parse_expr)
+    field_args <- setNames(config$formula, config$name) %>%
+      lapply(parse_expr)
+  }
 
 
   x <- list()

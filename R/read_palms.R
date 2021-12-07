@@ -4,6 +4,7 @@
 #' @param file Path to the PALMS csv file.
 #'
 #' @return A \code{sf data.frame} of PALMS data represented as \code{POINT} geometry.
+#' @param verbose Print progress after each step. Default is \code{TRUE}.
 #'
 #' @details This functions checks for the following columns, and will fail if
 #' these are not present:
@@ -31,8 +32,8 @@
 #' @importFrom readr read_csv
 #'
 #' @export
-read_palms <- function(file) {
-  palms <- read_csv(file)
+read_palms <- function(file, verbose = TRUE) {
+  palms <- read_csv(file, show_col_types = verbose)
   palms <- setNames(palms, tolower(names(palms)))
 
   check_names <- c("identifier",
@@ -61,6 +62,8 @@ read_palms <- function(file) {
   if (length(extra) > 0)
     message("Your palms input file has extra columns: ", paste(extra, sep = ", "), "\n")
 
-  message("Column name check passed. Converting to sf dataframe...\n")
+  if (verbose)
+    message("Column name check passed. Converting to sf dataframe...\n")
+
   return(st_as_sf(palms, coords = c("lon", "lat"), crs = 4326))
 }

@@ -4,10 +4,12 @@
 \alias{palms_build_days}
 \title{Calculate day-level summaries from the palmsplus dataset}
 \usage{
-palms_build_days(data, config_file = NULL)
+palms_build_days(data, verbose = TRUE, config_file = NULL)
 }
 \arguments{
 \item{data}{The palmsplus data obtained from \code{\link{palms_build_palmsplus}}.}
+
+\item{verbose}{Print progress to console. Default is \code{TRUE}.}
 
 \item{config_file}{Path to the config file}
 }
