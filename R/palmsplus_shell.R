@@ -96,27 +96,27 @@ palmsplus_shell <- function(palms_data,
   # Save results to output folder: csv files (excluding geometry) and GIS shapefiles
   if (save_output) {
 
-    if (!dir.exists(output)) {
+    if (!dir.exists(output_path)) {
       if (verbose)
         message("Creating output directory\n")
 
-      dir.create(output)
+      dir.create(output_path)
     }
 
-    write_csv(st_drop_geometry(pp), file.path(output, 'palmsplus.csv'))
-    st_write(pp, delete_layer = TRUE, file.path(output, 'palmsplus.shp'))
+    write_csv(st_drop_geometry(pp), file.path(output_path, 'palmsplus.csv'))
+    st_write(pp, delete_layer = TRUE, file.path(output_path, 'palmsplus.shp'))
 
     if (days) {
-      write_csv(d, file.path(output, 'days.csv'))
+      write_csv(d, file.path(output_path, 'days.csv'))
     }
 
     if (trajectories) {
-      write_csv(st_drop_geometry(tr), file.path(output, 'trajectories.csv'))
-      st_write(tr, delete_layer = TRUE, file.path(output, 'trajectories.shp'))
+      write_csv(st_drop_geometry(tr), file.path(output_path, 'trajectories.csv'))
+      st_write(tr, delete_layer = TRUE, file.path(output_path, 'trajectories.shp'))
 
       if (multimodal) {
-        write_csv(st_drop_geometry(mm), file.path(output, 'multimodal.csv'))
-        st_write(mm, delete_layer = TRUE, file.path(output, 'multimodal.shp'))
+        write_csv(st_drop_geometry(mm), file.path(output_path, 'multimodal.csv'))
+        st_write(mm, delete_layer = TRUE, file.path(output_path, 'multimodal.shp'))
       }
 
     }

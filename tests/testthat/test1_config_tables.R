@@ -55,7 +55,7 @@ test_that("Testing config table workflow", {
   palms_add_trajectory_field("moderate",  "sum(activityintensity == 2) * 15")
   palms_add_trajectory_field("vigorous",  "sum(activityintensity == 3) * 15")
   palms_add_trajectory_field("mvpa",      "moderate + vigorous")
-  palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
+  palms_add_trajectory_field("length",    "as.numeric(st_length(geometry))",  TRUE)
   palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE)
 
   expect_error(palms_add_trajectory_field("speed", "."))
