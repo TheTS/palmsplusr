@@ -93,6 +93,38 @@ palmsplus_shell <- function(palms_data,
 
 
 
+  # Save results to output folder: csv files (excluding geometry) and GIS shapefiles
+  if (save_output) {
+
+    if (!dir.exists(output)) {
+      if (verbose)
+        message("Creating output directory\n")
+
+      dir.create(output)
+    }
+
+    write_csv(st_drop_geometry(pp), file.path(output, 'palmsplus.csv'))
+    st_write(pp, delete_layer = TRUE, file.path(output, 'palmsplus.shp'))
+
+    if (days) {
+      write_csv(d, file.path(output, 'days.csv'))
+    }
+
+    if (trajectories) {
+      write_csv(st_drop_geometry(tr), file.path(output, 'trajectories.csv'))
+      st_write(tr, delete_layer = TRUE, file.path(output, 'trajectories.shp'))
+
+      if (multimodal) {
+        write_csv(st_drop_geometry(mm), file.path(output, 'multimodal.csv'))
+        st_write(mm, delete_layer = TRUE, file.path(output, 'multimodal.shp'))
+      }
+
+    }
+
+  }
+
+
+  # Return relevant data as a list if requested
   if (return_list) {
 
     result <- list(palmsplus_output = pp)
@@ -106,35 +138,6 @@ palmsplus_shell <- function(palms_data,
     return(result)
   }
 
-
-
-
-  # Save results to output folder: csv files (excluding geometry) and GIS shapefiles
-
-  if (!dir.exists(output)) {
-    if (verbose)
-      message("Creating output directory\n")
-
-    dir.create(output)
-  }
-
-  write_csv(st_drop_geometry(pp), file.path(output, 'palmsplus.csv'))
-  st_write(pp, delete_layer = TRUE, file.path(output, 'palmsplus.shp'), )
-
-  if (days) {
-    write_csv(d, file.path(output, 'days.csv'))
-  }
-
-  if (trajectories) {
-    write_csv(st_drop_geometry(tr), file.path(output, 'trajectories.csv'))
-    st_write(tr, delete_layer = TRUE, file.path(output, 'trajectories.shp'))
-
-    if (multimodal) {
-      write_csv(st_drop_geometry(mm), file.path(output, 'multimodal.csv'))
-      st_write(mm, delete_layer = TRUE, file.path(output, 'multimodal.shp'))
-    }
-
-  }
 
 }
 
