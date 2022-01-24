@@ -2,6 +2,7 @@
 #' Shell function for processing palmsplus data
 #'
 #' @param palms_data The palms dataset that is output from HABITUS. Path to csv file.
+#' @param habitus Is this data from HABITUS (as opposed to PALMS, which has different column names). Default is \code{FALSE}.
 #'
 #' @param config_file The config file specifying the palmsplus processing parameters. Path to csv file.
 #'
@@ -10,29 +11,54 @@
 #'
 #' @param verbose Print progress after each step. Default is \code{TRUE}.
 #'
+#' @param save_output Logical. Save output files to disk. Default is \code{TRUE}.
+#' @param output_path Path to directory where output files are saved. Default is current working directory
+#' @param return_list Return all datasets as a list? Default is \code{FALSE}.
+#'
 #' @param days Build the \code{days} dataset? Default is \code{TRUE}.
 #' @param trajectories Build the \code{trajectories} dataset? Default is \code{TRUE}.
 #' @param multimodal Build the \code{multimodal} dataset? Default is \code{TRUE}.
 #'
-#' @param return_list Return all datasets as a list? Default is \code{FALSE}.
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#'\dontrun{
+#' palmsplus_shell(palms_data = "habitus_cleaned.csv", # Path to palms/habitus dataset
+#'                 habitus = TRUE,                     # Are data from habitus (not palms)
+#'
+#'                 config_file = "config.csv",         # Path to config file
+#'
+#'                 days = TRUE,                        # Build the 'days' dataset?
+#'                 trajectories = TRUE,                # Build the 'trajectories' dataset?
+#'                 multimodal = TRUE,                  # Build the 'multimodal' dataset?
+#'
+#'                 spatial_threshold = 100,            # Spatial threshold for multimodal trips (meters)
+#'                 temporal_threshold = 5,             # Temporal threshold for multimodal trips (minutes)
+#'
+#'                 save_output = TRUE,                 # Save output files?
+#'                 output_path = "output",             # Directory where results are saved
+#'                 return_list = TRUE)                 # Return output files as a list
+#'}
+
 palmsplus_shell <- function(palms_data,
+                            habitus = FALSE,
                             config_file,
                             spatial_threshold = 200,
                             temporal_threshold = 10,
                             verbose = TRUE,
 
+                            save_output = TRUE,
+                            output_path = getwd(),
+                            return_list = FALSE,
+
                             days = TRUE,
                             trajectories = TRUE,
-                            multimodal = TRUE,
-                            return_list = FALSE) {
+                            multimodal = TRUE) {
 
   # Read palms data from csv (if the data is saved as csv from HABITUS)
-  palms <- read_palms(file = palms_data, verbose = verbose)
+  palms <- read_palms(file = palms_data, verbose = verbose, habitus = habitus)
 
   # Build palmsplus dataset. This dataset is used to create the days and trajectories datasets
   pp <- palms_build_palmsplus(data = palms, config_file = config_file, verbose = verbose)
@@ -85,14 +111,30 @@ palmsplus_shell <- function(palms_data,
 
   # Save results to output folder: csv files (excluding geometry) and GIS shapefiles
 
-  # write_csv(st_set_geometry(pp, NULL), "output/palmsplus.csv")
-  # write_csv(days, "output/days.csv")
-  # write_csv(st_set_geometry(tr, NULL), "output/trajectories.csv")
-  # write_csv(st_set_geometry(mm, NULL), "output/multimodal.csv")
-  #
-  # st_write(pp, "output/palmsplus.shp")
-  # st_write(tr, "output/trajecories.shp")
-  # st_write(mm, "output/multimodal.shp")
+  if (!dir.exists(output)) {
+    if (verbose)
+      message("Creating output directory\n")
+
+    dir.create(output)
+  }
+
+  write_csv(st_drop_geometry(pp), file.path(output, 'palmsplus.csv'))
+  st_write(pp, delete_layer = TRUE, file.path(output, 'palmsplus.shp'), )
+
+  if (days) {
+    write_csv(d, file.path(output, 'days.csv'))
+  }
+
+  if (trajectories) {
+    write_csv(st_drop_geometry(tr), file.path(output, 'trajectories.csv'))
+    st_write(tr, delete_layer = TRUE, file.path(output, 'trajectories.shp'))
+
+    if (multimodal) {
+      write_csv(st_drop_geometry(mm), file.path(output, 'multimodal.csv'))
+      st_write(mm, delete_layer = TRUE, file.path(output, 'multimodal.shp'))
+    }
+
+  }
 
 }
 

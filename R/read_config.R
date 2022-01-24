@@ -6,9 +6,6 @@
 #'
 #' @importFrom readr read_csv
 #'
-#' @export
-#'
-#' @examples
 read_config <- function(path) {
 
   if (file.exists(path)) {

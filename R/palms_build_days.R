@@ -63,8 +63,8 @@ palms_build_days <- function(data, verbose = TRUE, config_file = NULL) {
 
     if (nrow(config) < 1) {
 
-      if (verbose)
-        message("palms_build_days: No domains have been added - using totals only.")
+      #if (verbose)
+      #  message("palms_build_days: No domains have been added - using totals only.")
 
     } else {
       domains <- c(domains, config$name)

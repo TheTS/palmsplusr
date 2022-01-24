@@ -4,12 +4,14 @@
 \alias{read_palms}
 \title{Read PALMS data from a csv file}
 \usage{
-read_palms(file, verbose = TRUE)
+read_palms(file, verbose = TRUE, habitus = FALSE)
 }
 \arguments{
 \item{file}{Path to the PALMS csv file.}
 
 \item{verbose}{Print progress after each step. Default is \code{TRUE}.}
+
+\item{habitus}{Is this data output from HABITUS (as opposed to PALMS, which has different column names). Default is \code{FALSE}.}
 }
 \value{
 A \code{sf data.frame} of PALMS data represented as \code{POINT} geometry.

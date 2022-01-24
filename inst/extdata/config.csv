@@ -27,7 +27,7 @@ trajectory_field,light,sum(activityintensity == 1) * 15,,FALSE
 trajectory_field,moderate,sum(activityintensity == 2) * 15,,FALSE
 trajectory_field,vigorous,sum(activityintensity == 3) * 15,,FALSE
 trajectory_field,mvpa,moderate + vigorous,,FALSE
-trajectory_field,length,as.numeric(st_length(.)),,TRUE
+trajectory_field,length,as.numeric(st_length(geometry)),,TRUE
 trajectory_field,speed,(length / duration) * 3.6,,TRUE
 multimodal_field,duration,sum,,
 multimodal_field,nonwear,sum,,

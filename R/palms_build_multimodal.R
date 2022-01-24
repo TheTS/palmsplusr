@@ -90,8 +90,8 @@ palms_build_multimodal <- function(data, spatial_threshold,
     multimodal_fields <- read_config(config_file) %>%
       filter(context == 'multimodal_field')
   } else if (exists("multimodal_fields")) {
-    multimodal_fields %>%
-      rename(func = formula)
+    multimodal_fields <- multimodal_fields %>%
+      rename(formula = func)
   }
 
 

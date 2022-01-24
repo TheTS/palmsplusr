@@ -6,18 +6,23 @@
 \usage{
 palmsplus_shell(
   palms_data,
+  habitus = FALSE,
   config_file,
   spatial_threshold = 200,
   temporal_threshold = 10,
   verbose = TRUE,
+  save_output = TRUE,
+  output_path = getwd(),
+  return_list = FALSE,
   days = TRUE,
   trajectories = TRUE,
-  multimodal = TRUE,
-  return_list = FALSE
+  multimodal = TRUE
 )
 }
 \arguments{
 \item{palms_data}{The palms dataset that is output from HABITUS. Path to csv file.}
+
+\item{habitus}{Is this data from HABITUS (as opposed to PALMS, which has different column names). Default is \code{FALSE}.}
 
 \item{config_file}{The config file specifying the palmsplus processing parameters. Path to csv file.}
 
@@ -27,17 +32,40 @@ palmsplus_shell(
 
 \item{verbose}{Print progress after each step. Default is \code{TRUE}.}
 
+\item{save_output}{Logical. Save output files to disk. Default is \code{TRUE}.}
+
+\item{output_path}{Path to directory where output files are saved. Default is current working directory}
+
+\item{return_list}{Return all datasets as a list? Default is \code{FALSE}.}
+
 \item{days}{Build the \code{days} dataset? Default is \code{TRUE}.}
 
 \item{trajectories}{Build the \code{trajectories} dataset? Default is \code{TRUE}.}
 
 \item{multimodal}{Build the \code{multimodal} dataset? Default is \code{TRUE}.}
-
-\item{return_list}{Return all datasets as a list? Default is \code{FALSE}.}
 }
 \value{
 
 }
 \description{
 Shell function for processing palmsplus data
+}
+\examples{
+\dontrun{
+palmsplus_shell(palms_data = "habitus_cleaned.csv", # Path to palms/habitus dataset
+                habitus = TRUE,                     # Are data from habitus (not palms)
+
+                config_file = "config.csv",         # Path to config file
+
+                days = TRUE,                        # Build the 'days' dataset?
+                trajectories = TRUE,                # Build the 'trajectories' dataset?
+                multimodal = TRUE,                  # Build the 'multimodal' dataset?
+
+                spatial_threshold = 100,            # Spatial threshold for multimodal trips (meters)
+                temporal_threshold = 5,             # Temporal threshold for multimodal trips (minutes)
+
+                save_output = TRUE,                 # Save output files?
+                output_path = "output",             # Directory where results are saved
+                return_list = TRUE)                 # Return output files as a list
+}
 }
