@@ -103,19 +103,19 @@ palmsplus_shell <- function(palms_data,
       dir.create(output_path)
     }
 
-    write_csv(st_drop_geometry(pp), file.path(output_path, 'palmsplus.csv'))
+    write_csv(st_drop_geometry(pp), file.path(output_path, 'palmsplus.csv'), na = '')
     st_write(pp, delete_layer = TRUE, file.path(output_path, 'palmsplus.shp'))
 
     if (days) {
-      write_csv(d, file.path(output_path, 'days.csv'))
+      write_csv(d, file.path(output_path, 'days.csv'), na = '')
     }
 
     if (trajectories) {
-      write_csv(st_drop_geometry(tr), file.path(output_path, 'trajectories.csv'))
+      write_csv(st_drop_geometry(tr), file.path(output_path, 'trajectories.csv'), na = '')
       st_write(tr, delete_layer = TRUE, file.path(output_path, 'trajectories.shp'))
 
       if (multimodal) {
-        write_csv(st_drop_geometry(mm), file.path(output_path, 'multimodal.csv'))
+        write_csv(st_drop_geometry(mm), file.path(output_path, 'multimodal.csv'), na = '')
         st_write(mm, delete_layer = TRUE, file.path(output_path, 'multimodal.shp'))
       }
 

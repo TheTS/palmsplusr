@@ -172,7 +172,8 @@ palms_buffer <- function(point, distance = 100, crs = 2193) {
 #'
 #' @description Returns a logical vector the length of the input \code{data}
 #' points. This checks if each point falls inside \code{polygon}. Multiple
-#' polygons are supported (e.g., multiple homes, or parks).
+#' polygons are supported (e.g., multiple homes, or parks). If the \code{polygon}
+#' data is empty, \code{NA} will be returned.
 #'
 #' @param data The data points.
 #' @param polygons The polygon feature.
@@ -194,6 +195,11 @@ palms_buffer <- function(point, distance = 100, crs = 2193) {
 #'
 #' @export
 palms_in_polygon <- function(data, polygons, collapse_var = NULL){
+
+  if (nrow(polygons) < 1) {
+    message("palms_in_polygon: Polygon data has 0 rows, returning NA")
+    return(NA)
+  }
 
   collapse_var <- quo_text(enquo(collapse_var))
 

@@ -21,7 +21,8 @@ polygons are present, an additional column will be returned for each.
 \description{
 Returns a logical vector the length of the input \code{data}
 points. This checks if each point falls inside \code{polygon}. Multiple
-polygons are supported (e.g., multiple homes, or parks).
+polygons are supported (e.g., multiple homes, or parks). If the \code{polygon}
+data is empty, \code{NA} will be returned.
 }
 \examples{
 data(list = c("palms", "home"))
