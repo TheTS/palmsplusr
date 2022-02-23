@@ -1,7 +1,7 @@
 Package: palmsplusr
 Type: Package
 Title: Process PALMS output data
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(as.person("Tom Stewart <tom.stewart@aut.ac.nz> [aut, cre]"),
              as.person("Bernhard Snizek <b@snizek.com> [aut, ctb]"),
              as.person("Jasper Schipperijn <jschipperijn@health.sdu.dk> [ctb]"))
