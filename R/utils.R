@@ -201,6 +201,8 @@ palms_in_polygon <- function(data, polygons, collapse_var = NULL){
     return(NA)
   }
 
+  polygons <- st_make_valid(polygons)
+
   collapse_var <- quo_text(enquo(collapse_var))
 
    if (!(collapse_var == "NULL"))
