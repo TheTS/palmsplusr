@@ -36,8 +36,8 @@
 #'
 #' @export
 palms_build_multimodal <- function(data, spatial_threshold,
-                                  temporal_threshold, verbose = TRUE,
-                                  config_file = NULL) {
+                                   temporal_threshold, verbose = TRUE,
+                                   config_file = NULL) {
 
   if (!all(c("identifier", "tripnumber", "start", "end", "geometry", "mot") %in% colnames(data)))
     stop("Your trajectories data does not contain the required column names...")
@@ -138,7 +138,7 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
 
   # Build trajectory_location formulas if they exist
-  if (exists("trajectory_location")) {
+  if (exists("trajectory_locations")) {
 
     names <- unique(c(trajectory_locations$start_criteria,
                       trajectory_locations$end_criteria))
@@ -149,18 +149,20 @@ palms_build_multimodal <- function(data, spatial_threshold,
     lookup <- palmsplus %>%
       filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
       as.data.frame() %>%
-      select(c("identifier", "tripnumber", "triptype", names)) %>%
+      select(c("identifier", "tripnumber", "triptype", all_of(names))) %>%
       as.data.table()
 
     args_locations <- setNames(
-      paste0("lookup[tripnumber==start_trip & triptype==1 & identifier==first(identifier),",
+      paste0("lookup[lookup$tripnumber==start_trip & lookup$triptype==1 & lookup$identifier==first(identifier),",
              trajectory_locations$start_criteria,
-        "] & lookup[tripnumber==end_trip & triptype==4  & identifier==first(identifier),",
+        "] & lookup[lookup$tripnumber==end_trip & lookup$triptype==4  & lookup$identifier==first(identifier),",
         trajectory_locations$end_criteria, "]"),
       trajectory_locations$name) %>%
       lapply(parse_expr)
-  } else
+  } else {
     args_locations <- NULL
+  }
+
 
   # Calculate other fields (+ trajectory_locations)
   df_other <- mot_split %>%
