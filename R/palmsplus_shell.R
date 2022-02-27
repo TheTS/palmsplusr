@@ -20,8 +20,8 @@
 #' @param multimodal Build the \code{multimodal} dataset? Default is \code{TRUE}.
 #'
 #'
-#' @return
-#' @export
+#' @return Returns a list with requested data frames (if `return_list` is true)
+
 #'
 #' @examples
 #'\dontrun{
@@ -40,7 +40,14 @@
 #'                 save_output = TRUE,                 # Save output files?
 #'                 output_path = "output",             # Directory where results are saved
 #'                 return_list = TRUE)                 # Return output files as a list
+#'
+#'
+#'
+#'
 #'}
+#'
+#'
+#' @export
 
 palmsplus_shell <- function(palms_data,
                             habitus = FALSE,
@@ -61,13 +68,13 @@ palmsplus_shell <- function(palms_data,
   palms <- read_palms(file = palms_data, verbose = verbose, habitus = habitus)
 
   # Build palmsplus dataset. This dataset is used to create the days and trajectories datasets
-  pp <- palms_build_palmsplus(data = palms, config_file = config_file, verbose = verbose)
+  palmsplus <- palms_build_palmsplus(data = palms, config_file = config_file, verbose = verbose)
 
 
   # Build days dataset if requested
   if (days) {
 
-    d <- palms_build_days(data = pp, config_file = config_file, verbose = verbose)
+    d <- palms_build_days(data = palmsplus, config_file = config_file, verbose = verbose)
 
   }
 
@@ -75,11 +82,12 @@ palmsplus_shell <- function(palms_data,
   # Build trajectories dataset if requested
   if (trajectories) {
 
-    tr <- palms_build_trajectories(data = pp, config_file = config_file)
+    tr <- palms_build_trajectories(data = palmsplus, config_file = config_file)
 
 
     # Build multimodal dataset if requested
     if (multimodal) {
+
 
       mm <- palms_build_multimodal(data = tr,
                                    spatial_threshold = spatial_threshold,
@@ -103,7 +111,7 @@ palmsplus_shell <- function(palms_data,
       dir.create(output_path)
     }
 
-    write_csv(st_drop_geometry(pp), file.path(output_path, 'palmsplus.csv'), na = '')
+    write_csv(st_drop_geometry(palmsplus), file.path(output_path, 'palmsplus.csv'), na = '')
     st_write(pp, delete_layer = TRUE, file.path(output_path, 'palmsplus.shp'))
 
     if (days) {
@@ -127,7 +135,7 @@ palmsplus_shell <- function(palms_data,
   # Return relevant data as a list if requested
   if (return_list) {
 
-    result <- list(palmsplus_output = pp)
+    result <- list(palmsplus_output = palmsplus)
 
     if (days) result <- append(result, list(days_output = d))
 

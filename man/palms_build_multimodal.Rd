@@ -9,7 +9,8 @@ palms_build_multimodal(
   spatial_threshold,
   temporal_threshold,
   verbose = TRUE,
-  config_file = NULL
+  config_file = NULL,
+  palmsplus_copy = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ palms_build_multimodal(
 \item{verbose}{Print progress after each step. Default is \code{TRUE}.}
 
 \item{config_file}{Path to the config file}
+
+\item{palmsplus_copy}{When using config files, a copy of the palmsplus dataframe is passed to this function (future use)}
 }
 \value{
 The input trajectories LINESTRING geometry, collapsed into multimodal trips

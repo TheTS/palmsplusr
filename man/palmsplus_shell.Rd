@@ -45,7 +45,7 @@ palmsplus_shell(
 \item{multimodal}{Build the \code{multimodal} dataset? Default is \code{TRUE}.}
 }
 \value{
-
+Returns a list with requested data frames (if `return_list` is true)
 }
 \description{
 Shell function for processing palmsplus data
@@ -67,5 +67,11 @@ palmsplus_shell(palms_data = "habitus_cleaned.csv", # Path to palms/habitus data
                 save_output = TRUE,                 # Save output files?
                 output_path = "output",             # Directory where results are saved
                 return_list = TRUE)                 # Return output files as a list
+
+
+
+
 }
+
+
 }

@@ -8,6 +8,7 @@
 #' @param temporal_threshold Temporal threshold in minutes
 #' @param verbose Print progress after each step. Default is \code{TRUE}.
 #' @param config_file Path to the config file
+#' @param palmsplus_copy When using config files, a copy of the palmsplus dataframe is passed to this function (future use)
 #'
 #' @details Several columns are required in the \code{trajectories} dataset. These
 #' need to be added as trajectory fields:
@@ -35,9 +36,12 @@
 #' @importFrom stats setNames
 #'
 #' @export
-palms_build_multimodal <- function(data, spatial_threshold,
-                                   temporal_threshold, verbose = TRUE,
-                                   config_file = NULL) {
+palms_build_multimodal <- function(data,
+                                   spatial_threshold,
+                                   temporal_threshold,
+                                   verbose = TRUE,
+                                   config_file = NULL,
+                                   palmsplus_copy = NULL) {
 
   if (!all(c("identifier", "tripnumber", "start", "end", "geometry", "mot") %in% colnames(data)))
     stop("Your trajectories data does not contain the required column names...")
@@ -134,6 +138,10 @@ palms_build_multimodal <- function(data, spatial_threshold,
 
     trajectory_locations <- read_config(config_file) %>%
       filter(context == 'trajectory_location')
+
+    if (nrow(trajectory_locations) < 1) {
+      rm(trajectory_locations)
+    }
   }
 
 
@@ -143,22 +151,42 @@ palms_build_multimodal <- function(data, spatial_threshold,
     names <- unique(c(trajectory_locations$start_criteria,
                       trajectory_locations$end_criteria))
 
+
     # Rather than recalculating geometry, just lookup in palmsplus
-    stopifnot(exists("palmsplus"))
+    if (!is.null(palmsplus_copy) | exists("palmsplus")) {
 
-    lookup <- palmsplus %>%
-      filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
-      as.data.frame() %>%
-      select(c("identifier", "tripnumber", "triptype", all_of(names))) %>%
-      as.data.table()
+      if (is.null(palmsplus_copy)) {
 
-    args_locations <- setNames(
-      paste0("lookup[lookup$tripnumber==start_trip & lookup$triptype==1 & lookup$identifier==first(identifier),",
-             trajectory_locations$start_criteria,
-        "] & lookup[lookup$tripnumber==end_trip & lookup$triptype==4  & lookup$identifier==first(identifier),",
-        trajectory_locations$end_criteria, "]"),
-      trajectory_locations$name) %>%
-      lapply(parse_expr)
+        lookup <- palmsplus %>%
+          filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
+          as.data.frame() %>%
+          select(c("identifier", "tripnumber", "triptype", all_of(names))) %>%
+          as.data.table()
+
+      } else {
+        lookup <- palmsplus_copy %>%
+          filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
+          as.data.frame() %>%
+          select(c("identifier", "tripnumber", "triptype", all_of(names))) %>%
+          as.data.table()
+
+      }
+
+
+      args_locations <- setNames(
+        paste0("lookup[lookup$tripnumber==start_trip & lookup$triptype==1 & lookup$identifier==first(identifier),",
+               trajectory_locations$start_criteria,
+               "] & lookup[lookup$tripnumber==end_trip & lookup$triptype==4  & lookup$identifier==first(identifier),",
+               trajectory_locations$end_criteria, "]"),
+        trajectory_locations$name) %>%
+        lapply(parse_expr)
+
+    } else {
+      message("palms_build_multimodal: trajectory_locations config table exists, but cannot find 'palmsplus' dataframe
+               in global  environment. Please assign output of palms_build_palmsplus to 'palmsplus'.")
+    }
+
+
   } else {
     args_locations <- NULL
   }
