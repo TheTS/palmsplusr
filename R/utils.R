@@ -362,7 +362,7 @@ palms_load_defaults <- function(epoch_length) {
   palms_add_trajectory_field("moderate",  paste0("sum(activityintensity == 2) * ", epoch_length))
   palms_add_trajectory_field("vigorous",  paste0("sum(activityintensity == 3) * ", epoch_length))
   palms_add_trajectory_field("mvpa",      "moderate + vigorous")
-  palms_add_trajectory_field("length",    "as.numeric(st_length(.))",  TRUE)
+  palms_add_trajectory_field("length",    "as.numeric(st_length(geometry))",  TRUE)
   palms_add_trajectory_field("speed",     "(length / duration) * 3.6", TRUE)
 
   # multimodal_fields
