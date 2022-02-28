@@ -30,7 +30,7 @@
 #' @import sf
 #' @importFrom rlang parse_expr
 #' @importFrom geosphere distGeo
-#' @importFrom data.table rleid as.data.table
+#' @importFrom data.table rleid
 #' @importFrom purrr reduce
 #' @importFrom tidyr gather spread unite
 #' @importFrom stats setNames
@@ -81,7 +81,7 @@ palms_build_multimodal <- function(data,
   # Use run-length encoding to assign mmt numbers
   data <- data %>%
     group_by(identifier) %>%
-    mutate(mmt_number = rleid(mmt_number)) %>%
+    mutate(mmt_number = data.table::rleid(mmt_number)) %>%
     ungroup() %>%
     select(-c(start_point, end_point, end_prev, mmt_criteria, time_diff, distance_diff))
 
@@ -160,15 +160,13 @@ palms_build_multimodal <- function(data,
         lookup <- palmsplus %>%
           filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
           as.data.frame() %>%
-          select(c("identifier", "tripnumber", "triptype", all_of(names))) %>%
-          as.data.table()
+          select(c("identifier", "tripnumber", "triptype", all_of(names)))
 
       } else {
         lookup <- palmsplus_copy %>%
           filter(tripnumber > 0 & triptype %in% c(1, 4)) %>%
           as.data.frame() %>%
-          select(c("identifier", "tripnumber", "triptype", all_of(names))) %>%
-          as.data.table()
+          select(c("identifier", "tripnumber", "triptype", all_of(names)))
 
       }
 
