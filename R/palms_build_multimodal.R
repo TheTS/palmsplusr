@@ -172,18 +172,28 @@ palms_build_multimodal <- function(data,
 
       }
 
+      # Helper function to lookup start and end locations from the lookup table
+      lookup_locations <- function(identifier, start_trip, start_loc, end_trip, end_loc) {
+
+        n1 <- lookup[(lookup$identifier == identifier) & (lookup$tripnumber == start_trip) & (lookup$triptype == 1), start_loc]
+        n2 <- lookup[(lookup$identifier == identifier) & (lookup$tripnumber == end_trip) & (lookup$triptype == 4), end_loc]
+
+        return(n1 & n2)
+      }
+
 
       args_locations <- setNames(
-        paste0("lookup[lookup$tripnumber==start_trip & lookup$triptype==1 & lookup$identifier==first(identifier),",
-               trajectory_locations$start_criteria,
-               "] & lookup[lookup$tripnumber==end_trip & lookup$triptype==4  & lookup$identifier==first(identifier),",
-               trajectory_locations$end_criteria, "]"),
+
+        paste0("lookup_locations(identifier, start_trip, '", trajectory_locations$start_criteria, "', end_trip, '", trajectory_locations$end_criteria, "')"),
+
         trajectory_locations$name) %>%
         lapply(parse_expr)
 
     } else {
       message("palms_build_multimodal: trajectory_locations config table exists, but cannot find 'palmsplus' dataframe
                in global  environment. Please assign output of palms_build_palmsplus to 'palmsplus'.")
+
+      args_locations <- NULL
     }
 
 
@@ -202,8 +212,9 @@ palms_build_multimodal <- function(data,
               mot_order = paste0(mot, collapse = "-"),
               start = first(start),
               end = last(end),
-              !!!args_locations,
               do_union = FALSE) %>%
+    rowwise() %>%
+    mutate(!!!args_locations) %>%
     ungroup() %>%
     select(-c(start_trip, end_trip)) %>%
     mutate_if(is.logical, as.integer)
